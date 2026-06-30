@@ -13,7 +13,7 @@ function Home() {
 
 	const { isPending, error, data } = useQuery({
 		queryKey: ["movie"],
-		queryFn: () => getMovieFn({ data: { id: 2 } }),
+		queryFn: () => getMovieFn({ data: { id: 335984 } }),
 	});
 
 	if (isPending) {
