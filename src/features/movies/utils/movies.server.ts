@@ -1,5 +1,3 @@
-import type { TmdbMovie } from "../types";
-
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 export async function getMovieById(id: number) {
