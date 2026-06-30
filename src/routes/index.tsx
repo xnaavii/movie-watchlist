@@ -2,18 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import MovieCard from "#/features/movies/components/MovieCard";
-import { getMovie } from "#/features/movies/utils/movies.functions";
+import type { TmdbMovie } from "#/features/movies/types";
+import { getPopularMovies } from "#/features/movies/utils/movies.functions";
 
 export const Route = createFileRoute("/")({
 	component: Home,
 });
 
 function Home() {
-	const getMovieFn = useServerFn(getMovie);
+	const getPopularMoviesFn = useServerFn(getPopularMovies);
 
 	const { isPending, error, data } = useQuery({
-		queryKey: ["movie"],
-		queryFn: () => getMovieFn({ data: { id: 335984 } }),
+		queryKey: ["movies"],
+		queryFn: () => getPopularMoviesFn({ data: {} }),
 	});
 
 	if (isPending) {
@@ -25,18 +26,22 @@ function Home() {
 	}
 
 	if (data?.success) {
-		const movie = data?.data;
+		const movies: TmdbMovie[] = data.data.results;
 
 		return (
 			<div className="p-8">
 				<h1 className="text-4xl font-bold">Welcome to Movie watchlist</h1>
-				<div className="grid gap-4 grid-cols-8">
-					<MovieCard
-						id={movie.id}
-						imageSrc={movie.poster_path}
-						title={movie.title}
-					/>
-				</div>
+				<ul className="grid gap-4 grid-cols-8">
+					{movies.map((movie) => (
+						<li key={movie.id}>
+							<MovieCard
+								id={movie.id}
+								imageSrc={movie.poster_path}
+								title={movie.title}
+							/>
+						</li>
+					))}
+				</ul>
 			</div>
 		);
 	}
