@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import MovieCard from "#/features/movies/components/MovieCard";
 import { getMovie } from "#/features/movies/utils/movies.functions";
 
 export const Route = createFileRoute("/")({
@@ -10,16 +11,32 @@ export const Route = createFileRoute("/")({
 function Home() {
 	const getMovieFn = useServerFn(getMovie);
 
-	const { data } = useQuery({
+	const { isPending, error, data } = useQuery({
 		queryKey: ["movie"],
 		queryFn: () => getMovieFn({ data: { id: 2 } }),
 	});
 
-	console.log(data);
+	if (isPending) {
+		return <p>Loading...</p>;
+	}
 
-	return (
-		<div className="p-8">
-			<h1 className="text-4xl font-bold">Welcome to Movie watchlist</h1>
-		</div>
-	);
+	if (error) {
+		return <p>There was an error: {error.message}</p>;
+	}
+
+	if (data?.success) {
+		const movie = data?.data;
+
+		return (
+			<div className="p-8">
+				<h1 className="text-4xl font-bold">Welcome to Movie watchlist</h1>
+				{}
+				<MovieCard
+					id={movie.id}
+					imageSrc={movie.poster_path}
+					title={movie.title}
+				/>
+			</div>
+		);
+	}
 }
