@@ -8,7 +8,7 @@ export const getMovie = createServerFn({ method: "GET" })
 	});
 
 export const getPopularMovies = createServerFn({ method: "GET" })
-	.validator((data: { language?: string; page?: number }) => data)
+	.validator((data?: { language?: string; page?: number }) => data)
 	.handler(async ({ data }) => {
 		const { language = "en-US", page = 1 } = data ?? {};
 		return getMoviesByPopularity(language, page);

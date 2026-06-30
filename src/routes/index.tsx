@@ -16,7 +16,7 @@ function Home() {
 			<MoviesSection
 				title="Popular"
 				queryKey="popular"
-				fetcher={() => getPopularMoviesFn({ data: {} })}
+				fetcher={() => getPopularMoviesFn()}
 			/>
 		</div>
 	);
