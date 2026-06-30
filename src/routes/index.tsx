@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import MovieCard from "#/features/movies/components/MovieCard";
+import { MoviesGrid } from "#/features/movies/components/MoviesGrid";
 import type { TmdbMovie } from "#/features/movies/types";
 import { getPopularMovies } from "#/features/movies/utils/movies.functions";
 
@@ -14,7 +14,7 @@ function Home() {
 
 	const { isPending, error, data } = useQuery({
 		queryKey: ["movies"],
-		queryFn: () => getPopularMoviesFn({ data: {} }),
+		queryFn: () => getPopularMoviesFn({ data: { page: 1 } }),
 	});
 
 	if (isPending) {
@@ -31,17 +31,7 @@ function Home() {
 		return (
 			<div className="p-8">
 				<h1 className="text-4xl font-bold">Welcome to Movie watchlist</h1>
-				<ul className="grid gap-4 grid-cols-8">
-					{movies.map((movie) => (
-						<li key={movie.id}>
-							<MovieCard
-								id={movie.id}
-								imageSrc={movie.poster_path}
-								title={movie.title}
-							/>
-						</li>
-					))}
-				</ul>
+				<MoviesGrid movies={movies} />
 			</div>
 		);
 	}
