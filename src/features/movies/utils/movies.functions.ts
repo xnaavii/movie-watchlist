@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getMovieById } from "./tmdb.server";
+import { getMovieById } from "./movies.server";
 
 export const getMovie = createServerFn({ method: "GET" })
   .validator((data: { id: number }) => data)

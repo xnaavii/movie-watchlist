@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { getMovie } from "#/features/tmdb/utils/tmdb.functions";
+import { getMovie } from "#/features/movies/utils/movies.functions";
 
 export const Route = createFileRoute("/")({
 	component: Home,
