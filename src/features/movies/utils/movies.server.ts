@@ -1,3 +1,5 @@
+import type { TmdbMovie, TmdbResult } from "../types";
+
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 export async function getMovieById(id: number) {
@@ -29,7 +31,7 @@ export async function getMovieById(id: number) {
 export async function getMoviesByPopularity(
 	language: string = "en-US",
 	page: number = 1,
-) {
+): Promise<TmdbResult<TmdbMovie>> {
 	try {
 		const url = `${TMDB_BASE_URL}/movie/popular?language=${language}&page=${page}`;
 

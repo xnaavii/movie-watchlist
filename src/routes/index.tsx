@@ -11,13 +11,10 @@ function Home() {
 	const getPopularMoviesFn = useServerFn(getPopularMovies);
 
 	return (
-		<div className="p-8">
-			<h1 className="text-4xl font-bold">Welcome to Movie watchlist</h1>
-			<MoviesSection
-				title="Popular"
-				queryKey="popular"
-				fetcher={() => getPopularMoviesFn()}
-			/>
-		</div>
+		<MoviesSection
+			title="Popular"
+			queryKey="popular"
+			fetcher={() => getPopularMoviesFn()}
+		/>
 	);
 }
