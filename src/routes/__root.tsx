@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import Search from "#/components/Search";
 import Sidebar from "#/components/Sidebar";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -47,7 +48,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="bg-black">
 				<div className="grid grid-cols-[auto_1fr] min-h-dvh overflow-x-hidden">
 					<Sidebar />
-					<main className="overflow-y-auto">{children}</main>
+					<main className="overflow-y-auto flex flex-col p-4">
+						<Search />
+						{children}
+					</main>
 				</div>
 				<TanStackDevtools
 					config={{
