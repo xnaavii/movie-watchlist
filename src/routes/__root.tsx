@@ -45,10 +45,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-black">
+			<body className="bg-black text-white">
 				<div className="grid grid-cols-[auto_1fr] min-h-dvh overflow-x-hidden">
 					<Sidebar />
-					<main className="overflow-y-auto flex flex-col p-4">
+					<main className="overflow-y-auto flex flex-col p-4 gap-8">
 						<Search />
 						{children}
 					</main>
