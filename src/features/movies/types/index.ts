@@ -18,6 +18,7 @@ export type TmdbMovieDetails = TmdbMovie & {
 	backdrop_path: string;
 	runtime: number;
 	tagline: string;
+  overview: string;
 };
 
 export type TmdbSingleResult<T> =

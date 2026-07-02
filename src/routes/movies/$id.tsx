@@ -2,9 +2,11 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "#/components/ui/button";
+import { SITE_CONFIG } from "#/config/site";
 import { MovieBanner } from "#/features/movies/components/MovieBanner";
 import { MoviePoster } from "#/features/movies/components/MoviePoster";
 import { getMovie } from "#/features/movies/server/movies.functions";
+import { getMovieImage } from "#/features/movies/utils/tmdb";
 
 const movieQuery = (id: number) =>
 	queryOptions({
@@ -16,6 +18,34 @@ export const Route = createFileRoute("/movies/$id")({
 	component: Movie,
 	loader: ({ params, context }) => {
 		return context.queryClient.ensureQueryData(movieQuery(Number(params.id)));
+	},
+	head: ({ loaderData, params }) => {
+		if (!loaderData?.success) {
+			return { meta: [{ title: "Movie not found" }] };
+		}
+
+		const movie = loaderData.data;
+		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
+		const imageUrl = getMovieImage(movie.backdrop_path, "w1280") ?? "";
+
+		return {
+			meta: [
+				{ title: `${movie.title} | ${SITE_CONFIG.name}` },
+				{ name: "description", content: movie.overview },
+
+				{ property: "og:title", content: movie.title },
+				{ property: "og:description", content: movie.overview },
+				{ property: "og:image", content: imageUrl },
+				{ property: "og:type", content: "video.movie" },
+				{ property: "og:url", content: pageUrl },
+
+				{ name: "twitter:card", content: "summary_large_image" },
+				{ name: "twitter:title", content: movie.title },
+				{ name: "twitter:description", content: movie.overview },
+				{ name: "twitter:image", content: imageUrl },
+				{ name: "twitter:url", content: pageUrl },
+			],
+		};
 	},
 });
 
