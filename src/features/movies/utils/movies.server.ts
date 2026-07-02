@@ -1,10 +1,17 @@
-import type { TmdbMovie, TmdbResult } from "../types";
+import type {
+	TmdbMovie,
+	TmdbMovieDetails,
+	TmdbResult,
+	TmdbSingleResult,
+} from "../types";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
-export async function getMovieById(id: number) {
-	if (id === undefined || id === null || id < 0) {
-		return { success: false, message: "Please provide a valid id" };
+export async function getMovieById(
+	id: number,
+): Promise<TmdbSingleResult<TmdbMovieDetails>> {
+	if (!Number.isFinite(id) || id <= 0) {
+		return { success: false, error: "Please provide a valid id" };
 	}
 
 	try {
@@ -24,7 +31,10 @@ export async function getMovieById(id: number) {
 		const data = await response.json();
 		return { success: true, data };
 	} catch (error) {
-		console.error("Error fetching movie: ", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
 	}
 }
 
