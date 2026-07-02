@@ -1,8 +1,10 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { AspectRatio } from "#/components/ui/aspect-ratio";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "#/components/ui/button";
+import { MovieBanner } from "#/features/movies/components/MovieBanner";
+import { MoviePoster } from "#/features/movies/components/MoviePoster";
 import { getMovie } from "#/features/movies/server/movies.functions";
-import { getMovieImage } from "#/features/movies/utils/tmdb";
 
 const movieQuery = (id: number) =>
 	queryOptions({
@@ -20,49 +22,29 @@ export const Route = createFileRoute("/movies/$id")({
 function Movie() {
 	const { id } = Route.useParams();
 	const { data: result } = useSuspenseQuery(movieQuery(Number(id)));
+	const router = useRouter();
 
 	if (!result.success) {
 		return <div className="p-4 text-red-500">{result.error}</div>;
 	}
 
 	const movie = result.data;
-	const backdropImage = getMovieImage(movie.backdrop_path);
-	const posterImage = getMovieImage(movie.poster_path, "w342");
 
 	return (
-		<div className="relative w-full min-h-100 h-[60vh] bg-neutral-950">
-			<div className="absolute top-0 left-0 size-full bg-linear-to-t from-black to-transparent z-1" />
-			{backdropImage ? (
-				<img
-					src={backdropImage}
-					alt={movie.title}
-					className="absolute size-full object-cover"
-				/>
-			) : (
-				<p>
-					<div className="absolute top-0 left-0 w-full h-full bg-muted aspect-2/3 flex items-center justify-center text-xl text-muted-foreground">
-						No image
-					</div>
-				</p>
-			)}
-			<div className="absolute bottom-6 left-6 translate-y-1/4 z-9 w-37.5 sm:w-50">
-				<AspectRatio
-					ratio={2 / 3}
-					className="relative rounded-lg overflow-hidden bg-muted"
-				>
-					{posterImage ? (
-						<img
-							src={posterImage}
-							alt={movie.title}
-							className="absolute inset-0 size-full object-cover"
-						/>
-					) : (
-						<div className="absolute inset-0 bg-muted flex items-center justify-center text-xl text-muted-foreground">
-							No image
-						</div>
-					)}
-				</AspectRatio>
+		<MovieBanner backdropPath={movie.backdrop_path} title={movie.title}>
+			<div className="absolute bottom-6 left-6 z-9 w-37.5 sm:w-50">
+				<MoviePoster posterPath={movie.poster_path} title={movie.title} />
 			</div>
-		</div>
+			<div className="absolute top-6 left-6 z-9">
+				<Button
+					variant="ghost"
+					className="bg-background/15 backdrop-blur-xl"
+					onClick={() => router.history.back()}
+				>
+					<ChevronLeft />
+					Go back
+				</Button>
+			</div>
+		</MovieBanner>
 	);
 }
