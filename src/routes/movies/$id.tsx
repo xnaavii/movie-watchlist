@@ -15,7 +15,7 @@ const movieQuery = (id: number) =>
 	});
 
 export const Route = createFileRoute("/movies/$id")({
-	component: Movie,
+	component: MovieDetails,
 	loader: ({ params, context }) => {
 		return context.queryClient.ensureQueryData(movieQuery(Number(params.id)));
 	},
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/movies/$id")({
 	},
 });
 
-function Movie() {
+function MovieDetails() {
 	const { id } = Route.useParams();
 	const { data: result } = useSuspenseQuery(movieQuery(Number(id)));
 	const router = useRouter();
