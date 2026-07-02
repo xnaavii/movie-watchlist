@@ -15,6 +15,7 @@ export type TmdbGenre = {
 
 export type TmdbMovieDetails = TmdbMovie & {
 	genres: TmdbGenre[];
+	backdrop_path: string;
 	runtime: number;
 	tagline: string;
 };
