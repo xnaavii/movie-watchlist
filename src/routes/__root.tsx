@@ -46,9 +46,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="bg-black text-white">
-				<div className="grid grid-cols-[auto_1fr] min-h-dvh overflow-x-hidden">
+				<div className="grid grid-cols-[auto_1fr] h-dvh overflow-hidden">
 					<Sidebar />
-					<main className="overflow-y-auto flex flex-col p-4 gap-8">
+					<main className="overflow-y-auto flex flex-col p-4 gap-8 min-h-0">
 						<Search />
 						{children}
 					</main>

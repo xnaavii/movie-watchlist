@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+
 import { MoviesSection } from "#/features/movies/components/MoviesSection";
 import { getPopularMovies } from "#/features/movies/utils/movies.functions";
 

@@ -46,6 +46,8 @@ export const MoviesSection = ({
 
 	if (moviesList.length === 0) return null;
 
+	console.log(moviesList[0]);
+
 	return (
 		<div className="flex flex-col gap-4">
 			<h2 className="text-2xl tracking-tight font-medium">{title}</h2>

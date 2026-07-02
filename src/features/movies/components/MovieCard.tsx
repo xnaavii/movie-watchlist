@@ -6,10 +6,10 @@ import { Button } from "#/components/ui/button";
 interface MovieCardProps {
 	id: number;
 	title: string;
-	imageSrc: string;
+	imageSrc: string | null;
 }
 
-const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500/";
+const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original/";
 
 const MovieCard: React.FC<MovieCardProps> = ({ id, title, imageSrc }) => {
 	return (
@@ -18,12 +18,18 @@ const MovieCard: React.FC<MovieCardProps> = ({ id, title, imageSrc }) => {
 			ratio={2 / 3}
 		>
 			<Link to="/movies/$id" params={{ id: `${id}` }}>
-				<img
-					src={IMAGE_BASE_URL + imageSrc}
-					alt={title}
-					className="absolute top-0 left-0 w-full h-full object-cover"
-					loading="lazy"
-				/>
+				{imageSrc ? (
+					<img
+						src={IMAGE_BASE_URL + imageSrc}
+						alt={title}
+						className="absolute top-0 left-0 w-full h-full object-cover"
+						loading="lazy"
+					/>
+				) : (
+					<div className="absolute top-0 left-0 w-full h-full bg-muted aspect-2/3 flex items-center justify-center text-xs text-muted-foreground">
+						No image
+					</div>
+				)}
 			</Link>
 			<Button size="icon" className="absolute bottom-0 right-0 mr-2 mb-2">
 				<TicketPlus />
