@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { TmdbMovie, TmdbResult } from "../types";
-import MovieCardSkeleton from "./MovieCardSkeleton";
 import MovieList from "./MovieList";
+import MoviesSectionSkeleton from "./MoviesSectionSkeleton";
 
 interface MoviesSectionProps {
 	title: string;
@@ -20,23 +20,7 @@ export const MoviesSection = ({
 	});
 
 	if (isPending) {
-		const skeletonItems = Array.from({ length: 10 }, (_, i) => ({
-			id: `skeleton-${queryKey}-${i}`,
-		}));
-
-		return (
-			<div>
-				<div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
-
-				<div className="flex gap-4 overflow-x-hidden pb-4">
-					{skeletonItems.map((item) => (
-						<div key={item.id} className="w-37.5 sm:w-50 shrink-0">
-							<MovieCardSkeleton />
-						</div>
-					))}
-				</div>
-			</div>
-		);
+		return <MoviesSectionSkeleton />;
 	}
 
 	if (error)
