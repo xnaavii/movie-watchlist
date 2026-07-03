@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getMovieById, getMoviesByPopularity } from "./movies.server";
+import { getMovieById, getMoviesByList } from "./movies.server";
 
 export const getMovie = createServerFn({ method: "GET" })
 	.validator((data: { id: number }) => data)
@@ -7,9 +7,14 @@ export const getMovie = createServerFn({ method: "GET" })
 		return getMovieById(data.id);
 	});
 
-export const getPopularMovies = createServerFn({ method: "GET" })
-	.validator((data?: { language?: string; page?: number }) => data)
+export const getMoviesList = createServerFn({ method: "GET" })
+	.validator(
+		(data?: {
+			list?: "popular" | "now_playing" | "top_rated" | "upcoming";
+			language?: string;
+			page?: number;
+		}) => data,
+	)
 	.handler(async ({ data }) => {
-		const { language = "en-US", page = 1 } = data ?? {};
-		return getMoviesByPopularity(language, page);
+		return getMoviesByList(data?.list, data?.language, data?.page);
 	});

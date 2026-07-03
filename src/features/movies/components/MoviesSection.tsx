@@ -1,22 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
-import type { TmdbMovie, TmdbResult } from "../types";
+import { getMoviesList } from "../server/movies.functions";
 import MovieList from "./MovieList";
 import MoviesSectionSkeleton from "./MoviesSectionSkeleton";
 
+type MovieListType = "popular" | "now_playing" | "top_rated" | "upcoming";
+
 interface MoviesSectionProps {
 	title: string;
-	queryKey: string;
-	fetcher: () => Promise<TmdbResult<TmdbMovie>>;
+	list: MovieListType;
+	language?: string;
+	page?: number;
 }
 
 export const MoviesSection = ({
 	title,
-	queryKey,
-	fetcher,
+	list,
+	language = "en-US",
+	page = 1,
 }: MoviesSectionProps) => {
 	const { isPending, error, data } = useQuery({
-		queryKey: ["movies", queryKey],
-		queryFn: fetcher,
+		queryKey: ["movies", list, language, page],
+		queryFn: () => getMoviesList({ data: { list, language, page } }),
 	});
 
 	if (isPending) {

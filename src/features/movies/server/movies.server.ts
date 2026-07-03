@@ -38,12 +38,13 @@ export async function getMovieById(
 	}
 }
 
-export async function getMoviesByPopularity(
+export async function getMoviesByList(
+	list: "popular" | "now_playing" | "top_rated" | "upcoming" = "popular",
 	language: string = "en-US",
 	page: number = 1,
 ): Promise<TmdbResult<TmdbMovie>> {
 	try {
-		const url = `${TMDB_BASE_URL}/movie/popular?language=${language}&page=${page}`;
+		const url = `${TMDB_BASE_URL}/movie/${list}?language=${language}&page=${page}`;
 
 		const response = await fetch(url, {
 			method: "GET",
