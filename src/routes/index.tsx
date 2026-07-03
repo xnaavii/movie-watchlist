@@ -7,11 +7,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-	// TODO: Show other sections
-
 	return (
-		<div className="p-6">
+		<div className="flex flex-col gap-8 p-6">
 			<MoviesSection title="Popular" list="popular" />
+			<MoviesSection title="In Theaters" list="now_playing" />
+			<MoviesSection title="Upcoming" list="upcoming" />
 			<MoviesSection title="Top Rated" list="top_rated" />
 		</div>
 	);
