@@ -1,17 +1,17 @@
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { getMovieImage } from "#/features/movies/utils/tmdb";
 
-interface MoviePosterProps {
+type MoviePosterProps = {
 	posterPath: string | null;
 	title: string;
 	className?: string;
-}
+};
 
-export const MoviePoster = ({
+export default function MoviePoster({
 	posterPath,
 	title,
 	className,
-}: MoviePosterProps) => {
+}: MoviePosterProps) {
 	const posterImage = getMovieImage(posterPath, "w342");
 
 	return (
@@ -32,4 +32,4 @@ export const MoviePoster = ({
 			)}
 		</AspectRatio>
 	);
-};
+}

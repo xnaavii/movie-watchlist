@@ -10,13 +10,13 @@ type MovieHeroProps = {
 	storyline: string;
 };
 
-const MovieHero: React.FC<MovieHeroProps> = ({
+export default function MovieCard({
 	title,
 	runtime,
 	genres,
 	releaseDate,
 	storyline,
-}) => {
+}: MovieHeroProps) {
 	return (
 		<div className="relative p-6 flex justify-between rounded-md">
 			<div className="absolute bg-linear-to-r from-black to-transparent" />
@@ -40,6 +40,4 @@ const MovieHero: React.FC<MovieHeroProps> = ({
 			</div>
 		</div>
 	);
-};
-
-export default MovieHero;
+}

@@ -5,19 +5,19 @@ import MoviesSectionSkeleton from "./MoviesSectionSkeleton";
 
 type MovieListType = "popular" | "now_playing" | "top_rated" | "upcoming";
 
-interface MoviesSectionProps {
+type MoviesSectionProps = {
 	title: string;
 	list: MovieListType;
 	language?: string;
 	page?: number;
-}
+};
 
-export const MoviesSection = ({
+export default function MoviesSection({
 	title,
 	list,
 	language = "en-US",
 	page = 1,
-}: MoviesSectionProps) => {
+}: MoviesSectionProps) {
 	const { isPending, error, data } = useQuery({
 		queryKey: ["movies", list, language, page],
 		queryFn: () => getMoviesList({ data: { list, language, page } }),
@@ -40,4 +40,4 @@ export const MoviesSection = ({
 			<MovieList movies={movies} />
 		</div>
 	);
-};
+}

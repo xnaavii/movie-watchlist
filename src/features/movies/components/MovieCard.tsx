@@ -4,13 +4,13 @@ import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { getMovieImage } from "../utils/tmdb";
 
-interface MovieCardProps {
+type MovieCardProps = {
 	id: number;
 	title: string;
 	imageSrc: string | null;
-}
+};
 
-const MovieCard: React.FC<MovieCardProps> = ({ id, title, imageSrc }) => {
+export default function MovieCard({ id, title, imageSrc }: MovieCardProps) {
 	const posterImage = getMovieImage(imageSrc, "w342");
 
 	return (
@@ -37,6 +37,4 @@ const MovieCard: React.FC<MovieCardProps> = ({ id, title, imageSrc }) => {
 			</Button>
 		</AspectRatio>
 	);
-};
-
-export default MovieCard;
+}

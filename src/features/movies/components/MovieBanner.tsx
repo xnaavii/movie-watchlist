@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { getMovieImage } from "#/features/movies/utils/tmdb";
 
-interface MovieBannerProps {
+type MovieBannerProps = {
 	backdropPath: string | null;
 	title: string;
 	children?: React.ReactNode;
-}
+};
 
-export const MovieBanner = ({
+export default function MovieBanner({
 	backdropPath,
 	title,
 	children,
-}: MovieBannerProps) => {
+}: MovieBannerProps) {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const imgRef = useRef<HTMLImageElement>(null);
 
@@ -61,4 +61,4 @@ export const MovieBanner = ({
 			{children}
 		</div>
 	);
-};
+}

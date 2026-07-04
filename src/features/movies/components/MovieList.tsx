@@ -5,7 +5,7 @@ type MovieListProps = {
 	movies: TmdbMovie[];
 };
 
-const MovieList: React.FC<MovieListProps> = ({ movies }) => {
+export default function MovieList({ movies }: MovieListProps) {
 	return (
 		<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
 			{movies.map((movie) => (
@@ -19,6 +19,4 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
 			))}
 		</div>
 	);
-};
-
-export default MovieList;
+}

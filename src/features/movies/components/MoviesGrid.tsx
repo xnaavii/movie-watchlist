@@ -5,7 +5,7 @@ type MoviesGridProps = {
 	movies: TmdbMovie[];
 };
 
-export const MoviesGrid = ({ movies }: MoviesGridProps) => {
+export default function MoviesGrid({ movies }: MoviesGridProps) {
 	return (
 		<ul className="grid gap-4 grid-cols-8 overflow-x-hidden">
 			{movies.map((movie) => (
@@ -19,4 +19,4 @@ export const MoviesGrid = ({ movies }: MoviesGridProps) => {
 			))}
 		</ul>
 	);
-};
+}
