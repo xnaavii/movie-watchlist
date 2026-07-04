@@ -17,7 +17,7 @@ export const MoviePoster = ({
 	return (
 		<AspectRatio
 			ratio={2 / 3}
-			className={`relative rounded-lg overflow-hidden bg-muted ${className ?? ""}`}
+			className={`rounded-lg overflow-hidden bg-muted ${className ?? ""}`}
 		>
 			{posterImage ? (
 				<img
