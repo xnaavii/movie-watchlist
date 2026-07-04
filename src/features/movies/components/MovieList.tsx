@@ -1,11 +1,11 @@
 import type { TmdbMovie } from "../types";
-import MovieCard from "./MovieCard";
+import { MovieCard } from "./MovieCard";
 
 type MovieListProps = {
 	movies: TmdbMovie[];
 };
 
-export default function MovieList({ movies }: MovieListProps) {
+export function MovieList({ movies }: MovieListProps) {
 	return (
 		<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
 			{movies.map((movie) => (

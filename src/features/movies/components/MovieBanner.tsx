@@ -7,7 +7,7 @@ type MovieBannerProps = {
 	children?: React.ReactNode;
 };
 
-export default function MovieBanner({
+export function MovieBanner({
 	backdropPath,
 	title,
 	children,

@@ -7,7 +7,7 @@ type MoviePosterProps = {
 	className?: string;
 };
 
-export default function MoviePoster({
+export function MoviePoster({
 	posterPath,
 	title,
 	className,

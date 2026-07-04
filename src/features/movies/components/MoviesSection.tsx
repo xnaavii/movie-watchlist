@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMoviesList } from "../server/movies.functions";
-import MovieList from "./MovieList";
-import MoviesSectionSkeleton from "./MoviesSectionSkeleton";
+import { MovieList } from "./MovieList";
+import { MoviesSectionSkeleton } from "./MoviesSectionSkeleton";
 
 type MovieListType = "popular" | "now_playing" | "top_rated" | "upcoming";
 

@@ -1,6 +1,6 @@
-import MovieCardSkeleton from "./MovieCardSkeleton";
+import { MovieCardSkeleton } from "./MovieCardSkeleton";
 
-export default function MoviesSectionSkeleton() {
+export function MoviesSectionSkeleton() {
 	const skeletonItems = Array.from({ length: 10 }, (_, i) => ({
 		id: i,
 	}));

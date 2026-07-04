@@ -10,7 +10,7 @@ type MovieHeroProps = {
 	storyline: string;
 };
 
-export default function MovieCard({
+export function MovieCard({
 	title,
 	runtime,
 	genres,

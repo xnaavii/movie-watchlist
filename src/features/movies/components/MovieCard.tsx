@@ -10,7 +10,7 @@ type MovieCardProps = {
 	imageSrc: string | null;
 };
 
-export default function MovieCard({ id, title, imageSrc }: MovieCardProps) {
+export function MovieCard({ id, title, imageSrc }: MovieCardProps) {
 	const posterImage = getMovieImage(imageSrc, "w342");
 
 	return (

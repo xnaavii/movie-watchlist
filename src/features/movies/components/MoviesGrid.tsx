@@ -1,11 +1,11 @@
 import type { TmdbMovie } from "../types";
-import MovieCard from "./MovieCard";
+import { MovieCard } from "./MovieCard";
 
 type MoviesGridProps = {
 	movies: TmdbMovie[];
 };
 
-export default function MoviesGrid({ movies }: MoviesGridProps) {
+export function MoviesGrid({ movies }: MoviesGridProps) {
 	return (
 		<ul className="grid gap-4 grid-cols-8 overflow-x-hidden">
 			{movies.map((movie) => (
