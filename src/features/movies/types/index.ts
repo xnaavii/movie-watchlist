@@ -19,6 +19,7 @@ export type TmdbMovieDetails = TmdbMovie & {
 	runtime: number;
 	tagline: string;
   overview: string;
+  vote_average: number;
 };
 
 export type TmdbSingleResult<T> =
