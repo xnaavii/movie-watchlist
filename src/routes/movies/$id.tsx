@@ -1,6 +1,6 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, Dot } from "lucide-react";
+import { BookmarkPlus, ChevronLeft, Dot } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { MovieBanner } from "#/features/movies/components/MovieBanner";
@@ -82,32 +82,34 @@ function MovieDetails() {
 					<div className="w-37.5 sm:w-50 shrink-0">
 						<MoviePoster posterPath={movie.poster_path} title={movie.title} />
 					</div>
-					{/* Movie Details */}
-					<div className="flex flex-col gap-4 max-w-2xl">
-						<h2 className="text-4xl font-semibold">{movie.title}</h2>
-						<ul className="flex items-center gap-2 flex-wrap">
-							{runtime && (
-								<li className="flex items-center gap-2">
-									<span>{runtime}</span>
-									<Dot />
-								</li>
-							)}
-							{movie.genres.map((genre, index) => (
-								<li key={genre.id} className="flex items-center gap-2">
-									<span>{genre.name}</span>
-									{index + 1 !== movie.genres.length && <Dot />}
-								</li>
-							))}
-						</ul>
+
+					<div className="flex flex-col justify-between">
+						{/* Movie Details */}
+						<div className="flex flex-col gap-4 max-w-2xl">
+							<h2 className="text-4xl font-semibold">{movie.title}</h2>
+							<ul className="flex items-center gap-2 flex-wrap">
+								{runtime && (
+									<li className="flex items-center gap-2">
+										<span>{runtime}</span>
+										<Dot />
+									</li>
+								)}
+								{movie.genres.map((genre, index) => (
+									<li key={genre.id} className="flex items-center gap-2">
+										<span>{genre.name}</span>
+										{index + 1 !== movie.genres.length && <Dot />}
+									</li>
+								))}
+							</ul>
+							<p className="text-secondary">{movie.overview}</p>
+						</div>
+						<Button className="w-fit">
+							<BookmarkPlus />
+							Add to watchlist
+						</Button>
 					</div>
 				</div>
 			</MovieBanner>
-
-			{/* Storyline */}
-			<div className="flex flex-col gap-2 max-w-2xl p-6">
-				<h3 className="text-lg font-medium">Storyline</h3>
-				<p className="text-secondary">{movie.overview}</p>
-			</div>
 		</div>
 	);
 }
