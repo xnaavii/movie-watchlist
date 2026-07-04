@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Dot } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
