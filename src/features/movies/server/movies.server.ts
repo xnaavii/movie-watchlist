@@ -1,15 +1,10 @@
-import type {
-	TmdbMovie,
-	TmdbMovieDetails,
-	TmdbResult,
-	TmdbSingleResult,
-} from "../types";
+import type { TmdbMovie, TmdbResult, TmdbSingleResult } from "../types";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 export async function getMovieById(
 	id: number,
-): Promise<TmdbSingleResult<TmdbMovieDetails>> {
+): Promise<TmdbSingleResult<TmdbMovie>> {
 	if (!Number.isFinite(id) || id <= 0) {
 		return { success: false, error: "Please provide a valid id" };
 	}
