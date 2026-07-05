@@ -94,26 +94,25 @@ function MovieDetails() {
 								</li>
 							))}
 						</ul>
+						<div className="flex items-center gap-4">
+							{movie.vote_average ? (
+								<p className="flex items-center gap-1 text-sm text-secondary">
+									<Star className="size-4" />
+									{movie.vote_average.toFixed(1)}
+								</p>
+							) : (
+								<p className="text-sm text-secondary">No ratings yet.</p>
+							)}
+							<Button className="w-fit">
+								<BookmarkPlus />
+								Add to watchlist
+							</Button>
+						</div>
 					</div>
 				</div>
 			</MovieBanner>
 
 			<div className="flex flex-col gap-6 p-6">
-				<div className="flex items-center gap-4">
-					{movie.vote_average ? (
-						<p className="flex items-center gap-1 text-sm text-secondary">
-							<Star className="size-4" />
-							{movie.vote_average.toFixed(1)}
-						</p>
-					) : (
-						<p className="text-sm text-secondary">No ratings yet.</p>
-					)}
-					<Button className="w-fit">
-						<BookmarkPlus />
-						Add to watchlist
-					</Button>
-				</div>
-
 				<div className="flex flex-col gap-2 max-w-2xl">
 					<h3 className="text-lg font-medium">Storyline</h3>
 					<p className="text-secondary">{movie.overview}</p>
