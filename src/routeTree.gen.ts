@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MoviesIdRouteImport } from './routes/movies/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -60,27 +68,44 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore' | '/search' | '/movies/$id' | '/api/auth/$'
+  fullPaths:
+    '/' | '/explore' | '/search' | '/signup' | '/movies/$id' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/search' | '/movies/$id' | '/api/auth/$'
-  id: '__root__' | '/' | '/explore' | '/search' | '/movies/$id' | '/api/auth/$'
+  to: '/' | '/explore' | '/search' | '/signup' | '/movies/$id' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/explore'
+    | '/search'
+    | '/signup'
+    | '/movies/$id'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExploreRoute: typeof ExploreRoute
   SearchRoute: typeof SearchRoute
+  SignupRoute: typeof SignupRoute
   MoviesIdRoute: typeof MoviesIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -123,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
   SearchRoute: SearchRoute,
+  SignupRoute: SignupRoute,
   MoviesIdRoute: MoviesIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
