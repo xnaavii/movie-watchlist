@@ -14,20 +14,17 @@ export function MovieCard({ id, title, imageSrc }: MovieCardProps) {
 	const posterImage = getMovieImage(imageSrc, "w342");
 
 	return (
-		<AspectRatio
-			className="relative rounded-lg overflow-hidden bg-muted"
-			ratio={2 / 3}
-		>
+		<AspectRatio className="relative rounded-md overflow-hidden" ratio={2 / 3}>
 			<Link to="/movies/$id" params={{ id: `${id}` }}>
 				{posterImage ? (
 					<img
 						src={posterImage}
 						alt={title}
-						className="absolute top-0 left-0 w-full h-full object-cover"
+						className="size-full"
 						loading="lazy"
 					/>
 				) : (
-					<div className="absolute top-0 left-0 w-full h-full bg-muted aspect-2/3 flex items-center justify-center text-xs text-muted-foreground">
+					<div className="bg-muted flex items-center justify-center text-xs text-muted-foreground">
 						No image
 					</div>
 				)}
