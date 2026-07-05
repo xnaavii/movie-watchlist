@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
 import { getMoviesList } from "../server/movies.functions";
 import { getMovieImage } from "../utils/tmdb";
+import { HeroSlideshowSkeleton } from "./HeroSlideshowSkeleton";
 
 const heroQuery = queryOptions({
 	queryKey: ["movies", "now_playing", "en-US", 1, "hero"],
@@ -35,7 +36,7 @@ export function HeroSlideshow() {
 	}, [movies.length]);
 
 	if (isPending) {
-		return <p>Loading</p>;
+		return <HeroSlideshowSkeleton />;
 	}
 
 	if (error) {
