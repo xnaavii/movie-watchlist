@@ -12,7 +12,7 @@ type MoviesSectionProps = {
 	page?: number;
 };
 
-export default function MoviesSection({
+export function MoviesSection({
 	title,
 	list,
 	language = "en-US",
