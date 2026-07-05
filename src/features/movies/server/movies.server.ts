@@ -66,3 +66,33 @@ export async function getMoviesByList(
 		};
 	}
 }
+
+export async function searchMoviesByQuery(
+	query: string,
+	page: number = 1,
+): Promise<TmdbResult<TmdbMovie>> {
+	try {
+		const url = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`;
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				accept: "application/json",
+				Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error(
+				`TMDB API ERROR: ${response.status} ${response.statusText}`,
+			);
+		}
+
+		const data = await response.json();
+		return { success: true, data };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error occurred",
+		};
+	}
+}
