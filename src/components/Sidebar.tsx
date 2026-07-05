@@ -34,14 +34,6 @@ const Sidebar = () => {
 					</li>
 					<li>
 						<NavLink
-							to="/movies"
-							icon={Clapperboard}
-							showLabel={false}
-							label="Movies"
-						/>
-					</li>
-					<li>
-						<NavLink
 							to="/watchlist"
 							icon={Library}
 							showLabel={false}
