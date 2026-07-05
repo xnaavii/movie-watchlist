@@ -25,7 +25,12 @@ const Sidebar = () => {
 						/>
 					</li>
 					<li>
-						<NavLink to="/" icon={Compass} showLabel={false} label="Explore" />
+						<NavLink
+							to="/explore"
+							icon={Compass}
+							showLabel={false}
+							label="Explore"
+						/>
 					</li>
 					<li>
 						<NavLink
