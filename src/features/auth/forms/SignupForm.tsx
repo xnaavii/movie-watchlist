@@ -16,6 +16,7 @@ import {
 	FieldLabel,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { authClient } from "#/lib/auth-client";
 
 const formSchema = z
 	.object({
@@ -48,7 +49,17 @@ export function SignupForm() {
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
+			const { data, error } = await authClient.signUp.email({
+				name: value.name,
+				email: value.email,
+				password: value.password,
+			});
+
+			if (error) {
+				console.error(error.message, error.status);
+			}
+
+			console.log("Success! User created.");
 		},
 	});
 
