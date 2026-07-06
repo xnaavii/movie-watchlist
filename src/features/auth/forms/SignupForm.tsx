@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
 import {
@@ -49,17 +50,17 @@ export function SignupForm() {
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			const { data, error } = await authClient.signUp.email({
+			const { error } = await authClient.signUp.email({
 				name: value.name,
 				email: value.email,
 				password: value.password,
 			});
 
 			if (error) {
-				console.error(error.message, error.status);
+				toast.error(`${error.message}, ${error.status}`);
+			} else {
+				toast.success("Account created!");
 			}
-
-			console.log("Success! User created.");
 		},
 	});
 

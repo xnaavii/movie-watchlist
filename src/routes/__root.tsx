@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import Sidebar from "#/components/Sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 
@@ -50,6 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					<Sidebar />
 					<main className="overflow-y-auto min-h-0">{children}</main>
 				</div>
+				<Toaster />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
