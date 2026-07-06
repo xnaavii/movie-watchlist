@@ -1,12 +1,6 @@
-import {
-	Clapperboard,
-	Compass,
-	Library,
-	Search,
-	VenetianMask,
-} from "lucide-react";
+import { Compass, Library, Search, VenetianMask } from "lucide-react";
+import { UserMenu } from "#/features/auth/components/UserMenu";
 import NavLink from "./NavLink";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Sidebar = () => {
 	return (
@@ -43,14 +37,7 @@ const Sidebar = () => {
 				</ul>
 			</nav>
 
-			<Avatar>
-				<AvatarImage
-					src="https://github.com/shadcn.png"
-					alt="@shadcn"
-					className="grayscale"
-				/>
-				<AvatarFallback>CN</AvatarFallback>
-			</Avatar>
+			<UserMenu />
 		</aside>
 	);
 };
