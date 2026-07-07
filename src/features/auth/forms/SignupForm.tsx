@@ -194,7 +194,7 @@ export function SignupForm() {
 			</CardContent>
 			<CardFooter>
 				<FieldGroup>
-					<Field orientation="horizontal">
+					<Field>
 						<Button variant="outline" onClick={() => form.reset()}>
 							Reset
 						</Button>

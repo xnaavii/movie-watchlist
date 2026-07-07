@@ -126,7 +126,7 @@ export function LoginForm() {
 			</CardContent>
 			<CardFooter>
 				<FieldGroup>
-					<Field orientation="horizontal">
+					<Field>
 						<form.Subscribe>
 							{({ isSubmitting }) => (
 								<Button type="submit" form="login-form" disabled={isSubmitting}>
