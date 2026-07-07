@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -12,6 +13,7 @@ import {
 } from "#/components/ui/card";
 import {
 	Field,
+	FieldDescription,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
@@ -191,14 +193,21 @@ export function SignupForm() {
 				</form>
 			</CardContent>
 			<CardFooter>
-				<Field orientation="horizontal">
-					<Button variant="outline" onClick={() => form.reset()}>
-						Reset
-					</Button>
-					<Button type="submit" form="signup-form">
-						Submit
-					</Button>
-				</Field>
+				<FieldGroup>
+					<Field orientation="horizontal">
+						<Button variant="outline" onClick={() => form.reset()}>
+							Reset
+						</Button>
+						<Button type="submit" form="signup-form">
+							Submit
+						</Button>
+					</Field>
+					<Field>
+						<FieldDescription className="text-center">
+							Already have an account? <Link to="/login">Log in</Link>
+						</FieldDescription>
+					</Field>
+				</FieldGroup>
 			</CardFooter>
 		</Card>
 	);

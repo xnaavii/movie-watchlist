@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -13,6 +13,7 @@ import {
 } from "#/components/ui/card";
 import {
 	Field,
+	FieldDescription,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
@@ -124,15 +125,22 @@ export function LoginForm() {
 				</form>
 			</CardContent>
 			<CardFooter>
-				<Field orientation="horizontal">
-					<form.Subscribe>
-						{({ isSubmitting }) => (
-							<Button type="submit" form="login-form" disabled={isSubmitting}>
-								{isSubmitting ? "Logging in..." : "Submit"}
-							</Button>
-						)}
-					</form.Subscribe>
-				</Field>
+				<FieldGroup>
+					<Field orientation="horizontal">
+						<form.Subscribe>
+							{({ isSubmitting }) => (
+								<Button type="submit" form="login-form" disabled={isSubmitting}>
+									{isSubmitting ? "Logging in..." : "Submit"}
+								</Button>
+							)}
+						</form.Subscribe>
+					</Field>
+					<Field>
+						<FieldDescription className="text-center">
+							Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+						</FieldDescription>
+					</Field>
+				</FieldGroup>
 			</CardFooter>
 		</Card>
 	);
