@@ -128,8 +128,8 @@ export function LoginForm() {
 				<FieldGroup>
 					<Field>
 						<form.Subscribe>
-							{({ isSubmitting }) => (
-								<Button type="submit" form="login-form" disabled={isSubmitting}>
+							{({ canSubmit, isSubmitting }) => (
+								<Button type="submit" form="login-form" disabled={!canSubmit}>
 									{isSubmitting ? "Logging in..." : "Submit"}
 								</Button>
 							)}

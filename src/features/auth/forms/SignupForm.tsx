@@ -198,9 +198,13 @@ export function SignupForm() {
 						<Button variant="outline" onClick={() => form.reset()}>
 							Reset
 						</Button>
-						<Button type="submit" form="signup-form">
-							Submit
-						</Button>
+						<form.Subscribe>
+							{({ canSubmit, isSubmitting }) => (
+								<Button type="submit" form="signup-form" disabled={!canSubmit}>
+									{isSubmitting ? "Creating your account..." : "Submit"}
+								</Button>
+							)}
+						</form.Subscribe>
 					</Field>
 					<Field>
 						<FieldDescription className="text-center">
