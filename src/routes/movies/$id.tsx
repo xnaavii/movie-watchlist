@@ -1,10 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { BookmarkPlus, ChevronLeft, Dot, Star } from "lucide-react";
+import { ChevronLeft, ListPlus } from "lucide-react";
+import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
-import { MovieBanner } from "#/features/movies/components/MovieBanner";
-import { MoviePoster } from "#/features/movies/components/MoviePoster";
 import { movieQueries } from "#/features/movies/queries";
 import { formatRuntime } from "#/features/movies/utils/format";
 import { getMovieImage } from "#/features/movies/utils/tmdb";
@@ -51,69 +50,69 @@ function MovieDetailsPage() {
 	const router = useRouter();
 
 	if (isError) {
-		return <div className="p-4 text-red-500">{error?.message}</div>;
+		return (
+			<div className="p-4 text-destructive-foreground">{error?.message}</div>
+		);
 	}
 
 	const runtime = formatRuntime(movie.runtime);
+	const backdropImage = getMovieImage(movie.backdrop_path, "w1280");
+	const posterImage = getMovieImage(movie.poster_path, "w342");
 
 	return (
-		<div className="overflow-hidden overflow-y-scroll h-full">
-			<MovieBanner backdropPath={movie.backdrop_path} title={movie.title}>
-				<div className="absolute top-6 left-6 z-9">
-					<Button
-						variant="ghost"
-						className="bg-background/15 backdrop-blur-xl"
-						onClick={() => router.history.back()}
-					>
-						<ChevronLeft />
-						Go back
-					</Button>
-				</div>
+		<div className="relative w-full h-[80vh]">
+			<Button
+				className="absolute top-6 left-6 z-10"
+				variant="secondary"
+				onClick={() => router.history.back()}
+			>
+				<ChevronLeft />
+				Return
+			</Button>
 
-				<div className="absolute bottom-6 left-6 z-9 w-full flex gap-4">
-					<div className="w-50 shrink-0">
-						<MoviePoster posterPath={movie.poster_path} title={movie.title} />
-					</div>
-					<div className="flex flex-col justify-end gap-4">
-						<h2 className="text-4xl font-semibold drop-shadow-lg">
-							{movie.title}
-						</h2>
-						<ul className="flex items-center gap-2 flex-wrap">
-							{runtime && (
-								<li className="flex items-center gap-2">
-									<span>{runtime}</span>
-									<Dot />
-								</li>
-							)}
-							{movie.genres.map((genre, index) => (
-								<li key={genre.id} className="flex items-center gap-2">
-									<span>{genre.name}</span>
-									{index + 1 !== movie.genres.length && <Dot />}
-								</li>
-							))}
-						</ul>
-						<div className="flex items-center gap-4">
-							{movie.vote_average ? (
-								<p className="flex items-center gap-1 text-sm text-secondary">
-									<Star className="size-4" />
-									{movie.vote_average.toFixed(1)}
-								</p>
-							) : (
-								<p className="text-sm text-secondary">No ratings yet.</p>
-							)}
-							<Button className="w-fit">
-								<BookmarkPlus />
-								Add to watchlist
-							</Button>
+			{/* Backdrop image and overlay */}
+			<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-50% to-transparent size-full z-1"></div>
+			<div className="absolute inset-0 bg-linear-to-t from-background via-transparent via-100% to-transparent size-full z-1"></div>
+			{backdropImage ? (
+				<img
+					src={backdropImage}
+					alt={`${movie.title} banner`}
+					className="absolute right-0 bottom-0 object-cover size-full object-top"
+				/>
+			) : (
+				<div className="absolute right-0 bottom-0 object-cover size-full bg-muted-foreground flex flex-col items-center justify-center">
+					<p className="text-3xl">No Backdrop Image</p>
+				</div>
+			)}
+
+			<div className="absolute bottom-0 translate-y-1/3 p-6 z-10">
+				{/* Movie poster and details */}
+				<div className="grid grid-cols-[auto_1fr] gap-6">
+					{posterImage ? (
+						<div className="w-xs rounded-4xl overflow-hidden">
+							<AspectRatio ratio={2 / 3}>
+								<img
+									src={posterImage}
+									alt={`${movie.title} poster`}
+									className="size-full object-cover"
+								/>
+							</AspectRatio>
 						</div>
+					) : (
+						<div className="w-2xs rounded-4xl overflow-hidden bg-muted">
+							<AspectRatio ratio={2 / 3}>
+								<p className="text-3xl">No Backdrop Image</p>
+							</AspectRatio>
+						</div>
+					)}
+					<div className="flex flex-col gap-6 max-w-5xl">
+						<h1 className="font-semibold text-5xl min-w-0">{movie.title}</h1>
+						<p className="text-lg text-muted-foreground">{movie.overview}</p>
+						<Button className="w-fit">
+							<ListPlus />
+							Add to watchlist
+						</Button>
 					</div>
-				</div>
-			</MovieBanner>
-
-			<div className="flex flex-col gap-6 p-6">
-				<div className="flex flex-col gap-2 max-w-2xl">
-					<h3 className="text-lg font-medium">Storyline</h3>
-					<p className="text-secondary">{movie.overview}</p>
 				</div>
 			</div>
 		</div>

@@ -25,9 +25,9 @@ export function MovieBanner({
 	}, []);
 
 	return (
-		<div className="relative w-full min-h-150 h-[60vh] bg-neutral-950">
+		<div className="relative w-full min-h-150 h-[70vh] bg-background">
 			<div className="absolute inset-0 overflow-hidden">
-				<div className="absolute top-0 left-0 size-full bg-linear-to-t from-black to-transparent z-1" />
+				<div className="absolute top-0 left-0 size-full bg-linear-to-t from-background to-transparent z-1" />
 				{backdropFull ? (
 					<>
 						{backdropTiny && (
