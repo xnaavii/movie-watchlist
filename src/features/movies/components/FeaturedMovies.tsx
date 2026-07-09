@@ -1,27 +1,14 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { BookmarkPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { fetchMovieListFn } from "../server/movies.functions";
+import type { TmdbMovie } from "../types";
 import { getMovieImage } from "../utils/tmdb";
-import { HeroSlideshowSkeleton } from "./HeroSlideshowSkeleton";
-
-const heroQuery = queryOptions({
-	queryKey: ["movies", "now_playing", "en-US", 1, "hero"],
-	queryFn: () =>
-		fetchMovieListFn({
-			data: { list: "now_playing", language: "en-US", page: 1 },
-		}),
-});
 
 const TIMER_INTERVAL = 5000;
 
-export function HeroSlideshow() {
+export function FeaturedMovies({ movies }: { movies: TmdbMovie[] }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
-	const { data, isPending, error } = useQuery(heroQuery);
-
-	const movies = data ? data.results.slice(0, 3) : [];
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {
@@ -34,14 +21,6 @@ export function HeroSlideshow() {
 			clearTimeout(timerId);
 		};
 	}, [movies.length]);
-
-	if (isPending) {
-		return <HeroSlideshowSkeleton />;
-	}
-
-	if (error) {
-		return <p>There was an error</p>;
-	}
 
 	if (movies.length === 0) {
 		return null;

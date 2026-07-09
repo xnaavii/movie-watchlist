@@ -1,6 +1,6 @@
 import { Skeleton } from "#/components/ui/skeleton";
 
-export function HeroSlideshowSkeleton() {
+export function FeaturedMoviesSkeleton() {
 	return (
 		<div className="relative bg-black min-h-150 h-[60vh] overflow-hidden">
 			<Skeleton className="size-full rounded-none" />
