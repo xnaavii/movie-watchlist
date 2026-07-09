@@ -53,10 +53,6 @@ export async function fetchMoviesByQuery(
 	query: string,
 	page: number = 1,
 ): Promise<TmdbPaginatedResponse<TmdbMovie>> {
-	if (!query.trim()) {
-		throw new Error("Please provide a search query");
-	}
-
 	const url = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`;
 	const response = await fetch(url, {
 		headers: {
