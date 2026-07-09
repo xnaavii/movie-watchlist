@@ -35,18 +35,15 @@ export function MoviesSection({
 	return (
 		<div className="relative flex flex-col gap-4">
 			<h2 className="text-2xl tracking-tight font-medium">{title}</h2>
-			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
+			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory max-w">
 				{movies.map((movie) => (
-					<div
+					<MovieCard
 						key={movie.id}
-						className="w-37.5 sm:w-50 shrink-0 snap-start hover:z-10"
-					>
-						<MovieCard
-							id={movie.id}
-							imageSrc={movie.poster_path}
-							title={movie.title}
-						/>
-					</div>
+						id={movie.id}
+						imageSrc={movie.poster_path}
+						title={movie.title}
+						className="w-2xs shrink-0 snap-start"
+					/>
 				))}
 			</div>
 			<div className="absolute right-0 bottom-0 h-full w-24 bg-linear-to-l from-black via-black/30 to-transparent pointer-events-none" />
