@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { TMDBMovieList } from "../types";
 import {
 	getMovieById,
 	getMoviesByList,
@@ -13,11 +14,7 @@ export const getMovie = createServerFn({ method: "GET" })
 
 export const getMoviesList = createServerFn({ method: "GET" })
 	.validator(
-		(data?: {
-			list?: "popular" | "now_playing" | "top_rated" | "upcoming";
-			language?: string;
-			page?: number;
-		}) => data,
+		(data: { list?: TMDBMovieList; language?: string; page?: number }) => data,
 	)
 	.handler(async ({ data }) => {
 		return getMoviesByList(data?.list, data?.language, data?.page);

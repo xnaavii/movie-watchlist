@@ -21,3 +21,9 @@ export type TmdbMovie = {
 export type TmdbSingleResult<T> =
 	| { success: true; data: T }
 	| { success: false; error: string };
+
+export type TMDBMovieList =
+	| "popular"
+	| "now_playing"
+	| "top_rated"
+	| "upcoming";
