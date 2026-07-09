@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import Sidebar from "#/components/Sidebar";
+import { ThemeProvider } from "#/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -42,29 +43,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-black text-white">
-				<div className="grid grid-cols-[auto_1fr] h-dvh overflow-hidden">
-					<Sidebar />
-					<main className="overflow-y-auto min-h-0">{children}</main>
-				</div>
-				<Toaster />
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-						{ name: "Tanstack Form", render: <FormDevtoolsPanel /> },
-						TanStackQueryDevtools,
-					]}
-				/>
+			<body>
+				<ThemeProvider defaultTheme="system" storageKey="theme">
+					<div className="grid grid-cols-[auto_1fr] h-dvh overflow-hidden">
+						<Sidebar />
+						<main className="overflow-y-auto min-h-0">{children}</main>
+					</div>
+					<Toaster />
+					<TanStackDevtools
+						config={{
+							position: "bottom-right",
+						}}
+						plugins={[
+							{
+								name: "Tanstack Router",
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+							{ name: "Tanstack Form", render: <FormDevtoolsPanel /> },
+							TanStackQueryDevtools,
+						]}
+					/>
+				</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

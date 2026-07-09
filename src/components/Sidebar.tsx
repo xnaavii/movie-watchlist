@@ -1,5 +1,6 @@
 import { Compass, Library, Search, VenetianMask } from "lucide-react";
 import { UserMenu } from "#/features/auth/components/UserMenu";
+import { ModeToggle } from "./ModeToggle";
 import NavLink from "./NavLink";
 
 const Sidebar = () => {
@@ -36,8 +37,10 @@ const Sidebar = () => {
 					</li>
 				</ul>
 			</nav>
-
-			<UserMenu />
+			<div className="flex flex-col gap-4">
+				<UserMenu />
+				<ModeToggle />
+			</div>
 		</aside>
 	);
 };
