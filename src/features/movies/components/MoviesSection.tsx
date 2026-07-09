@@ -28,7 +28,7 @@ export function MoviesSection({
 	if (error)
 		return <div className="p-4 text-red-500">Error loading {title}</div>;
 
-	const movies = data?.success ? data.data.results : [];
+	const movies = data.results || [];
 
 	if (movies.length === 0) return null;
 

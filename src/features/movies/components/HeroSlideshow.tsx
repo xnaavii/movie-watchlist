@@ -3,14 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { BookmarkPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { getMovieListFn } from "../server/movies.functions";
+import { fetchMovieListFn } from "../server/movies.functions";
 import { getMovieImage } from "../utils/tmdb";
 import { HeroSlideshowSkeleton } from "./HeroSlideshowSkeleton";
 
 const heroQuery = queryOptions({
 	queryKey: ["movies", "now_playing", "en-US", 1, "hero"],
 	queryFn: () =>
-		getMovieListFn({
+		fetchMovieListFn({
 			data: { list: "now_playing", language: "en-US", page: 1 },
 		}),
 });
@@ -21,7 +21,7 @@ export function HeroSlideshow() {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const { data, isPending, error } = useQuery(heroQuery);
 
-	const movies = data?.success ? data.data.results.slice(0, 3) : [];
+	const movies = data ? data.results.slice(0, 3) : [];
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {

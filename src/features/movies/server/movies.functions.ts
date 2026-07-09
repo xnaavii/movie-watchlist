@@ -1,27 +1,27 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { TMDBMovieList } from "../types";
 import {
-	getMovieById,
-	getMovieList,
-	searchMoviesByQuery,
+	fetchMovieDetails,
+	fetchMovieList,
+	fetchMoviesByQuery,
 } from "./movies.server";
 
-export const getMovie = createServerFn({ method: "GET" })
+export const fetchMovieDetailsFn = createServerFn({ method: "GET" })
 	.validator((data: { id: number }) => data)
 	.handler(async ({ data }) => {
-		return getMovieById(data.id);
+		return fetchMovieDetails(data.id);
 	});
 
-export const getMovieListFn = createServerFn({ method: "GET" })
+export const fetchMovieListFn = createServerFn({ method: "GET" })
 	.validator(
-		(data: { list?: TMDBMovieList; language?: string; page?: number }) => data,
+		(data: { list: TMDBMovieList; language?: string; page?: number }) => data,
 	)
 	.handler(async ({ data }) => {
-		return getMovieList(data?.list, data?.language, data?.page);
+		return fetchMovieList(data?.list, data?.language, data?.page);
 	});
 
-export const searchMovies = createServerFn({ method: "GET" })
+export const fetchMoviesByQueryFn = createServerFn({ method: "GET" })
 	.validator((data: { query: string; page?: number }) => data)
 	.handler(async ({ data }) => {
-		return searchMoviesByQuery(data.query, data.page);
+		return fetchMoviesByQuery(data.query, data.page);
 	});

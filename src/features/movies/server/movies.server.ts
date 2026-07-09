@@ -1,98 +1,76 @@
-import type { TmdbMovie, TmdbResult, TmdbSingleResult } from "../types";
+import type { TMDBMovieList, TmdbMovie } from "../types";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
-export async function getMovieById(
-	id: number,
-): Promise<TmdbSingleResult<TmdbMovie>> {
+type TmdbPaginatedResponse<T> = {
+	page: number;
+	results: T[];
+	total_pages: number;
+	total_results: number;
+};
+
+export async function fetchMovieDetails(id: number): Promise<TmdbMovie> {
 	if (!Number.isFinite(id) || id <= 0) {
-		return { success: false, error: "Please provide a valid id" };
+		throw new Error("Please provide a valid id");
 	}
 
-	try {
-		const response = await fetch(`${TMDB_BASE_URL}/movie/${id}`, {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-			},
-		});
+	const response = await fetch(`${TMDB_BASE_URL}/movie/${id}`, {
+		headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
+	});
 
-		if (!response.ok) {
-			throw new Error(
-				`TMDB API ERROR: ${response.status} ${response.statusText}`,
-			);
-		}
-
-		const data = await response.json();
-		return { success: true, data };
-	} catch (error) {
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Unknown error",
-		};
+	if (!response.ok) {
+		const body = await response.text().catch(() => "");
+		throw new Error(`TMDB API error: ${response.status} ${body}`);
 	}
+
+	return response.json();
 }
 
-export async function getMovieList(
-	list: "popular" | "now_playing" | "top_rated" | "upcoming" = "popular",
+export async function fetchMovieList(
+	list: TMDBMovieList,
 	language: string = "en-US",
 	page: number = 1,
-): Promise<TmdbResult<TmdbMovie>> {
-	try {
-		const url = `${TMDB_BASE_URL}/movie/${list}?language=${language}&page=${page}`;
+): Promise<TmdbPaginatedResponse<TmdbMovie>> {
+	const url = `${TMDB_BASE_URL}/movie/${list}?language=${language}&page=${page}`;
+	const response = await fetch(url, {
+		headers: {
+			accept: "application/json",
+			Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+		},
+	});
 
-		const response = await fetch(url, {
-			method: "GET",
-			headers: {
-				accept: "application/json",
-				Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-			},
-		});
-
-		if (!response.ok) {
-			throw new Error(
-				`TMDB API ERROR: ${response.status} ${response.statusText}`,
-			);
-		}
-
-		const data = await response.json();
-		return { success: true, data };
-	} catch (error) {
-		console.error("Error fetching popular movies: ", error);
-
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Unknown error occurred",
-		};
+	if (!response.ok) {
+		const body = await response.text().catch(() => "");
+		throw new Error(
+			`TMDB API error fetching list "${list}": ${response.status} ${body}`,
+		);
 	}
+
+	return response.json();
 }
 
-export async function searchMoviesByQuery(
+export async function fetchMoviesByQuery(
 	query: string,
 	page: number = 1,
-): Promise<TmdbResult<TmdbMovie>> {
-	try {
-		const url = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`;
-		const response = await fetch(url, {
-			method: "GET",
-			headers: {
-				accept: "application/json",
-				Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-			},
-		});
-
-		if (!response.ok) {
-			throw new Error(
-				`TMDB API ERROR: ${response.status} ${response.statusText}`,
-			);
-		}
-
-		const data = await response.json();
-		return { success: true, data };
-	} catch (error) {
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Unknown error occurred",
-		};
+): Promise<TmdbPaginatedResponse<TmdbMovie>> {
+	if (!query.trim()) {
+		throw new Error("Please provide a search query");
 	}
+
+	const url = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`;
+	const response = await fetch(url, {
+		headers: {
+			accept: "application/json",
+			Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+		},
+	});
+
+	if (!response.ok) {
+		const body = await response.text().catch(() => "");
+		throw new Error(
+			`TMDB API error searching "${query}": ${response.status} ${body}`,
+		);
+	}
+
+	return response.json();
 }

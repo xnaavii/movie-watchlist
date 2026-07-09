@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SearchBar } from "#/components/SearchBar";
 import { MovieCard } from "#/features/movies/components/MovieCard";
-import { searchMovies } from "#/features/movies/server/movies.functions";
+import { fetchMoviesByQueryFn } from "#/features/movies/server/movies.functions";
 
 const searchParamsSchema = z.object({
 	q: z.string().catch(""),
@@ -13,7 +13,7 @@ const searchParamsSchema = z.object({
 const movieSearchQuery = (query: string) =>
 	queryOptions({
 		queryKey: ["movies", "search", query],
-		queryFn: () => searchMovies({ data: { query } }),
+		queryFn: () => fetchMoviesByQueryFn({ data: { query } }),
 		enabled: query.trim().length > 0,
 	});
 
@@ -40,8 +40,16 @@ function SearchPage() {
 		return () => clearTimeout(timerId);
 	}, [draft, navigate]);
 
-	const { data, isPending } = useQuery(movieSearchQuery(q));
-	const movies = data?.success ? data.data.results : [];
+	const {
+		data: movies,
+		isPending,
+		isError,
+		error,
+	} = useQuery(movieSearchQuery(q));
+
+	if (isError) {
+		return <p>There was an error: {error.message}</p>;
+	}
 
 	return (
 		<div className="flex flex-col gap-6 p-6">
@@ -53,11 +61,11 @@ function SearchPage() {
 				</p>
 			) : isPending ? (
 				<p className="text-muted-foreground">Searching...</p>
-			) : movies.length === 0 ? (
+			) : movies.results.length === 0 ? (
 				<p className="text-muted-foreground">No results for &quot;{q}&quot;</p>
 			) : (
 				<div className="grid grid-cols-6 gap-4">
-					{movies.map((movie) => (
+					{movies.results.map((movie) => (
 						<MovieCard
 							key={movie.id}
 							id={movie.id}

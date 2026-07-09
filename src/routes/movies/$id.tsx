@@ -5,14 +5,14 @@ import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { MovieBanner } from "#/features/movies/components/MovieBanner";
 import { MoviePoster } from "#/features/movies/components/MoviePoster";
-import { getMovie } from "#/features/movies/server/movies.functions";
+import { fetchMovieDetailsFn } from "#/features/movies/server/movies.functions";
 import { formatRuntime } from "#/features/movies/utils/format";
 import { getMovieImage } from "#/features/movies/utils/tmdb";
 
 const movieQuery = (id: number) =>
 	queryOptions({
 		queryKey: ["movie", id],
-		queryFn: () => getMovie({ data: { id } }),
+		queryFn: () => fetchMovieDetailsFn({ data: { id } }),
 	});
 
 export const Route = createFileRoute("/movies/$id")({
@@ -21,10 +21,10 @@ export const Route = createFileRoute("/movies/$id")({
 		return context.queryClient.ensureQueryData(movieQuery(Number(params.id)));
 	},
 	head: ({ loaderData, params }) => {
-		if (!loaderData?.success) {
+		if (!loaderData) {
 			return { meta: [{ title: "Movie not found" }] };
 		}
-		const movie = loaderData.data;
+		const movie = loaderData;
 		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
 		const imageUrl = getMovieImage(movie.backdrop_path, "w1280") ?? "";
 		return {
@@ -48,14 +48,17 @@ export const Route = createFileRoute("/movies/$id")({
 
 function MovieDetails() {
 	const { id } = Route.useParams();
-	const { data: result } = useSuspenseQuery(movieQuery(Number(id)));
+	const {
+		data: movie,
+		error,
+		isError,
+	} = useSuspenseQuery(movieQuery(Number(id)));
 	const router = useRouter();
 
-	if (!result.success) {
-		return <div className="p-4 text-red-500">{result.error}</div>;
+	if (isError) {
+		return <div className="p-4 text-red-500">{error?.message}</div>;
 	}
 
-	const movie = result.data;
 	const runtime = formatRuntime(movie.runtime);
 
 	return (
