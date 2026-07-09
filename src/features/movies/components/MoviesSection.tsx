@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMoviesList } from "../server/movies.functions";
+import { movieQueries } from "../queries";
+import type { TMDBMovieList } from "../types";
 import { MovieCard } from "./MovieCard";
 import { MoviesSectionSkeleton } from "./MoviesSectionSkeleton";
 
-type MovieListType = "popular" | "now_playing" | "top_rated" | "upcoming";
-
 type MoviesSectionProps = {
 	title: string;
-	list: MovieListType;
+	list: TMDBMovieList;
 	language?: string;
 	page?: number;
 };
@@ -18,10 +17,9 @@ export function MoviesSection({
 	language = "en-US",
 	page = 1,
 }: MoviesSectionProps) {
-	const { isPending, error, data } = useQuery({
-		queryKey: ["movies", list, language, page],
-		queryFn: () => getMoviesList({ data: { list, language, page } }),
-	});
+	const { isPending, error, data } = useQuery(
+		movieQueries.list(list, language, page),
+	);
 
 	if (isPending) {
 		return <MoviesSectionSkeleton />;
@@ -39,7 +37,10 @@ export function MoviesSection({
 			<h2 className="text-2xl tracking-tight font-medium">{title}</h2>
 			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
 				{movies.map((movie) => (
-					<div key={movie.id} className="w-37.5 sm:w-50 shrink-0 snap-start hover:z-10">
+					<div
+						key={movie.id}
+						className="w-37.5 sm:w-50 shrink-0 snap-start hover:z-10"
+					>
 						<MovieCard
 							id={movie.id}
 							imageSrc={movie.poster_path}

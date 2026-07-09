@@ -1,9 +1,15 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { HeroSlideshow } from "#/features/movies/components/HeroSlideshow";
 import { MoviesSection } from "#/features/movies/components/MoviesSection";
+import { movieQueries } from "#/features/movies/queries";
 
 export const Route = createFileRoute("/explore")({
 	component: Explore,
+	loader: ({ context }) => {
+		context.queryClient.ensureQueryData(movieQueries.list("now_playing"));
+	},
 });
 
 function Explore() {

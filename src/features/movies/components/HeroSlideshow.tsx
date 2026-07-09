@@ -3,14 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { BookmarkPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { getMoviesList } from "../server/movies.functions";
+import { getMovieListFn } from "../server/movies.functions";
 import { getMovieImage } from "../utils/tmdb";
 import { HeroSlideshowSkeleton } from "./HeroSlideshowSkeleton";
 
 const heroQuery = queryOptions({
 	queryKey: ["movies", "now_playing", "en-US", 1, "hero"],
 	queryFn: () =>
-		getMoviesList({
+		getMovieListFn({
 			data: { list: "now_playing", language: "en-US", page: 1 },
 		}),
 });

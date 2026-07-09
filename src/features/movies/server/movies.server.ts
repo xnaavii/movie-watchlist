@@ -33,7 +33,7 @@ export async function getMovieById(
 	}
 }
 
-export async function getMoviesByList(
+export async function getMovieList(
 	list: "popular" | "now_playing" | "top_rated" | "upcoming" = "popular",
 	language: string = "en-US",
 	page: number = 1,

@@ -1,14 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getMoviesList } from "./server/movies.functions";
+import { getMovieListFn } from "./server/movies.functions";
 import type { TMDBMovieList } from "./types";
 
-export const moviesListQuery = (
-	list: TMDBMovieList,
-	language: string,
-	page: number,
-) => {
-	return queryOptions({
-		queryKey: ["movies", list, language, page],
-		queryFn: () => getMoviesList({ data: { list, language, page } }),
-	});
+export const movieQueries = {
+	list: (list?: TMDBMovieList, language?: string, page?: number) =>
+		queryOptions({
+			queryKey: ["movies", { list, language, page }],
+			queryFn: () => getMovieListFn({ data: { list, language, page } }),
+		}),
+	details: () => {},
 };
