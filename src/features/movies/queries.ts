@@ -1,5 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
-import { fetchMovieListFn } from "./server/movies.functions";
+import {
+	fetchMovieDetailsFn,
+	fetchMovieListFn,
+} from "./server/movies.functions";
 import type { TMDBMovieList } from "./types";
 
 export const movieQueries = {
@@ -8,5 +11,9 @@ export const movieQueries = {
 			queryKey: ["movies", { list, language, page }],
 			queryFn: () => fetchMovieListFn({ data: { list, language, page } }),
 		}),
-	details: () => {},
+	details: (id: number) =>
+		queryOptions({
+			queryKey: ["movies", "details", { id }],
+			queryFn: () => fetchMovieDetailsFn({ data: { id } }),
+		}),
 };

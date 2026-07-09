@@ -1,25 +1,20 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { BookmarkPlus, ChevronLeft, Dot, Star } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { MovieBanner } from "#/features/movies/components/MovieBanner";
 import { MoviePoster } from "#/features/movies/components/MoviePoster";
-import { fetchMovieDetailsFn } from "#/features/movies/server/movies.functions";
+import { movieQueries } from "#/features/movies/queries";
 import { formatRuntime } from "#/features/movies/utils/format";
 import { getMovieImage } from "#/features/movies/utils/tmdb";
 
-const movieQuery = (id: number) =>
-	queryOptions({
-		queryKey: ["movie", id],
-		queryFn: () => fetchMovieDetailsFn({ data: { id } }),
-	});
-
 export const Route = createFileRoute("/movies/$id")({
-	component: MovieDetails,
-	loader: ({ params, context }) => {
-		return context.queryClient.ensureQueryData(movieQuery(Number(params.id)));
-	},
+	component: MovieDetailsPage,
+	loader: ({ params, context }) =>
+		context.queryClient.ensureQueryData(
+			movieQueries.details(Number(params.id)),
+		),
 	head: ({ loaderData, params }) => {
 		if (!loaderData) {
 			return { meta: [{ title: "Movie not found" }] };
@@ -46,13 +41,13 @@ export const Route = createFileRoute("/movies/$id")({
 	},
 });
 
-function MovieDetails() {
+function MovieDetailsPage() {
 	const { id } = Route.useParams();
 	const {
 		data: movie,
 		error,
 		isError,
-	} = useSuspenseQuery(movieQuery(Number(id)));
+	} = useSuspenseQuery(movieQueries.details(Number(id)));
 	const router = useRouter();
 
 	if (isError) {
