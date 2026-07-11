@@ -2,6 +2,7 @@ import type { TMDBMovieList, TmdbMovie } from "../types";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
+
 type TmdbPaginatedResponse<T> = {
 	page: number;
 	results: T[];
@@ -15,7 +16,7 @@ export async function fetchMovieDetails(id: number): Promise<TmdbMovie> {
 	}
 
 	const response = await fetch(`${TMDB_BASE_URL}/movie/${id}`, {
-		headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
+		headers: { Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}` },
 	});
 
 	if (!response.ok) {
@@ -35,7 +36,7 @@ export async function fetchMovieList(
 	const response = await fetch(url, {
 		headers: {
 			accept: "application/json",
-			Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+			Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
 		},
 	});
 
@@ -57,7 +58,7 @@ export async function fetchMoviesByQuery(
 	const response = await fetch(url, {
 		headers: {
 			accept: "application/json",
-			Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+			Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
 		},
 	});
 

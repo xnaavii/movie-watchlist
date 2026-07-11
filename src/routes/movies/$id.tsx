@@ -12,7 +12,7 @@ export const Route = createFileRoute("/movies/$id")({
 	component: MovieDetailsPage,
 	loader: ({ params, context }) =>
 		context.queryClient.ensureQueryData(
-			movieQueries.details(Number(params.id)),
+			movieQueries.details({ movie_id: Number(params.id) }),
 		),
 	head: ({ loaderData, params }) => {
 		if (!loaderData) {
@@ -46,7 +46,7 @@ function MovieDetailsPage() {
 		data: movie,
 		error,
 		isError,
-	} = useSuspenseQuery(movieQueries.details(Number(id)));
+	} = useSuspenseQuery(movieQueries.details({ movie_id: Number(id) }));
 	const router = useRouter();
 
 	if (isError) {

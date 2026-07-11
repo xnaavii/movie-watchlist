@@ -1,10 +1,20 @@
+import type { MovieDetails, MovieDetailsParams } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
+import { tmdb } from "#/lib/tmdb";
 import type { TMDBMovieList } from "../types";
 import {
 	fetchMovieDetails,
 	fetchMovieList,
 	fetchMoviesByQuery,
 } from "./movies.server";
+
+export const getMovieDetails = createServerFn({ method: "GET" })
+	.validator((data: MovieDetailsParams) => data)
+	.handler(async ({ data }) => {
+		const movie: MovieDetails = await tmdb.movies.details({ ...data });
+
+		return movie;
+	});
 
 export const fetchMovieDetailsFn = createServerFn({ method: "GET" })
 	.validator((data: { id: number }) => data)
