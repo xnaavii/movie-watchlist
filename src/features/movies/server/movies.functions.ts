@@ -1,4 +1,8 @@
-import type { MovieDetails, MovieDetailsParams } from "@lorenzopant/tmdb";
+import type {
+	MovieDetails,
+	MovieDetailsParams,
+	MovieListParams,
+} from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
 import { tmdb } from "#/lib/tmdb";
 import type { TMDBMovieList } from "../types";
@@ -14,6 +18,30 @@ export const getMovieDetails = createServerFn({ method: "GET" })
 		const movie: MovieDetails = await tmdb.movies.details({ ...data });
 
 		return movie;
+	});
+
+export const getPopularMovies = createServerFn({ method: "GET" })
+	.validator((data: MovieListParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movie_lists.popular({ ...data });
+	});
+
+export const getTopRatedMovies = createServerFn({ method: "GET" })
+	.validator((data: MovieListParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movie_lists.top_rated({ ...data });
+	});
+
+export const getNowPlayingMovies = createServerFn({ method: "GET" })
+	.validator((data: MovieListParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movie_lists.now_playing({ ...data });
+	});
+
+export const getUpcomingMovies = createServerFn({ method: "GET" })
+	.validator((data: MovieListParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movie_lists.upcoming({ ...data });
 	});
 
 export const fetchMovieDetailsFn = createServerFn({ method: "GET" })
