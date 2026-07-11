@@ -6,6 +6,7 @@ import type {
 } from "@lorenzopant/tmdb";
 import { queryOptions } from "@tanstack/react-query";
 import {
+	getImdbRating,
 	getMovieDetails,
 	getMovieList,
 	getMovieVideos,
@@ -35,3 +36,10 @@ export const movieQueries = {
 			queryFn: () => searchMovies({ data: { ...params } }),
 		}),
 };
+
+export const imdbRatingQueryOptions = (imdbId: string) =>
+	queryOptions({
+		queryKey: ["imdb-rating", imdbId],
+		queryFn: () => getImdbRating({ data: { imdbId } }),
+		staleTime: 1000 * 60 * 60 * 24,
+	});
