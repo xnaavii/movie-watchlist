@@ -20,10 +20,27 @@ export const getMovieDetails = createServerFn({ method: "GET" })
 		return movie;
 	});
 
-export const getPopularMovies = createServerFn({ method: "GET" })
-	.validator((data: MovieListParams) => data)
+export const getMovieList = createServerFn({ method: "GET" })
+	.validator(
+		(
+			data: {
+				list: TMDBMovieList;
+			} & MovieListParams,
+		) => data,
+	)
 	.handler(async ({ data }) => {
-		return tmdb.movie_lists.popular({ ...data });
+		const { list, ...params } = data;
+
+		switch (list) {
+			case "popular":
+				return tmdb.movie_lists.popular(params);
+			case "now_playing":
+				return tmdb.movie_lists.now_playing(params);
+			case "upcoming":
+				return tmdb.movie_lists.upcoming(params);
+			case "top_rated":
+				return tmdb.movie_lists.top_rated(params);
+		}
 	});
 
 export const getTopRatedMovies = createServerFn({ method: "GET" })

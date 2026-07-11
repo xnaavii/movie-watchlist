@@ -1,31 +1,27 @@
+import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Card, CardHeader, CardTitle } from "#/components/ui/card";
 import { cn } from "#/lib/utils";
-import { getMovieImage } from "../utils/tmdb";
 
 type MovieCardProps = {
-	id: number;
-	title: string;
-	imageSrc: string | null;
+	movie: MovieResultItem;
 	className?: string;
 };
 
-export function MovieCard({ id, title, imageSrc, className }: MovieCardProps) {
-	const posterImage = getMovieImage(imageSrc, "w342");
-
+export function MovieCard({ movie, className }: MovieCardProps) {
 	return (
 		<Card className={cn("relative mx-auto w-full max-w-sm pt-0", className)}>
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
-					params={{ id: `${id}` }}
+					params={{ id: `${movie.id}` }}
 					className="block size-full"
 				>
-					{posterImage ? (
+					{movie.poster_path ? (
 						<img
-							src={posterImage}
-							alt={title}
+							src={movie.poster_path}
+							alt={movie.title}
 							className="size-full object-cover"
 							loading="lazy"
 						/>
@@ -38,7 +34,7 @@ export function MovieCard({ id, title, imageSrc, className }: MovieCardProps) {
 			</AspectRatio>
 
 			<CardHeader>
-				<CardTitle className="line-clamp-1">{title}</CardTitle>
+				<CardTitle className="line-clamp-1">{movie.title}</CardTitle>
 			</CardHeader>
 		</Card>
 	);

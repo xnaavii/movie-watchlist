@@ -1,36 +1,14 @@
 import type { MovieDetailsParams, MovieListParams } from "@lorenzopant/tmdb";
 import { queryOptions } from "@tanstack/react-query";
-import {
-	getMovieDetails,
-	getNowPlayingMovies,
-	getPopularMovies,
-	getTopRatedMovies,
-	getUpcomingMovies,
-} from "./server/movies.functions";
+import { getMovieDetails, getMovieList } from "./server/movies.functions";
+import type { TMDBMovieList } from "./types";
 
 export const movieQueries = {
-	list: {
-		popular: (params: MovieListParams) =>
-			queryOptions({
-				queryKey: ["movies", "list", "popular", params],
-				queryFn: () => getPopularMovies({ data: { ...params } }),
-			}),
-		topRated: (params: MovieListParams) =>
-			queryOptions({
-				queryKey: ["movies", "list", "top_rated", params],
-				queryFn: () => getTopRatedMovies({ data: { ...params } }),
-			}),
-		nowPlaying: (params: MovieListParams) =>
-			queryOptions({
-				queryKey: ["movies", "list", "now_playing", params],
-				queryFn: () => getNowPlayingMovies({ data: { ...params } }),
-			}),
-		upcoming: (params: MovieListParams) =>
-			queryOptions({
-				queryKey: ["movies", "list", "upcoming", params],
-				queryFn: () => getUpcomingMovies({ data: { ...params } }),
-			}),
-	},
+	list: (list: TMDBMovieList, params?: MovieListParams) =>
+		queryOptions({
+			queryKey: ["movies", "list", { list, params }],
+			queryFn: () => getMovieList({ data: { list, ...params } }),
+		}),
 	details: (params: MovieDetailsParams) =>
 		queryOptions({
 			queryKey: ["movies", "details", { id: params.movie_id }],

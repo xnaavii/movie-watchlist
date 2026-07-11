@@ -1,13 +1,12 @@
+import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { BookmarkPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import type { TmdbMovie } from "../types";
-import { getMovieImage } from "../utils/tmdb";
 
 const TIMER_INTERVAL = 5000;
 
-export function FeaturedMovies({ movies }: { movies: TmdbMovie[] }) {
+export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
 
 	useEffect(() => {
@@ -28,13 +27,11 @@ export function FeaturedMovies({ movies }: { movies: TmdbMovie[] }) {
 
 	const movie = movies[currentIndex];
 
-	const backdropImage = getMovieImage(movie.backdrop_path, "w1280");
-
 	return (
 		<div className="relative bg-muted min-h-150 h-[60vh] overflow-hidden">
-			{backdropImage ? (
+			{movie.backdrop_path ? (
 				<img
-					src={backdropImage}
+					src={movie.backdrop_path}
 					alt={movie.title}
 					className="size-full object-cover"
 				/>

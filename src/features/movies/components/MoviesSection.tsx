@@ -7,19 +7,10 @@ import { MoviesSectionSkeleton } from "./MoviesSectionSkeleton";
 type MoviesSectionProps = {
 	title: string;
 	list: TMDBMovieList;
-	language?: string;
-	page?: number;
 };
 
-export function MoviesSection({
-	title,
-	list,
-	language = "en-US",
-	page = 1,
-}: MoviesSectionProps) {
-	const { isPending, error, data } = useQuery(
-		movieQueries.list(list, language, page),
-	);
+export function MoviesSection({ title, list }: MoviesSectionProps) {
+	const { isPending, error, data } = useQuery(movieQueries.list(list));
 
 	if (isPending) {
 		return <MoviesSectionSkeleton />;
@@ -39,14 +30,12 @@ export function MoviesSection({
 				{movies.map((movie) => (
 					<MovieCard
 						key={movie.id}
-						id={movie.id}
-						imageSrc={movie.poster_path}
-						title={movie.title}
+						movie={movie}
 						className="w-2xs shrink-0 snap-start"
 					/>
 				))}
 			</div>
-			<div className="absolute right-0 bottom-0 h-full w-24 bg-linear-to-l from-black via-black/30 to-transparent pointer-events-none" />
+			<div className="absolute right-0 bottom-0 h-full w-24 bg-linear-to-l from-background via-background/30 to-transparent pointer-events-none" />
 		</div>
 	);
 }
