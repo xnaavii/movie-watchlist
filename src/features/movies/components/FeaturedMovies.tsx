@@ -1,6 +1,6 @@
 import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
-import { BookmarkPlus } from "lucide-react";
+import { ListPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
 
@@ -44,7 +44,7 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 				<p className="text-muted-foreground text-lg">{movie.overview}</p>
 				<div className="flex gap-2">
 					<Button size="lg">
-						<BookmarkPlus />
+						<ListPlus />
 						Add to watchlist
 					</Button>
 
