@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, ListPlus } from "lucide-react";
+import { ChevronLeft, Dot, ListPlus } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
@@ -46,8 +46,6 @@ function MovieDetailsPage() {
 	);
 	const router = useRouter();
 
-	const runtime = formatRuntime(movie.runtime);
-
 	return (
 		<div className="relative w-full h-[80vh]">
 			<Button
@@ -60,8 +58,8 @@ function MovieDetailsPage() {
 			</Button>
 
 			{/* Backdrop image and overlay */}
-			<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-50% to-transparent size-full z-1"></div>
-			<div className="absolute inset-0 bg-linear-to-t from-background via-transparent via-100% to-transparent size-full z-1"></div>
+			<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-1"></div>
+			<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-1"></div>
 			{movie.backdrop_path ? (
 				<img
 					src={movie.backdrop_path}
@@ -74,7 +72,7 @@ function MovieDetailsPage() {
 				</div>
 			)}
 
-			<div className="absolute bottom-0 translate-y-1/3 p-6 z-10">
+			<div className="absolute bottom-0 p-6 z-10">
 				{/* Movie poster and details */}
 				<div className="grid grid-cols-[auto_1fr] gap-6">
 					{movie.poster_path ? (
@@ -96,6 +94,17 @@ function MovieDetailsPage() {
 					)}
 					<div className="flex flex-col gap-6 max-w-5xl">
 						<h1 className="font-semibold text-5xl min-w-0">{movie.title}</h1>
+						{/* Release year */}
+						<p>{new Date(movie.release_date).getFullYear()}</p>
+						{/* Genres */}
+						<div className="flex gap-2 items-center">
+							{movie.genres.map((genre, i) => (
+								<div className="flex gap-2 items-center" key={genre.id}>
+									<span>{genre.name}</span>
+									{movie.genres.length > i + 1 ? <Dot /> : null}
+								</div>
+							))}
+						</div>
 						<p className="text-lg text-muted-foreground">{movie.overview}</p>
 						<Button className="w-fit">
 							<ListPlus />
