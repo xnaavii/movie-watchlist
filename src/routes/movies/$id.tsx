@@ -6,7 +6,6 @@ import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { movieQueries } from "#/features/movies/queries";
 import { formatRuntime } from "#/features/movies/utils/format";
-import { getMovieImage } from "#/features/movies/utils/tmdb";
 
 export const Route = createFileRoute("/movies/$id")({
 	component: MovieDetailsPage,
@@ -20,7 +19,7 @@ export const Route = createFileRoute("/movies/$id")({
 		}
 		const movie = loaderData;
 		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
-		const imageUrl = getMovieImage(movie.backdrop_path, "w1280") ?? "";
+		const imageUrl = movie.backdrop_path || undefined;
 		return {
 			meta: [
 				{ title: `${movie.title} | ${SITE_CONFIG.name}` },
@@ -42,22 +41,12 @@ export const Route = createFileRoute("/movies/$id")({
 
 function MovieDetailsPage() {
 	const { id } = Route.useParams();
-	const {
-		data: movie,
-		error,
-		isError,
-	} = useSuspenseQuery(movieQueries.details({ movie_id: Number(id) }));
+	const { data: movie } = useSuspenseQuery(
+		movieQueries.details({ movie_id: Number(id) }),
+	);
 	const router = useRouter();
 
-	if (isError) {
-		return (
-			<div className="p-4 text-destructive-foreground">{error?.message}</div>
-		);
-	}
-
 	const runtime = formatRuntime(movie.runtime);
-	const backdropImage = getMovieImage(movie.backdrop_path, "w1280");
-	const posterImage = getMovieImage(movie.poster_path, "w342");
 
 	return (
 		<div className="relative w-full h-[80vh]">
@@ -73,9 +62,9 @@ function MovieDetailsPage() {
 			{/* Backdrop image and overlay */}
 			<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-50% to-transparent size-full z-1"></div>
 			<div className="absolute inset-0 bg-linear-to-t from-background via-transparent via-100% to-transparent size-full z-1"></div>
-			{backdropImage ? (
+			{movie.backdrop_path ? (
 				<img
-					src={backdropImage}
+					src={movie.backdrop_path}
 					alt={`${movie.title} banner`}
 					className="absolute right-0 bottom-0 object-cover size-full object-top"
 				/>
@@ -88,11 +77,11 @@ function MovieDetailsPage() {
 			<div className="absolute bottom-0 translate-y-1/3 p-6 z-10">
 				{/* Movie poster and details */}
 				<div className="grid grid-cols-[auto_1fr] gap-6">
-					{posterImage ? (
+					{movie.poster_path ? (
 						<div className="w-xs rounded-4xl overflow-hidden">
 							<AspectRatio ratio={2 / 3}>
 								<img
-									src={posterImage}
+									src={movie.poster_path}
 									alt={`${movie.title} poster`}
 									className="size-full object-cover"
 								/>
