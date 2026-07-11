@@ -1,11 +1,11 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Dot, ListPlus } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import { movieQueries } from "#/features/movies/queries";
-import { formatRuntime } from "#/features/movies/utils/format";
 
 export const Route = createFileRoute("/movies/$id")({
 	component: MovieDetailsPage,
@@ -44,75 +44,79 @@ function MovieDetailsPage() {
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: Number(id) }),
 	);
+
 	const router = useRouter();
 
 	return (
-		<div className="relative w-full h-[80vh]">
-			<Button
-				className="absolute top-6 left-6 z-10"
-				variant="secondary"
-				onClick={() => router.history.back()}
-			>
-				<ChevronLeft />
-				Return
-			</Button>
+		<>
+			<div className="relative w-full h-[80vh]">
+				<Button
+					className="absolute top-6 left-6 z-10"
+					variant="secondary"
+					onClick={() => router.history.back()}
+				>
+					<ChevronLeft />
+					Return
+				</Button>
 
-			{/* Backdrop image and overlay */}
-			<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-1"></div>
-			<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-1"></div>
-			{movie.backdrop_path ? (
-				<img
-					src={movie.backdrop_path}
-					alt={`${movie.title} banner`}
-					className="absolute right-0 bottom-0 object-cover size-full object-top"
-				/>
-			) : (
-				<div className="absolute right-0 bottom-0 object-cover size-full bg-muted-foreground flex flex-col items-center justify-center">
-					<p className="text-3xl">No Backdrop Image</p>
-				</div>
-			)}
+				{/* Backdrop image and overlay */}
+				<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-1"></div>
+				<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-1"></div>
+				{movie.backdrop_path ? (
+					<img
+						src={movie.backdrop_path}
+						alt={`${movie.title} banner`}
+						className="absolute right-0 bottom-0 object-cover size-full object-top"
+					/>
+				) : (
+					<div className="absolute right-0 bottom-0 object-cover size-full bg-muted-foreground flex flex-col items-center justify-center">
+						<p className="text-3xl">No Backdrop Image</p>
+					</div>
+				)}
 
-			<div className="absolute bottom-0 p-6 z-10">
-				{/* Movie poster and details */}
-				<div className="grid grid-cols-[auto_1fr] gap-6">
-					{movie.poster_path ? (
-						<div className="w-xs rounded-4xl overflow-hidden">
-							<AspectRatio ratio={2 / 3}>
-								<img
-									src={movie.poster_path}
-									alt={`${movie.title} poster`}
-									className="size-full object-cover"
-								/>
-							</AspectRatio>
+				<div className="absolute bottom-0 p-6 z-10">
+					{/* Movie poster and details */}
+					<div className="grid grid-cols-[auto_1fr] gap-6">
+						{movie.poster_path ? (
+							<div className="w-xs rounded-4xl overflow-hidden">
+								<AspectRatio ratio={2 / 3}>
+									<img
+										src={movie.poster_path}
+										alt={`${movie.title} poster`}
+										className="size-full object-cover"
+									/>
+								</AspectRatio>
+							</div>
+						) : (
+							<div className="w-2xs rounded-4xl overflow-hidden bg-muted">
+								<AspectRatio ratio={2 / 3}>
+									<p className="text-3xl">No Backdrop Image</p>
+								</AspectRatio>
+							</div>
+						)}
+						<div className="flex flex-col gap-6 max-w-5xl">
+							<h1 className="font-semibold text-5xl min-w-0">{movie.title}</h1>
+							{/* Release year */}
+							<p>{new Date(movie.release_date).getFullYear()}</p>
+							{/* Genres */}
+							<div className="flex gap-2 items-center">
+								{movie.genres.map((genre, i) => (
+									<div className="flex gap-2 items-center" key={genre.id}>
+										<span>{genre.name}</span>
+										{movie.genres.length > i + 1 ? <Dot /> : null}
+									</div>
+								))}
+							</div>
+							<p className="text-lg text-muted-foreground">{movie.overview}</p>
+							<Button className="w-fit">
+								<ListPlus />
+								Add to watchlist
+							</Button>
 						</div>
-					) : (
-						<div className="w-2xs rounded-4xl overflow-hidden bg-muted">
-							<AspectRatio ratio={2 / 3}>
-								<p className="text-3xl">No Backdrop Image</p>
-							</AspectRatio>
-						</div>
-					)}
-					<div className="flex flex-col gap-6 max-w-5xl">
-						<h1 className="font-semibold text-5xl min-w-0">{movie.title}</h1>
-						{/* Release year */}
-						<p>{new Date(movie.release_date).getFullYear()}</p>
-						{/* Genres */}
-						<div className="flex gap-2 items-center">
-							{movie.genres.map((genre, i) => (
-								<div className="flex gap-2 items-center" key={genre.id}>
-									<span>{genre.name}</span>
-									{movie.genres.length > i + 1 ? <Dot /> : null}
-								</div>
-							))}
-						</div>
-						<p className="text-lg text-muted-foreground">{movie.overview}</p>
-						<Button className="w-fit">
-							<ListPlus />
-							Add to watchlist
-						</Button>
 					</div>
 				</div>
 			</div>
-		</div>
+			<TrailerSection movie={movie} />
+		</>
 	);
 }

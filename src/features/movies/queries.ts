@@ -1,12 +1,14 @@
 import type {
 	MovieDetailsParams,
 	MovieListParams,
+	MovieVideosParams,
 	SearchMoviesParams,
 } from "@lorenzopant/tmdb";
 import { queryOptions } from "@tanstack/react-query";
 import {
 	getMovieDetails,
 	getMovieList,
+	getMovieVideos,
 	searchMovies,
 } from "./server/movies.functions";
 import type { TMDBMovieList } from "./types";
@@ -21,6 +23,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "details", { id: params.movie_id }],
 			queryFn: () => getMovieDetails({ data: { ...params } }),
+		}),
+	videos: (params: MovieVideosParams) =>
+		queryOptions({
+			queryKey: ["movies", "details", "videos", { ...params }],
+			queryFn: () => getMovieVideos({ data: { ...params } }),
 		}),
 	search: (params: SearchMoviesParams) =>
 		queryOptions({

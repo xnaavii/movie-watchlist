@@ -2,6 +2,7 @@ import type {
 	MovieDetails,
 	MovieDetailsParams,
 	MovieListParams,
+	MovieVideosParams,
 	SearchMoviesParams,
 } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
@@ -37,6 +38,12 @@ export const getMovieList = createServerFn({ method: "GET" })
 			case "top_rated":
 				return tmdb.movie_lists.top_rated(params);
 		}
+	});
+
+export const getMovieVideos = createServerFn({ method: "GET" })
+	.validator((data: MovieVideosParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movies.videos({ ...data });
 	});
 
 export const searchMovies = createServerFn({ method: "GET" })
