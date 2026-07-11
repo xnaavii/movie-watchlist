@@ -1,21 +1,14 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SearchBar } from "#/components/SearchBar";
 import { MovieCard } from "#/features/movies/components/MovieCard";
-import { fetchMoviesByQueryFn } from "#/features/movies/server/movies.functions";
+import { movieQueries } from "#/features/movies/queries";
 
 const searchParamsSchema = z.object({
 	q: z.string().catch(""),
 });
-
-const movieSearchQuery = (query: string) =>
-	queryOptions({
-		queryKey: ["movies", "search", query],
-		queryFn: () => fetchMoviesByQueryFn({ data: { query } }),
-		enabled: query.trim().length > 0,
-	});
 
 export const Route = createFileRoute("/search")({
 	component: SearchPage,
@@ -23,7 +16,9 @@ export const Route = createFileRoute("/search")({
 	loaderDeps: ({ search }) => ({ q: search.q }),
 	loader: ({ context, deps }) => {
 		if (!deps.q) return;
-		return context.queryClient.ensureQueryData(movieSearchQuery(deps.q));
+		return context.queryClient.ensureQueryData(
+			movieQueries.search({ query: deps.q }),
+		);
 	},
 });
 
@@ -45,7 +40,7 @@ function SearchPage() {
 		isPending,
 		isError,
 		error,
-	} = useQuery(movieSearchQuery(q));
+	} = useQuery(movieQueries.search({ query: q }));
 
 	if (isError) {
 		return <p>There was an error: {error.message}</p>;
@@ -66,12 +61,7 @@ function SearchPage() {
 			) : (
 				<div className="grid grid-cols-6 gap-4">
 					{movies.results.map((movie) => (
-						<MovieCard
-							key={movie.id}
-							id={movie.id}
-							title={movie.title}
-							imageSrc={movie.poster_path}
-						/>
+						<MovieCard key={movie.id} movie={movie} />
 					))}
 				</div>
 			)}
