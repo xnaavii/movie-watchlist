@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Dot, ListPlus } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
