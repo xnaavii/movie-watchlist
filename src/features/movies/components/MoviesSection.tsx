@@ -26,7 +26,7 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 	return (
 		<div className="relative flex flex-col gap-4">
 			<h2 className="text-2xl tracking-tight font-medium">{title}</h2>
-			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory max-w">
+			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
 				{movies.map((movie) => (
 					<MovieCard
 						key={movie.id}
