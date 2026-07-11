@@ -61,7 +61,7 @@ function MovieDetailsPage() {
 	const router = useRouter();
 
 	return (
-		<>
+		<div className="flex flex-col gap-8">
 			<div className="relative w-full h-[80vh]">
 				<Button
 					className="absolute top-6 left-6 z-10"
@@ -139,6 +139,6 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 			<TrailerSection movie={movie} />
-		</>
+		</div>
 	);
 }
