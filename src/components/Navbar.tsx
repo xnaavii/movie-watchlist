@@ -7,7 +7,7 @@ export function Navbar() {
 	const matchRoute = useMatchRoute();
 
 	return (
-		<header className="p-2 fixed top-0 flex gap-2 items-center md:hidden w-full bg-linear-to-b from-sidebar via-sidebar/50 via-60% to-transparent z-30">
+		<header className="p-2 fixed top-0 flex gap-2 items-center md:hidden w-full bg-linear-to-b from-background to-transparent z-30">
 			<nav className="flex justify-between w-full">
 				<Button
 					size="icon-lg"
