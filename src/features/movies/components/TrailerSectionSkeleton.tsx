@@ -6,8 +6,8 @@ export function TrailerSectionSkeleton() {
 	}));
 
 	return (
-		<section className="flex flex-col gap-4 p-6">
-			<div className="h-7.5 w-48 bg-muted animate-pulse rounded" />
+		<section className="flex flex-col gap-6 p-6">
+			<div className="h-9.5 w-48 bg-muted animate-pulse rounded-4xl" />
 			<div className="flex gap-4 w-full overflow-x-auto scrollbar-none snap-x snap-mandatory">
 				{skeletonItems.map((item) => (
 					<div
