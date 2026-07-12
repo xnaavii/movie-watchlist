@@ -64,7 +64,7 @@ function MovieDetailsPage() {
 		<div className="flex flex-col gap-8">
 			<div className="relative w-full h-[80vh]">
 				<Button
-					className="absolute top-6 left-6 z-10"
+					className="absolute top-6 left-6 z-20"
 					variant="secondary"
 					onClick={() => router.history.back()}
 				>
@@ -73,8 +73,8 @@ function MovieDetailsPage() {
 				</Button>
 
 				{/* Backdrop image and overlay */}
-				<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-1"></div>
-				<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-1"></div>
+				<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-10"></div>
+				<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-10"></div>
 				{movie.backdrop_path ? (
 					<img
 						src={movie.backdrop_path}
@@ -91,13 +91,22 @@ function MovieDetailsPage() {
 					{/* Movie poster and details */}
 					<div className="grid grid-cols-[auto_1fr] gap-6">
 						{movie.poster_path ? (
-							<div className="w-xs rounded-4xl overflow-hidden">
+							// Movie Poster
+							<div className="relative w-xs rounded-4xl z-10">
 								<AspectRatio ratio={2 / 3}>
 									<img
 										src={movie.poster_path}
-										alt={`${movie.title} poster`}
-										className="size-full object-cover"
+										alt={`${movie.title} poster blurred`}
+										aria-hidden="true"
+										className="absolute inset-0 size-full object-cover blur-3xl opacity-70"
 									/>
+									<div className="absolute inset-0 rounded-4xl overflow-hidden shadow-2xl">
+										<img
+											src={movie.poster_path}
+											alt={`${movie.title} poster`}
+											className="size-full object-cover"
+										/>
+									</div>
 								</AspectRatio>
 							</div>
 						) : (
