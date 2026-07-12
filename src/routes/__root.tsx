@@ -7,7 +7,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import Sidebar from "#/components/Sidebar";
+import { Sidebar } from "#/components/Sidebar";
 import { ThemeProvider } from "#/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
