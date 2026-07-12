@@ -15,7 +15,7 @@ export function Sidebar({ className }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				"p-2 flex flex-col justify-between items-center bg-sidebar",
+				"p-2 hidden md:flex flex-col justify-between items-center bg-sidebar",
 				className,
 			)}
 		>

@@ -7,6 +7,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Navbar } from "#/components/Navbar";
 import { Sidebar } from "#/components/Sidebar";
 import { ThemeProvider } from "#/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
@@ -49,7 +50,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<ThemeProvider defaultTheme="system" storageKey="theme">
-					<div className="grid grid-cols-[auto_1fr] h-dvh overflow-hidden">
+					<div className="grid grid-cols-1 md:grid-cols-[auto_1fr] h-dvh overflow-hidden">
+						<Navbar />
 						<Sidebar />
 						<main className="overflow-y-auto min-h-0" id="main-scrollable-area">
 							{children}
