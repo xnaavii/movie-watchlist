@@ -1,4 +1,5 @@
 import type {
+	MovieCreditsParams,
 	MovieDetails,
 	MovieDetailsParams,
 	MovieListParams,
@@ -41,6 +42,12 @@ export const getMovieList = createServerFn({ method: "GET" })
 			case "top_rated":
 				return tmdb.movie_lists.top_rated(params);
 		}
+	});
+
+export const getMovieCredits = createServerFn({ method: "GET" })
+	.validator((data: MovieCreditsParams) => data)
+	.handler(async ({ data }) => {
+		return tmdb.movies.credits({ ...data });
 	});
 
 export const getMovieVideos = createServerFn({ method: "GET" })

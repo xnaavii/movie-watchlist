@@ -1,4 +1,5 @@
 import type {
+	MovieCreditsParams,
 	MovieDetailsParams,
 	MovieListParams,
 	MovieVideosParams,
@@ -7,6 +8,7 @@ import type {
 import { queryOptions } from "@tanstack/react-query";
 import {
 	getImdbRating,
+	getMovieCredits,
 	getMovieDetails,
 	getMovieList,
 	getMovieVideos,
@@ -30,6 +32,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "details", "videos", { ...params }],
 			queryFn: () => getMovieVideos({ data: { ...params } }),
+		}),
+	credits: (params: MovieCreditsParams) =>
+		queryOptions({
+			queryKey: ["movies", "details", "credits", { ...params }],
+			queryFn: () => getMovieCredits({ data: { ...params } }),
 		}),
 	search: (params: SearchMoviesParams) =>
 		queryOptions({

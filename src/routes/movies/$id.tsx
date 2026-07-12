@@ -61,6 +61,12 @@ function MovieDetailsPage() {
 		enabled: Boolean(movie.id),
 	});
 
+	const credits = useSuspenseQuery(
+		movieQueries.credits({ movie_id: movie.id }),
+	);
+	const director = credits.data.crew.find((m) => m.job === "Director");
+	const topCast = credits.data.cast.slice(0, 5);
+
 	const router = useRouter();
 
 	return (
@@ -104,25 +110,42 @@ function MovieDetailsPage() {
 							</div>
 						)}
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-col gap-2 max-w-4xl">
+							<div className="flex flex-col gap-4 max-w-4xl">
+								{/* Release year */}
 								<h1 className="font-semibold text-5xl min-w-0">
 									{movie.title}
 								</h1>
-								{/* Release year */}
-								<p>{new Date(movie.release_date).getFullYear()}</p>
+								<p className="text-lg">
+									{new Date(movie.release_date).getFullYear()}
+								</p>
+								<div className="flex flex-col gap-2">
+									<div className="flex gap-2">
+										<p className="text-muted-foreground">Director: </p>
+										<span>{director?.name}</span>
+									</div>
+									<div className="flex gap-2">
+										<p className="text-muted-foreground">Cast: </p>
+										{topCast.map((cast, i) => (
+											<span key={cast.id}>
+												{cast.name}
+												{topCast.length > i + 1 ? "," : null}
+											</span>
+										))}
+									</div>
+								</div>
 								<Genres genres={movie.genres} />
-								{/* Imdb rating */}
-								{isPending ? (
-									<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-								) : isError ? (
-									<p>{error.message}</p>
-								) : (
-									<span className="text-sm text-muted-foreground">
-										{imdbRating?.imdbRating ?? "—"}
-									</span>
-								)}
 								<p className="text text-muted-foreground">{movie.overview}</p>
 							</div>
+							{/* Imdb rating */}
+							{isPending ? (
+								<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
+							) : isError ? (
+								<p>{error.message}</p>
+							) : (
+								<p className="text-sm text-muted-foreground">
+									IMDB: {imdbRating?.imdbRating ?? "—"}
+								</p>
+							)}
 							<Button className="w-fit">
 								<ListPlus />
 								Add to watchlist
