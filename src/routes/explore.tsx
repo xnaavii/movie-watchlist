@@ -6,9 +6,8 @@ import { movieQueries } from "#/features/movies/queries";
 
 export const Route = createFileRoute("/explore")({
 	component: ExplorePage,
-	loader: ({ context }) => {
-		context.queryClient.ensureQueryData(movieQueries.list("now_playing"));
-	},
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(movieQueries.list("now_playing")),
 });
 
 function ExplorePage() {
