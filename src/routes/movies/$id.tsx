@@ -11,7 +11,6 @@ import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
-	watchmodeStreamingSourcesQueryOptions,
 } from "#/features/movies/queries";
 
 export const Route = createFileRoute("/movies/$id")({
