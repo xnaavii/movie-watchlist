@@ -40,15 +40,26 @@ export const getMovieList = createServerFn({ method: "GET" })
 	.handler(async ({ data }) => {
 		const { list, ...params } = data;
 
-		switch (list) {
-			case "popular":
-				return tmdb.movie_lists.popular(params);
-			case "now_playing":
-				return tmdb.movie_lists.now_playing(params);
-			case "upcoming":
-				return tmdb.movie_lists.upcoming(params);
-			case "top_rated":
-				return tmdb.movie_lists.top_rated(params);
+		try {
+			switch (list) {
+				case "popular":
+					return await tmdb.movie_lists.popular(params);
+				case "now_playing":
+					return await tmdb.movie_lists.now_playing(params);
+				case "upcoming":
+					return await tmdb.movie_lists.upcoming(params);
+				case "top_rated":
+					return await tmdb.movie_lists.top_rated(params);
+				default:
+					list satisfies never;
+					throw new Error(`Unknown movie list type: ${list}`);
+			}
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get the movie list",
+			);
 		}
 	});
 
