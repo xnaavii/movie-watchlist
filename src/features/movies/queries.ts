@@ -10,6 +10,7 @@ import {
 	getMovieDetails,
 	getMovieList,
 	getMovieVideos,
+	getStreamingSources,
 	searchMovies,
 } from "./server/movies.functions";
 import type { TMDBMovieList } from "./types";
@@ -42,4 +43,10 @@ export const imdbRatingQueryOptions = (imdbId: string) =>
 		queryKey: ["imdb-rating", imdbId],
 		queryFn: () => getImdbRating({ data: { imdbId } }),
 		staleTime: 1000 * 60 * 60 * 24,
+	});
+
+export const watchmodeStreamingSourcesQueryOptions = (imdbId: string) =>
+	queryOptions({
+		queryKey: ["watchmode-streaming-sources", imdbId],
+		queryFn: () => getStreamingSources({ data: { imdbId } }),
 	});

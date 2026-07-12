@@ -7,6 +7,7 @@ import type {
 } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
 import { tmdb } from "#/lib/tmdb";
+import { watchmode } from "#/lib/watchmode";
 import type { TMDBMovieList } from "../types";
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
@@ -52,6 +53,28 @@ export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: SearchMoviesParams) => data)
 	.handler(async ({ data }) => {
 		return tmdb.search.movies({ ...data });
+	});
+
+export const getStreamingSources = createServerFn({ method: "GET" })
+	.validator((data: { imdbId: string }) => data)
+	.handler(async ({ data }) => {
+		if (!process.env.WATCHMODE_API_KEY) {
+			throw new Error("Please provide WATCHMODE_API_KEY");
+		}
+
+		if (!data.imdbId) {
+			throw new Error("Please provide imdb id");
+		}
+
+		const { data: sources, error } = await watchmode.title.getSources(
+			data.imdbId,
+		);
+
+		if (error) {
+			throw new Error("Failed to fetch streaming sources");
+		}
+
+		return sources;
 	});
 
 export const getImdbRating = createServerFn({ method: "GET" })

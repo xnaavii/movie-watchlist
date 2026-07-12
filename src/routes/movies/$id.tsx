@@ -10,6 +10,7 @@ import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
+	watchmodeStreamingSourcesQueryOptions,
 } from "#/features/movies/queries";
 
 export const Route = createFileRoute("/movies/$id")({
@@ -59,6 +60,10 @@ function MovieDetailsPage() {
 		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
 		enabled: Boolean(movie.id),
 	});
+
+	const streamingSources = useQuery(
+		watchmodeStreamingSourcesQueryOptions(movie.imdb_id ?? ""),
+	);
 
 	const router = useRouter();
 
@@ -120,9 +125,7 @@ function MovieDetailsPage() {
 										{imdbRating?.imdbRating ?? "—"}
 									</span>
 								)}
-								<p className="text-lg text-muted-foreground">
-									{movie.overview}
-								</p>
+								<p className="text text-muted-foreground">{movie.overview}</p>
 							</div>
 							<Button className="w-fit">
 								<ListPlus />
@@ -132,6 +135,28 @@ function MovieDetailsPage() {
 					</div>
 				</div>
 			</div>
+			{streamingSources.data && streamingSources.data.length > 0 ? (
+				<div className="flex flex-col gap-6 p-6">
+					<p className="text-xl tracking-tight font-medium">Available on</p>
+					<div className="flex flex-wrap gap-3">
+						{Array.from(
+							new Map(
+								streamingSources.data.map((source) => [source.name, source]),
+							).values(),
+						).map((source) => (
+							<a
+								key={source.source_id}
+								href={source.web_url || ""}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center justify-center gap-2 size-25 rounded-full bg-muted text-sm hover:bg-muted/80 transition-colors"
+							>
+								<span className="text-center">{source.name}</span>
+							</a>
+						))}
+					</div>
+				</div>
+			) : null}
 			<TrailerSection movie={movie} />
 		</div>
 	);
