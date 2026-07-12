@@ -70,35 +70,36 @@ function MovieDetailsPage() {
 	const router = useRouter();
 
 	return (
-		<div className="flex flex-col gap-8">
-			<div className="relative w-full h-[80vh]">
-				<Button
-					className="absolute top-6 left-6 z-20"
-					variant="secondary"
-					onClick={() => router.history.back()}
-				>
-					<ChevronLeft />
-					Return
-				</Button>
+		<div className="relative flex flex-col gap-8">
+			<Button
+				className="absolute left-6 z-20 mt-16"
+				variant="secondary"
+				onClick={() => router.history.back()}
+			>
+				<ChevronLeft />
+				Return
+			</Button>
+			<div className="relative w-full">
+				<div className="relative w-full h-[30vh] md:h-[80vh]">
+					{/* Backdrop image and overlay */}
+					<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-10"></div>
+					<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-10"></div>
+					{movie.backdrop_path ? (
+						<img
+							src={movie.backdrop_path}
+							alt={`${movie.title} banner`}
+							className="absolute right-0 bottom-0 object-cover size-full object-top"
+						/>
+					) : (
+						<div className="absolute right-0 bottom-0 object-cover size-full bg-muted-foreground flex flex-col items-center justify-center">
+							<p className="text-3xl">No Backdrop Image</p>
+						</div>
+					)}
+				</div>
 
-				{/* Backdrop image and overlay */}
-				<div className="absolute inset-0 bg-linear-to-r from-background via-transparent via-100% to-transparent size-full z-10"></div>
-				<div className="absolute inset-0 bg-linear-to-t from-background via-background via-20% to-transparent size-full z-10"></div>
-				{movie.backdrop_path ? (
-					<img
-						src={movie.backdrop_path}
-						alt={`${movie.title} banner`}
-						className="absolute right-0 bottom-0 object-cover size-full object-top"
-					/>
-				) : (
-					<div className="absolute right-0 bottom-0 object-cover size-full bg-muted-foreground flex flex-col items-center justify-center">
-						<p className="text-3xl">No Backdrop Image</p>
-					</div>
-				)}
-
-				<div className="absolute bottom-0 p-6 z-10">
-					{/* Movie poster and details */}
-					<div className="grid grid-cols-[auto_1fr] gap-8">
+				{/* Poster + Details */}
+				<div className="relative z-10 -mt-16 px-6 md:mt-0 md:absolute md:inset-x-0 md:bottom-0 md:p-6">
+					<div className="flex flex-col items-center text-center gap-8 md:flex-row md:items-start md:text-left">
 						{movie.poster_path ? (
 							// Movie Poster
 							<Poster movie={movie} />
@@ -109,28 +110,30 @@ function MovieDetailsPage() {
 								</AspectRatio>
 							</div>
 						)}
-						<div className="flex flex-col gap-4">
-							<div className="flex flex-col gap-4 max-w-4xl">
+						<div className="flex flex-col gap-4 items-center text-center md:items-start md:text-left">
+							<div className="flex flex-col gap-4 max-w-4xl items-center text-center md:items-start md:text-left">
 								{/* Release year */}
-								<h1 className="font-semibold text-5xl min-w-0">
+								<h1 className="font-semibold text-4xl md:text-5xl min-w-0">
 									{movie.title}
 								</h1>
 								<p className="text-lg">
 									{new Date(movie.release_date).getFullYear()}
 								</p>
-								<div className="flex flex-col gap-2">
-									<div className="flex gap-2">
-										<p className="text-muted-foreground">Director: </p>
+								<div className="flex flex-col gap-3 items-center md:items-start">
+									<div className="flex flex-col gap-1 items-center md:flex-row md:gap-2 md:items-baseline">
+										<p className="text-muted-foreground">Director:</p>
 										<span>{director?.name}</span>
 									</div>
-									<div className="flex gap-2">
-										<p className="text-muted-foreground">Cast: </p>
-										{topCast.map((cast, i) => (
-											<span key={cast.id}>
-												{cast.name}
-												{topCast.length > i + 1 ? "," : null}
-											</span>
-										))}
+									<div className="flex flex-col gap-1 items-center md:flex-row md:gap-2 md:items-baseline">
+										<p className="text-muted-foreground">Cast:</p>
+										<div className="flex flex-wrap gap-x-1 justify-center md:justify-start">
+											{topCast.map((cast, i) => (
+												<span key={cast.id} className="whitespace-nowrap">
+													{cast.name}
+													{topCast.length > i + 1 ? "," : null}
+												</span>
+											))}
+										</div>
 									</div>
 								</div>
 								<Genres genres={movie.genres} />
@@ -154,8 +157,8 @@ function MovieDetailsPage() {
 					</div>
 				</div>
 			</div>
-			<StreamingSources tmdbId={movie.imdb_id ?? ""} />
 			<TrailerSection movie={movie} />
+			<StreamingSources tmdbId={movie.imdb_id ?? ""} />
 		</div>
 	);
 }

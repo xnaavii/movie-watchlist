@@ -17,7 +17,7 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 
 		return (
 			<div className="flex flex-col gap-6 p-6">
-				<div className="w-50 h-5 animate-pulse bg-muted rounded-4xl" />
+				<div className="max-w-50 w-full animate-pulse bg-muted rounded-4xl" />
 				<div className="flex flex-wrap gap-3">
 					{skeletonItems.map((item) => (
 						<div
@@ -38,7 +38,7 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 		return (
 			<div className="flex flex-col gap-6 p-6">
 				<p className="text-xl tracking-tight font-medium">Available on</p>
-				<div className="flex flex-wrap gap-3">
+				<div className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-3 items-start justify-items-center">
 					{Array.from(
 						new Map(data.map((source) => [source.name, source])).values(),
 					).map((source) => (
@@ -47,9 +47,9 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 							href={source.web_url || ""}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="flex items-center justify-center gap-2 size-25 rounded-full bg-muted text-sm hover:bg-muted/80 transition-colors"
+							className="flex items-center justify-center aspect-square w-full max-w-50 rounded-full bg-muted text-sm p-4 text-center hover:bg-muted/80 transition-colors"
 						>
-							<span className="text-center">{source.name}</span>
+							<span>{source.name}</span>
 						</a>
 					))}
 				</div>

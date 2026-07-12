@@ -7,7 +7,7 @@ type PosterProps = {
 
 export function Poster({ movie }: PosterProps) {
 	return (
-		<div className="relative w-xs rounded-4xl z-10">
+		<div className="relative w-full max-w-60 md:max-w-80 rounded-4xl z-10">
 			<AspectRatio ratio={2 / 3}>
 				<img
 					src={movie.poster_path}
