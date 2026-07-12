@@ -1,6 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, Dot, ListPlus } from "lucide-react";
+import { ChevronLeft, ListPlus } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
@@ -50,8 +50,14 @@ function MovieDetailsPage() {
 		movieQueries.details({ movie_id: Number(id) }),
 	);
 
-	const { data: imdbRating } = useSuspenseQuery({
+	const {
+		data: imdbRating,
+		isPending,
+		isError,
+		error,
+	} = useQuery({
 		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
+		enabled: Boolean(movie.id),
 	});
 
 	const router = useRouter();
@@ -105,9 +111,15 @@ function MovieDetailsPage() {
 								<p>{new Date(movie.release_date).getFullYear()}</p>
 								<Genres genres={movie.genres} />
 								{/* Imdb rating */}
-								<span className="text text-muted-foreground">
-									Imdb: {imdbRating?.imdbRating ?? "—"}
-								</span>
+								{isPending ? (
+									<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
+								) : isError ? (
+									<p>{error.message}</p>
+								) : (
+									<span className="text-sm text-muted-foreground">
+										{imdbRating?.imdbRating ?? "—"}
+									</span>
+								)}
 								<p className="text-lg text-muted-foreground">
 									{movie.overview}
 								</p>
