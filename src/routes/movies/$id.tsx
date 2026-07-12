@@ -4,6 +4,8 @@ import { ChevronLeft, Dot, ListPlus } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { Genres } from "#/features/movies/components/Genres";
+import { Poster } from "#/features/movies/components/Poster";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
@@ -48,14 +50,8 @@ function MovieDetailsPage() {
 		movieQueries.details({ movie_id: Number(id) }),
 	);
 
-	const {
-		data: imdbRating,
-		isPending,
-		isError,
-		error,
-	} = useQuery({
+	const { data: imdbRating } = useSuspenseQuery({
 		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
-		enabled: Boolean(movie.id),
 	});
 
 	const router = useRouter();
@@ -89,26 +85,10 @@ function MovieDetailsPage() {
 
 				<div className="absolute bottom-0 p-6 z-10">
 					{/* Movie poster and details */}
-					<div className="grid grid-cols-[auto_1fr] gap-6">
+					<div className="grid grid-cols-[auto_1fr] gap-8">
 						{movie.poster_path ? (
 							// Movie Poster
-							<div className="relative w-xs rounded-4xl z-10">
-								<AspectRatio ratio={2 / 3}>
-									<img
-										src={movie.poster_path}
-										alt={`${movie.title} poster blurred`}
-										aria-hidden="true"
-										className="absolute inset-0 size-full object-cover blur-3xl opacity-70"
-									/>
-									<div className="absolute inset-0 rounded-4xl overflow-hidden shadow-2xl">
-										<img
-											src={movie.poster_path}
-											alt={`${movie.title} poster`}
-											className="size-full object-cover"
-										/>
-									</div>
-								</AspectRatio>
-							</div>
+							<Poster movie={movie} />
 						) : (
 							<div className="w-2xs rounded-4xl overflow-hidden bg-muted">
 								<AspectRatio ratio={2 / 3}>
@@ -116,29 +96,22 @@ function MovieDetailsPage() {
 								</AspectRatio>
 							</div>
 						)}
-						<div className="flex flex-col gap-6 max-w-5xl">
-							<h1 className="font-semibold text-5xl min-w-0">{movie.title}</h1>
-							{/* Release year */}
-							<p>{new Date(movie.release_date).getFullYear()}</p>
-							{isPending ? (
-								<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-							) : isError ? (
-								<p>{error.message}</p>
-							) : (
-								<span className="text-sm text-muted-foreground">
-									{imdbRating?.imdbRating ?? "—"}
+						<div className="flex flex-col gap-4">
+							<div className="flex flex-col gap-2 max-w-4xl">
+								<h1 className="font-semibold text-5xl min-w-0">
+									{movie.title}
+								</h1>
+								{/* Release year */}
+								<p>{new Date(movie.release_date).getFullYear()}</p>
+								<Genres genres={movie.genres} />
+								{/* Imdb rating */}
+								<span className="text text-muted-foreground">
+									Imdb: {imdbRating?.imdbRating ?? "—"}
 								</span>
-							)}
-							{/* Genres */}
-							<div className="flex gap-2 items-center">
-								{movie.genres.map((genre, i) => (
-									<div className="flex gap-2 items-center" key={genre.id}>
-										<span>{genre.name}</span>
-										{movie.genres.length > i + 1 ? <Dot /> : null}
-									</div>
-								))}
+								<p className="text-lg text-muted-foreground">
+									{movie.overview}
+								</p>
 							</div>
-							<p className="text-lg text-muted-foreground">{movie.overview}</p>
 							<Button className="w-fit">
 								<ListPlus />
 								Add to watchlist
