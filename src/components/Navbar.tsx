@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { Compass, List, Search, User, VenetianMask } from "lucide-react";
+import { Compass, Search, User, VenetianMask } from "lucide-react";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 
