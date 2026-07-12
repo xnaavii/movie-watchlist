@@ -6,6 +6,7 @@ import type {
 	MovieVideosParams,
 	SearchMoviesParams,
 } from "@lorenzopant/tmdb";
+import { TMDBError } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
@@ -16,9 +17,16 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: MovieDetailsParams) => data)
 	.handler(async ({ data }) => {
-		const movie: MovieDetails = await tmdb.movies.details({ ...data });
-
-		return movie;
+		try {
+			const movie: MovieDetails = await tmdb.movies.details({ ...data });
+			return movie;
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get the movie details",
+			);
+		}
 	});
 
 export const getMovieList = createServerFn({ method: "GET" })

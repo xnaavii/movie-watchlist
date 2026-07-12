@@ -14,7 +14,6 @@ import {
 } from "#/features/movies/queries";
 
 export const Route = createFileRoute("/movies/$id")({
-	component: MovieDetailsPage,
 	loader: ({ params, context }) =>
 		context.queryClient.ensureQueryData(
 			movieQueries.details({ movie_id: Number(params.id) }),
@@ -43,6 +42,7 @@ export const Route = createFileRoute("/movies/$id")({
 			],
 		};
 	},
+	component: MovieDetailsPage,
 });
 
 function MovieDetailsPage() {
