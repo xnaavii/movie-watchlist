@@ -66,19 +66,43 @@ export const getMovieList = createServerFn({ method: "GET" })
 export const getMovieCredits = createServerFn({ method: "GET" })
 	.validator((data: MovieCreditsParams) => data)
 	.handler(async ({ data }) => {
-		return tmdb.movies.credits({ ...data });
+		try {
+			return await tmdb.movies.credits({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get the movie credits",
+			);
+		}
 	});
 
 export const getMovieVideos = createServerFn({ method: "GET" })
 	.validator((data: MovieVideosParams) => data)
 	.handler(async ({ data }) => {
-		return tmdb.movies.videos({ ...data });
+		try {
+			return await tmdb.movies.videos({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get the movie videos",
+			);
+		}
 	});
 
 export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: SearchMoviesParams) => data)
 	.handler(async ({ data }) => {
-		return tmdb.search.movies({ ...data });
+		try {
+			return await tmdb.search.movies({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get search results",
+			);
+		}
 	});
 
 export const getStreamingSources = createServerFn({ method: "GET" })
