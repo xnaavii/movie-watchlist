@@ -51,7 +51,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<ThemeProvider defaultTheme="system" storageKey="theme">
 					<div className="grid grid-cols-[auto_1fr] h-dvh overflow-hidden">
 						<Sidebar />
-						<main className="overflow-y-auto min-h-0">{children}</main>
+						<main className="overflow-y-auto min-h-0" id="main-scrollable-area">
+							{children}
+						</main>
 					</div>
 					<Toaster />
 					<TanStackDevtools
