@@ -6,11 +6,11 @@ type StreamingSourcesProps = {
 };
 
 export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
-	const { data, isPending, isError, error } = useQuery(
+	const { data, isLoading, isError, error } = useQuery(
 		watchmodeStreamingSourcesQueryOptions(tmdbId),
 	);
 
-	if (isPending) {
+	if (isLoading) {
 		const skeletonItems = Array.from({ length: 4 }, (_, i) => ({
 			id: i,
 		}));
@@ -34,13 +34,15 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 		return <p>{error.message}</p>;
 	}
 
-	if (data.length > 0) {
+	const streamingSources = data || [];
+
+	if (streamingSources.length > 0) {
 		return (
 			<div className="flex flex-col gap-6 p-6">
 				<p className="text-xl tracking-tight font-medium">Available on</p>
 				<div className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-3 items-start justify-items-center">
 					{Array.from(
-						new Map(data.map((source) => [source.name, source])).values(),
+						new Map(streamingSources.map((source) => [source.name, source])).values(),
 					).map((source) => (
 						<a
 							key={source.source_id}
