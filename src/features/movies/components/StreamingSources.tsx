@@ -42,7 +42,9 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 				<p className="text-xl tracking-tight font-medium">Available on</p>
 				<div className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-3 items-start justify-items-center">
 					{Array.from(
-						new Map(streamingSources.map((source) => [source.name, source])).values(),
+						new Map(
+							streamingSources.map((source) => [source.name, source]),
+						).values(),
 					).map((source) => (
 						<a
 							key={source.source_id}

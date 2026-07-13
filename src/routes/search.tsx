@@ -35,16 +35,15 @@ function SearchPage() {
 		return () => clearTimeout(timerId);
 	}, [draft, navigate]);
 
-	const {
-		data: movies,
-		isPending,
-		isError,
-		error,
-	} = useQuery(movieQueries.search({ query: q }));
+	const { data, isLoading, isError, error } = useQuery(
+		movieQueries.search({ query: q }),
+	);
 
 	if (isError) {
 		return <p>There was an error: {error.message}</p>;
 	}
+
+	const movies = data?.results || [];
 
 	return (
 		<div className="flex flex-col gap-6 p-2 md:p-6 mt-16 md:mt-0">
@@ -53,13 +52,13 @@ function SearchPage() {
 				<p className="text-muted-foreground">
 					Start typing to search for movies.
 				</p>
-			) : isPending ? (
+			) : isLoading ? (
 				<p className="text-muted-foreground">Searching...</p>
-			) : movies.results.length === 0 ? (
+			) : movies.length === 0 ? (
 				<p className="text-muted-foreground">No results for &quot;{q}&quot;</p>
 			) : (
 				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
-					{movies.results.map((movie) => (
+					{movies.map((movie) => (
 						<MovieCard key={movie.id} movie={movie} />
 					))}
 				</div>
