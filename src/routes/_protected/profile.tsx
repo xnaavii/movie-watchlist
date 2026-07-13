@@ -11,10 +11,10 @@ export const Route = createFileRoute("/_protected/profile")({
 
 		return { user: session.user };
 	},
-	component: RouteComponent,
+	component: ProfilePage,
 });
 
-function RouteComponent() {
+function ProfilePage() {
 	const { user } = Route.useRouteContext();
 
 	return <div>Logged in as, {user.name}!</div>;
