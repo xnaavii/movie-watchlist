@@ -14,7 +14,7 @@ function ExplorePage() {
 	const { data } = useSuspenseQuery(movieQueries.list("now_playing"));
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-6">
 			<FeaturedMovies movies={data.results} />
 			<div className="flex flex-col gap-20 p-2 md:p-6">
 				<MoviesSection title="Popular" list="popular" />

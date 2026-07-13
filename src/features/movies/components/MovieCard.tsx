@@ -1,7 +1,12 @@
 import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
-import { Card, CardHeader, CardTitle } from "#/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "#/components/ui/card";
 import { cn } from "#/lib/utils";
 
 type MovieCardProps = {
@@ -11,7 +16,7 @@ type MovieCardProps = {
 
 export function MovieCard({ movie, className }: MovieCardProps) {
 	return (
-		<Card className={cn("relative mx-auto w-full max-w-sm pt-0", className)}>
+		<Card className={cn("mx-auto w-full max-w-sm pt-0", className)}>
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
@@ -32,9 +37,11 @@ export function MovieCard({ movie, className }: MovieCardProps) {
 					)}
 				</Link>
 			</AspectRatio>
-
 			<CardHeader>
 				<CardTitle className="line-clamp-1">{movie.title}</CardTitle>
+				<CardDescription>
+					{new Date(movie.release_date).getFullYear() || "N/A"}
+				</CardDescription>
 			</CardHeader>
 		</Card>
 	);

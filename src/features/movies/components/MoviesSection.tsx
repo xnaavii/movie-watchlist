@@ -24,14 +24,16 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 	if (movies.length === 0) return null;
 
 	return (
-		<div className="relative flex flex-col gap-4">
-			<h2 className="text-2xl tracking-tight font-medium">{title}</h2>
-			<div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
+		<div className="relative flex flex-col gap-6">
+			<h2 className="text-2xl md:text-3xl tracking-tighter font-medium">
+				{title}
+			</h2>
+			<div className="flex gap-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory">
 				{movies.map((movie) => (
 					<MovieCard
 						key={movie.id}
 						movie={movie}
-						className="w-2xs shrink-0 snap-start"
+						className="shrink-0 snap-start max-w-3xs md:max-w-2xs"
 					/>
 				))}
 			</div>
