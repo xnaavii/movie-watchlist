@@ -28,12 +28,12 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 	const movie = movies[currentIndex];
 
 	return (
-		<div className="relative bg-muted min-h-150 h-[60vh] overflow-hidden">
+		<div className="relative bg-muted h-[60vh] overflow-hidden">
 			{movie.backdrop_path ? (
 				<img
 					src={movie.backdrop_path}
 					alt={movie.title}
-					className="size-full object-cover"
+					className="size-full object-cover object-top"
 				/>
 			) : (
 				<p>No Image</p>
@@ -41,10 +41,10 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 			<div className="absolute inset-0 bg-linear-to-t from-black to-transparent z-1" />
 			<div className="absolute inset-0 p-2 md:p-6 flex flex-col gap-6 max-w-5xl justify-end z-9">
 				<div className="flex flex-col gap-2">
-					<h1 className="text-3xl md:text-5xl font-semibold min-w-0">
+					<h1 className="font-semibold text-4xl md:text-5xl min-w-0">
 						{movie.title}
 					</h1>
-					<p className="text-muted-foreground md:text-lg">{movie.overview}</p>
+					<p className="text text-muted-foreground">{movie.overview}</p>
 				</div>
 				<div className="flex gap-2">
 					<Button size="lg">
