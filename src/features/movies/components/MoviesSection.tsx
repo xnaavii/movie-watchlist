@@ -17,7 +17,7 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 	}
 
 	if (error)
-		return <div className="p-4 text-red-500">Error loading {title}</div>;
+		return <div className="p-2 md:p-6 text-red-500">Error loading {title}</div>;
 
 	const movies = data.results || [];
 
