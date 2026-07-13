@@ -12,12 +12,12 @@ type TrailerSectionProps = {
 export function TrailerSection({ movie }: TrailerSectionProps) {
 	const {
 		data: videos,
-		isPending,
+		isLoading,
 		isError,
 		error,
 	} = useQuery(movieQueries.videos({ movie_id: movie.id }));
 
-	if (isPending) {
+	if (isLoading) {
 		return <TrailerSectionSkeleton />;
 	}
 
