@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "watchlist_user_movie_unique" ON "watchlist" USING btree ("user_id","movie_id");--> statement-breakpoint
+CREATE INDEX "watchlist_user_id_idx" ON "watchlist" USING btree ("user_id");

@@ -1,6 +1,7 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, ListPlus } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ChevronLeft } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
@@ -12,6 +13,7 @@ import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
+import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 
 export const Route = createFileRoute("/movies/$id")({
 	loader: ({ params, context }) =>
@@ -149,10 +151,7 @@ function MovieDetailsPage() {
 									IMDB: {imdbRating?.imdbRating ?? "—"}
 								</p>
 							)}
-							<Button className="w-fit">
-								<ListPlus />
-								Add to watchlist
-							</Button>
+							<AddToWatchlistButton movie={movie} />
 						</div>
 					</div>
 				</div>

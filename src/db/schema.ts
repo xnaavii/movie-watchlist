@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
 	boolean,
 	index,
+	integer,
 	pgEnum,
 	pgTable,
 	text,
@@ -84,7 +85,7 @@ export const verification = pgTable(
 
 export const movie = pgTable("movie", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	tmdbId: text("tmdb_id").notNull().unique(),
+	tmdbId: integer("tmdb_id").notNull().unique(),
 	title: text("title").notNull(),
 	releaseDate: text("release_date"),
 	posterPath: text("poster_path"),
@@ -114,13 +115,8 @@ export const watchlist = pgTable(
 			.notNull(),
 	},
 	(table) => [
-		{
-			userMovieUnique: uniqueIndex("watchlist_user_movie_unique").on(
-				table.userId,
-				table.movieId,
-			),
-			userIdIdx: index("watchlist_user_id_idx").on(table.userId),
-		},
+		uniqueIndex("watchlist_user_movie_unique").on(table.userId, table.movieId),
+		index("watchlist_user_id_idx").on(table.userId),
 	],
 );
 

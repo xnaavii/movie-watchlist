@@ -35,6 +35,9 @@ function ProfilePage() {
 					<LogOut />
 				</Button>
 			</div>
+			<div>
+				<h1>Your watchlist</h1>
+			</div>
 		</div>
 	);
 }
