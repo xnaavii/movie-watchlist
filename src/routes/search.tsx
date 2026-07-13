@@ -47,9 +47,8 @@ function SearchPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6 p-6">
+		<div className="flex flex-col gap-4 p-4 md:p-6 mt-10 md:mt-0">
 			<SearchBar value={draft} onChange={setDraft} />
-
 			{!q ? (
 				<p className="text-muted-foreground">
 					Start typing to search for movies.
@@ -59,7 +58,7 @@ function SearchPage() {
 			) : movies.results.length === 0 ? (
 				<p className="text-muted-foreground">No results for &quot;{q}&quot;</p>
 			) : (
-				<div className="grid grid-cols-6 gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
 					{movies.results.map((movie) => (
 						<MovieCard key={movie.id} movie={movie} />
 					))}
