@@ -1,6 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { Compass, Search, User, VenetianMask } from "lucide-react";
-import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 
 export function Navbar() {
@@ -63,7 +62,6 @@ export function Navbar() {
 					</li>
 				</ul>
 			</nav>
-			<ModeToggle />
 		</header>
 	);
 }
