@@ -151,7 +151,7 @@ function MovieDetailsPage() {
 									IMDB: {imdbRating?.imdbRating ?? "—"}
 								</p>
 							)}
-							<AddToWatchlistButton movie={movie} />
+							<AddToWatchlistButton movieId={movie.id} />
 						</div>
 					</div>
 				</div>

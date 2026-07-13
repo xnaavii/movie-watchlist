@@ -1,8 +1,8 @@
 import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
-import { ListPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
+import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 
 const TIMER_INTERVAL = 5000;
 
@@ -47,12 +47,9 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 					<p className="text text-muted-foreground">{movie.overview}</p>
 				</div>
 				<div className="flex gap-2">
-					<Button size="lg">
-						<ListPlus />
-						Add to watchlist
-					</Button>
+					<AddToWatchlistButton movieId={movie.id} />
 
-					<Button variant="secondary" asChild size="lg">
+					<Button variant="secondary" asChild>
 						<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
 							Details
 						</Link>
