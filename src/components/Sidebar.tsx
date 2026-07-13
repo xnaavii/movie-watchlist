@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { Compass, List, Search, VenetianMask } from "lucide-react";
+import { Compass, List, Search, User, VenetianMask } from "lucide-react";
 import { UserMenu } from "#/features/auth/components/UserMenu";
 import { cn } from "#/lib/utils";
 import { ModeToggle } from "./ModeToggle";
@@ -49,6 +49,18 @@ export function Sidebar({ className }: SidebarProps) {
 					>
 						<Link to="/watchlist">
 							<List />
+						</Link>
+					</Button>
+					<Button
+						size="icon-lg"
+						asChild
+						variant={matchRoute({ to: "/profile" }) ? "default" : "secondary"}
+					>
+						<Link
+							to="/profile"
+							activeProps={{ className: "text-sidebar-primary" }}
+						>
+							<User />
 						</Link>
 					</Button>
 				</ul>
