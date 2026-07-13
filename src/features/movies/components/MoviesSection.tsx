@@ -10,16 +10,16 @@ type MoviesSectionProps = {
 };
 
 export function MoviesSection({ title, list }: MoviesSectionProps) {
-	const { isPending, error, data } = useQuery(movieQueries.list(list));
+	const { isLoading, error, data } = useQuery(movieQueries.list(list));
 
-	if (isPending) {
+	if (isLoading) {
 		return <MoviesSectionSkeleton />;
 	}
 
 	if (error)
 		return <div className="p-2 md:p-6 text-red-500">Error loading {title}</div>;
 
-	const movies = data.results || [];
+	const movies = data?.results || [];
 
 	if (movies.length === 0) return null;
 
