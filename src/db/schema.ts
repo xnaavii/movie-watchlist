@@ -1,5 +1,14 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	index,
+	pgEnum,
+	pgTable,
+	text,
+	timestamp,
+	uniqueIndex,
+	uuid,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -73,9 +82,52 @@ export const verification = pgTable(
 	(table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+export const movie = pgTable("movie", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	tmdbId: text("tmdb_id").notNull().unique(),
+	title: text("title").notNull(),
+	releaseDate: text("release_date"),
+	posterPath: text("poster_path"),
+	addedAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const watchlistStatusEnum = pgEnum("status", [
+	"want_to_watch",
+	"watched",
+]);
+
+export const watchlist = pgTable(
+	"watchlist",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		movieId: uuid("movie_id")
+			.notNull()
+			.references(() => movie.id, { onDelete: "cascade" }),
+		status: watchlistStatusEnum().notNull().default("want_to_watch"),
+		addedAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.notNull(),
+	},
+	(table) => [
+		{
+			userMovieUnique: uniqueIndex("watchlist_user_movie_unique").on(
+				table.userId,
+				table.movieId,
+			),
+			userIdIdx: index("watchlist_user_id_idx").on(table.userId),
+		},
+	],
+);
+
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
 	accounts: many(account),
+	watchlistEntries: many(watchlist),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -88,6 +140,21 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, {
 		fields: [account.userId],
+		references: [user.id],
+	}),
+}));
+
+export const movieRelations = relations(movie, ({ many }) => ({
+	watchlistEntries: many(watchlist),
+}));
+
+export const watchlistRelations = relations(watchlist, ({ one }) => ({
+	movie: one(movie, {
+		fields: [watchlist.movieId],
+		references: [movie.id],
+	}),
+	user: one(user, {
+		fields: [watchlist.userId],
 		references: [user.id],
 	}),
 }));
