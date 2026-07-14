@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { Link, useRouter } from "@tanstack/react-router";
+import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -26,8 +26,12 @@ const formSchema = z.object({
 	password: z.string().min(1, "Password is required"),
 });
 
+const routeApi = getRouteApi("/login");
+
 export function LoginForm() {
 	const router = useRouter();
+	const { redirect } = routeApi.useSearch();
+
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -45,7 +49,7 @@ export function LoginForm() {
 			if (error) {
 				toast.error(`Message: ${error.message}, Status: ${error.status}`);
 			} else {
-				router.history.push("/");
+				router.history.push(redirect ?? "/");
 				toast.success(`Logged in as ${data.user.email}`);
 			}
 		},
@@ -137,7 +141,10 @@ export function LoginForm() {
 					</Field>
 					<Field>
 						<FieldDescription className="text-center">
-							Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+							Don&apos;t have an account?{" "}
+							<Link to="/signup" search={{ redirect }}>
+								Sign up
+							</Link>
 						</FieldDescription>
 					</Field>
 				</FieldGroup>

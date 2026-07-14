@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { ensureSession } from "#/lib/auth.functions";
+import { ensureSession, getSession } from "#/lib/auth.functions";
 import {
 	deleteFromWatchlist,
 	findMovieByTmdbId,
@@ -50,6 +50,9 @@ export const removeFromWatchlist = createServerFn({ method: "POST" })
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
 	.validator((data: { tmdbId: number }) => data)
 	.handler(async ({ data }) => {
-		const session = await ensureSession();
-		return getWatchlistStatus(session.user.id, data.tmdbId);
+		const session = await getSession();
+
+		if (!session) return false;
+
+		return await getWatchlistStatus(session.user.id, data.tmdbId);
 	});

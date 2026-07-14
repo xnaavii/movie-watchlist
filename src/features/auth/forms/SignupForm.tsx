@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { Link } from "@tanstack/react-router";
+import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -40,7 +40,12 @@ const formSchema = z
 		path: ["confirmPassword"],
 	});
 
+const routeApi = getRouteApi("/signup");
+
 export function SignupForm() {
+	const router = useRouter();
+	const { redirect } = routeApi.useSearch();
+
 	const form = useForm({
 		defaultValues: {
 			name: "",
@@ -61,6 +66,7 @@ export function SignupForm() {
 			if (error) {
 				toast.error(`${error.message}, ${error.status}`);
 			} else {
+				router.history.push(redirect ?? "/");
 				toast.success("Account created!");
 			}
 		},
@@ -208,7 +214,10 @@ export function SignupForm() {
 					</Field>
 					<Field>
 						<FieldDescription className="text-center">
-							Already have an account? <Link to="/login">Log in</Link>
+							Already have an account?{" "}
+							<Link to="/login" search={{ redirect }}>
+								Log in
+							</Link>
 						</FieldDescription>
 					</Field>
 				</FieldGroup>

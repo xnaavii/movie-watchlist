@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { authClient } from "#/lib/auth-client";
 import { watchlistQueries } from "../queries";
 import {
 	addToWatchlist,
@@ -15,6 +17,8 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 	const addToWatchlistFn = useServerFn(addToWatchlist);
 	const removeFromWatchlistFn = useServerFn(removeFromWatchlist);
 	const queryClient = useQueryClient();
+	const { data: session } = authClient.useSession();
+	const navigate = useNavigate();
 
 	const { data: isInWatchlist } = useQuery({
 		...watchlistQueries.status(tmdbId),
@@ -22,6 +26,14 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 	});
 
 	async function toggleWatchlist(tmdbId: number) {
+		if (!session) {
+			navigate({
+				to: "/login",
+				search: { redirect: window.location.pathname },
+			});
+			return;
+		}
+
 		try {
 			if (isInWatchlist) {
 				await removeFromWatchlistFn({ data: { tmdbId } });
