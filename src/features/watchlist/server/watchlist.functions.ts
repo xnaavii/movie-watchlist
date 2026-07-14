@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { ensureSession } from "#/lib/auth.functions";
 import {
+	findOrCreateMovie,
 	getWatchlistStatus,
 	insertIntoWatchlist,
 	type NewMovieInsert,
@@ -9,21 +10,33 @@ import {
 
 export const addToWatchlist = createServerFn({ method: "POST" })
 	.validator(
-		(data: { status?: WatchlistStatusInsert; newMovie: NewMovieInsert }) =>
-			data,
+		(data: { status?: WatchlistStatusInsert; movie: NewMovieInsert }) => data,
 	)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
-		return await insertIntoWatchlist(
+
+		const movieRow = await findOrCreateMovie(data.movie);
+
+		if (!movieRow) {
+			throw new Error("Failed to find or create movie");
+		}
+
+		const [newRow] = await insertIntoWatchlist(
 			session.user.id,
 			data.status,
-			data.newMovie,
+			movieRow.id,
 		);
+
+		if (!newRow) {
+			throw new Error("Movie already in watchlist");
+		}
+
+		return newRow;
 	});
 
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
 	.validator((data: { tmdbId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
-		return await getWatchlistStatus(session.user.id, data.tmdbId);
+		return getWatchlistStatus(session.user.id, data.tmdbId);
 	});

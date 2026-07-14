@@ -27,7 +27,7 @@ export function AddToWatchlistButton({ movieId }: AddToWatchlistButtonProps) {
 		try {
 			const result = await addToWatchlistFn({
 				data: {
-					newMovie: {
+					movie: {
 						tmdbId: movie.id,
 						title: movie.title,
 						releaseDate: movie.release_date,

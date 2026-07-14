@@ -8,30 +8,15 @@ export type NewMovieInsert = typeof movie.$inferInsert;
 export async function insertIntoWatchlist(
 	userId: string,
 	status: WatchlistStatusInsert,
-	newMovie: NewMovieInsert,
+	movieId: string,
 ) {
-	const movieRow = await findOrCreateMovie(newMovie);
-
-	if (!movieRow) {
-		throw new Error("Failed to find or create movie");
-	}
-
-	const [newRow] = await db
+	return await db
 		.insert(watchlist)
-		.values({ userId, movieId: movieRow.id, status })
+		.values({ userId, movieId, status })
 		.onConflictDoNothing()
 		.returning();
-
-	if (!newRow) {
-		console.error("Movie already in watchlist", {
-			userId,
-			movieId: movieRow.id,
-		});
-		return null;
-	}
-
-	return newRow;
 }
+
 export async function findOrCreateMovie(newMovie: NewMovieInsert) {
 	const [existingMovie] = await db
 		.select()
