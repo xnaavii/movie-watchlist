@@ -1,4 +1,3 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import {
@@ -7,10 +6,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
+import type { NewMovieInsert } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 
 type MovieCardProps = {
-	movie: MovieResultItem;
+	movie: NewMovieInsert;
 	className?: string;
 };
 
@@ -20,12 +20,12 @@ export function MovieCard({ movie, className }: MovieCardProps) {
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
-					params={{ id: `${movie.id}` }}
+					params={{ id: `${movie.tmdbId}` }}
 					className="block size-full"
 				>
-					{movie.poster_path ? (
+					{movie.posterPath ? (
 						<img
-							src={movie.poster_path}
+							src={movie.posterPath}
 							alt={movie.title}
 							className="size-full object-cover"
 							loading="lazy"
@@ -40,7 +40,9 @@ export function MovieCard({ movie, className }: MovieCardProps) {
 			<CardHeader>
 				<CardTitle className="line-clamp-1">{movie.title}</CardTitle>
 				<CardDescription>
-					{new Date(movie.release_date).getFullYear() || "N/A"}
+					{movie.releaseDate
+						? new Date(movie.releaseDate).getFullYear()
+						: "N/A"}
 				</CardDescription>
 			</CardHeader>
 		</Card>

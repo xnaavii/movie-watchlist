@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "#/db";
-import { movie, watchlist } from "#/db/schema";
+import { movie, user, watchlist } from "#/db/schema";
 import { getMovieDetails } from "#/features/movies/server/movies.functions";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
@@ -85,4 +85,13 @@ export async function getWatchlistStatus(userId: string, tmdbId: number) {
 		.where(and(eq(watchlist.userId, userId), eq(movie.tmdbId, tmdbId)));
 
 	return Boolean(existing);
+}
+
+export async function selectUserWatchlist(userId: string) {
+	return await db
+		.select()
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.where(eq(watchlist.userId, userId))
+		.orderBy(desc(watchlist.addedAt));
 }

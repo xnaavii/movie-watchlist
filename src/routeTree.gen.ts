@@ -16,6 +16,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MoviesIdRouteImport } from './routes/movies/$id'
+import { Route as ProtectedWatchlistRouteImport } from './routes/_protected/watchlist'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -53,6 +54,11 @@ const MoviesIdRoute = MoviesIdRouteImport.update({
   path: '/movies/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedWatchlistRoute = ProtectedWatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/profile': typeof ProtectedProfileRoute
+  '/watchlist': typeof ProtectedWatchlistRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/profile': typeof ProtectedProfileRoute
+  '/watchlist': typeof ProtectedWatchlistRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/_protected/profile': typeof ProtectedProfileRoute
+  '/_protected/watchlist': typeof ProtectedWatchlistRoute
   '/movies/$id': typeof MoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/signup'
     | '/profile'
+    | '/watchlist'
     | '/movies/$id'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/signup'
     | '/profile'
+    | '/watchlist'
     | '/movies/$id'
     | '/api/auth/$'
   id:
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/signup'
     | '/_protected/profile'
+    | '/_protected/watchlist'
     | '/movies/$id'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -192,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoviesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/watchlist': {
+      id: '/_protected/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof ProtectedWatchlistRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/profile': {
       id: '/_protected/profile'
       path: '/profile'
@@ -211,10 +230,12 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedRouteChildren {
   ProtectedProfileRoute: typeof ProtectedProfileRoute
+  ProtectedWatchlistRoute: typeof ProtectedWatchlistRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedProfileRoute: ProtectedProfileRoute,
+  ProtectedWatchlistRoute: ProtectedWatchlistRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(

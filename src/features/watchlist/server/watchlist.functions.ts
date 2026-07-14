@@ -6,6 +6,7 @@ import {
 	findOrCreateMovie,
 	getWatchlistStatus,
 	insertIntoWatchlist,
+	selectUserWatchlist,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
@@ -56,3 +57,12 @@ export const getWatchlistStatusFn = createServerFn({ method: "GET" })
 
 		return await getWatchlistStatus(session.user.id, data.tmdbId);
 	});
+
+export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
+	async () => {
+		const session = await getSession();
+		if (!session) return [];
+
+		return await selectUserWatchlist(session.user.id);
+	},
+);

@@ -1,19 +1,9 @@
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { getSession } from "#/lib/auth.functions";
 import { authClient } from "#/lib/auth-client";
 
 export const Route = createFileRoute("/_protected/profile")({
-	beforeLoad: async () => {
-		const session = await getSession();
-
-		if (!session) {
-			throw redirect({ to: "/login" });
-		}
-
-		return { user: session.user };
-	},
 	component: ProfilePage,
 });
 
@@ -34,9 +24,6 @@ function ProfilePage() {
 					Log out
 					<LogOut />
 				</Button>
-			</div>
-			<div>
-				<h1>Your watchlist</h1>
 			</div>
 		</div>
 	);
