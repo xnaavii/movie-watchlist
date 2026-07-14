@@ -11,7 +11,10 @@ export function WatchlistToggleButton({
 	onToggle,
 }: WatchlistToggleButtonProps) {
 	return (
-		<Button onClick={onToggle}>
+		<Button
+			onClick={onToggle}
+			variant={isInWatchlist ? "outline" : "default"}
+		>
 			{isInWatchlist ? <ListCheck /> : <ListPlus />}
 			{isInWatchlist ? "In watchlist" : "Add to watchlist"}
 		</Button>
