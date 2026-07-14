@@ -1,6 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "#/db";
-import { movie, user, watchlist } from "#/db/schema";
+import { movie, watchlist } from "#/db/schema";
 import { getMovieDetails } from "#/features/movies/server/movies.functions";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
