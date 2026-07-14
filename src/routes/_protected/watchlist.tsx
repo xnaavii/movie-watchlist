@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { getUserWatchlist } from "#/features/watchlist/server/watchlist.functions";
 
