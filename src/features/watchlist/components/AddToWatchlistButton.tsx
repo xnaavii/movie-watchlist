@@ -41,8 +41,12 @@ export function AddToWatchlistButton({ movieId }: AddToWatchlistButtonProps) {
 			queryClient.invalidateQueries({
 				queryKey: ["watchlist", "status", movie.id],
 			});
-		} catch {
-			toast.error("Something went wrong. Please try again.");
+		} catch (error) {
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Something went wrong. Please try again.",
+			);
 		}
 	}
 

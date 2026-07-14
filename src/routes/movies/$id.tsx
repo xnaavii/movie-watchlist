@@ -1,6 +1,5 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ChevronLeft } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Button } from "#/components/ui/button";
@@ -14,17 +13,23 @@ import {
 	movieQueries,
 } from "#/features/movies/queries";
 import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
+import { watchlistQueries } from "#/features/watchlist/queries";
 
 export const Route = createFileRoute("/movies/$id")({
-	loader: ({ params, context }) =>
-		context.queryClient.ensureQueryData(
-			movieQueries.details({ movie_id: Number(params.id) }),
-		),
+	loader: async ({ params, context }) =>
+		await Promise.all([
+			context.queryClient.ensureQueryData(
+				movieQueries.details({ movie_id: Number(params.id) }),
+			),
+			context.queryClient.ensureQueryData(
+				watchlistQueries.status(Number(params.id)),
+			),
+		]),
 	head: ({ loaderData, params }) => {
 		if (!loaderData) {
 			return { meta: [{ title: "Movie not found" }] };
 		}
-		const movie = loaderData;
+		const movie = loaderData[0];
 		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
 		const imageUrl = movie.backdrop_path || undefined;
 		return {
