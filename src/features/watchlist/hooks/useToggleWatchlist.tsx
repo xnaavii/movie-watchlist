@@ -1,16 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ListCheck, ListPlus } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "#/components/ui/button";
 import { watchlistQueries } from "../queries";
 import { addToWatchlist } from "../server/watchlist.functions";
 
-type AddToWatchlistButtonProps = {
+interface UseToggleWatchlistProps {
 	tmdbId: number;
-};
+}
 
-export function AddToWatchlistButton({ tmdbId }: AddToWatchlistButtonProps) {
+export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 	const addToWatchlistFn = useServerFn(addToWatchlist);
 	const queryClient = useQueryClient();
 
@@ -19,7 +17,7 @@ export function AddToWatchlistButton({ tmdbId }: AddToWatchlistButtonProps) {
 		enabled: Boolean(tmdbId),
 	});
 
-	async function handleAddToWatchlist(tmdbId: number) {
+	async function watchlistToggle(tmdbId: number) {
 		try {
 			const result = await addToWatchlistFn({
 				data: {
@@ -41,14 +39,5 @@ export function AddToWatchlistButton({ tmdbId }: AddToWatchlistButtonProps) {
 		}
 	}
 
-	return (
-		<Button
-			className="w-fit"
-			disabled={isInWatchlist}
-			onClick={() => tmdbId && handleAddToWatchlist(tmdbId)}
-		>
-			{isInWatchlist ? <ListCheck /> : <ListPlus />}
-			{isInWatchlist ? "In watchlist" : "Add to watchlist"}
-		</Button>
-	);
+	return { isInWatchlist, watchlistToggle };
 }

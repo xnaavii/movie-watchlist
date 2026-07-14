@@ -12,7 +12,8 @@ import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
-import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
+import { WatchlistToggleButton } from "#/features/watchlist/components/WatchlistToggleButton";
+import { useToggleWatchlist } from "#/features/watchlist/hooks/useToggleWatchlist";
 import { watchlistQueries } from "#/features/watchlist/queries";
 
 export const Route = createFileRoute("/movies/$id")({
@@ -54,10 +55,11 @@ export const Route = createFileRoute("/movies/$id")({
 
 function MovieDetailsPage() {
 	const { id } = Route.useParams();
+
+	// Movie details
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: Number(id) }),
 	);
-
 	const {
 		data: imdbRating,
 		isPending,
@@ -67,12 +69,16 @@ function MovieDetailsPage() {
 		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
 		enabled: Boolean(movie.id),
 	});
-
 	const credits = useSuspenseQuery(
 		movieQueries.credits({ movie_id: movie.id }),
 	);
 	const director = credits.data.crew.find((m) => m.job === "Director");
 	const topCast = credits.data.cast.slice(0, 5);
+
+	// Watchlist
+	const { isInWatchlist, watchlistToggle } = useToggleWatchlist({
+		tmdbId: movie.id,
+	});
 
 	const router = useRouter();
 
@@ -156,7 +162,10 @@ function MovieDetailsPage() {
 									IMDB: {imdbRating?.imdbRating ?? "—"}
 								</p>
 							)}
-							<AddToWatchlistButton tmdbId={movie.id} />
+							<WatchlistToggleButton
+								isInWatchlist={isInWatchlist}
+								onToggle={() => watchlistToggle(movie.id)}
+							/>
 						</div>
 					</div>
 				</div>

@@ -2,12 +2,16 @@ import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
+import { WatchlistToggleButton } from "#/features/watchlist/components/WatchlistToggleButton";
+import { useToggleWatchlist } from "#/features/watchlist/hooks/useToggleWatchlist";
 
 const TIMER_INTERVAL = 5000;
 
 export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const { isInWatchlist, watchlistToggle } = useToggleWatchlist({
+		tmdbId: movies[currentIndex].id,
+	});
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {
@@ -47,7 +51,10 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 					<p className="text text-muted-foreground">{movie.overview}</p>
 				</div>
 				<div className="flex gap-2">
-					<AddToWatchlistButton tmdbId={movie.id} />
+					<WatchlistToggleButton
+						isInWatchlist={isInWatchlist}
+						onToggle={() => watchlistToggle(movie.id)}
+					/>
 
 					<Button variant="secondary" asChild>
 						<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
