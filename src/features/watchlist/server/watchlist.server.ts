@@ -22,6 +22,21 @@ export async function insertIntoWatchlist({
 		.returning();
 }
 
+export async function deleteFromWatchlist({
+	userId,
+	movieId,
+}: {
+	userId: string;
+	movieId: string;
+}) {
+	const [deleted] = await db
+		.delete(watchlist)
+		.where(and(eq(watchlist.userId, userId), eq(watchlist.movieId, movieId)))
+		.returning();
+
+	return deleted ?? null;
+}
+
 export async function findOrCreateMovie(tmdbId: number) {
 	const [existingMovie] = await db
 		.select()
@@ -51,6 +66,15 @@ export async function findOrCreateMovie(tmdbId: number) {
 		.returning();
 
 	return insertedMovie;
+}
+
+export async function findMovieByTmdbId(tmdbId: number) {
+	const [existingMovie] = await db
+		.select()
+		.from(movie)
+		.where(eq(movie.tmdbId, tmdbId));
+
+	return existingMovie ?? null;
 }
 
 export async function getWatchlistStatus(userId: string, tmdbId: number) {

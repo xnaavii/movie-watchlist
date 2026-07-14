@@ -2,7 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { watchlistQueries } from "../queries";
-import { addToWatchlist } from "../server/watchlist.functions";
+import {
+	addToWatchlist,
+	removeFromWatchlist,
+} from "../server/watchlist.functions";
 
 interface UseToggleWatchlistProps {
 	tmdbId: number;
@@ -10,6 +13,7 @@ interface UseToggleWatchlistProps {
 
 export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 	const addToWatchlistFn = useServerFn(addToWatchlist);
+	const removeFromWatchlistFn = useServerFn(removeFromWatchlist);
 	const queryClient = useQueryClient();
 
 	const { data: isInWatchlist } = useQuery({
@@ -19,16 +23,17 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 
 	async function watchlistToggle(tmdbId: number) {
 		try {
-			const result = await addToWatchlistFn({
-				data: {
-					tmdbId,
-				},
-			});
-			toast.success(
-				result === null ? "Already in your watchlist" : "Added to watchlist",
-			);
+			if (isInWatchlist) {
+				await removeFromWatchlistFn({ data: { tmdbId } });
+				toast.success("Removed from watchlist");
+			} else {
+				const result = await addToWatchlistFn({ data: { tmdbId } });
+				toast.success(
+					result === null ? "Already in your watchlist" : "Added to watchlist",
+				);
+			}
 			queryClient.invalidateQueries({
-				queryKey: ["watchlist", "status", tmdbId],
+				queryKey: watchlistQueries.status(tmdbId).queryKey,
 			});
 		} catch (error) {
 			toast.error(
