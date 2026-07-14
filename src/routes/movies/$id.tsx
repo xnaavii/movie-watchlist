@@ -76,7 +76,7 @@ function MovieDetailsPage() {
 	const topCast = credits.data.cast.slice(0, 5);
 
 	// Watchlist
-	const { isInWatchlist, watchlistToggle } = useToggleWatchlist({
+	const { isInWatchlist, toggleWatchlist } = useToggleWatchlist({
 		tmdbId: movie.id,
 	});
 
@@ -164,7 +164,7 @@ function MovieDetailsPage() {
 							)}
 							<WatchlistToggleButton
 								isInWatchlist={isInWatchlist}
-								onToggle={() => watchlistToggle(movie.id)}
+								onToggle={() => toggleWatchlist(movie.id)}
 							/>
 						</div>
 					</div>

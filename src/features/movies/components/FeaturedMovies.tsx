@@ -9,7 +9,7 @@ const TIMER_INTERVAL = 5000;
 
 export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
-	const { isInWatchlist, watchlistToggle } = useToggleWatchlist({
+	const { isInWatchlist, toggleWatchlist } = useToggleWatchlist({
 		tmdbId: movies[currentIndex].id,
 	});
 
@@ -53,7 +53,7 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 				<div className="flex gap-2">
 					<WatchlistToggleButton
 						isInWatchlist={isInWatchlist}
-						onToggle={() => watchlistToggle(movie.id)}
+						onToggle={() => toggleWatchlist(movie.id)}
 					/>
 
 					<Button variant="secondary" asChild>

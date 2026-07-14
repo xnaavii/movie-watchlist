@@ -21,7 +21,7 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 		enabled: Boolean(tmdbId),
 	});
 
-	async function watchlistToggle(tmdbId: number) {
+	async function toggleWatchlist(tmdbId: number) {
 		try {
 			if (isInWatchlist) {
 				await removeFromWatchlistFn({ data: { tmdbId } });
@@ -44,5 +44,5 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 		}
 	}
 
-	return { isInWatchlist, watchlistToggle };
+	return { isInWatchlist, toggleWatchlist };
 }
