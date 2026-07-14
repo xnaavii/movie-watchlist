@@ -47,7 +47,7 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 					<p className="text text-muted-foreground">{movie.overview}</p>
 				</div>
 				<div className="flex gap-2">
-					<AddToWatchlistButton movieId={movie.id} />
+					<AddToWatchlistButton tmdbId={movie.id} />
 
 					<Button variant="secondary" asChild>
 						<Link to="/movies/$id" params={{ id: `${movie.id}` }}>

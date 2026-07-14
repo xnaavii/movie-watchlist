@@ -4,28 +4,25 @@ import {
 	findOrCreateMovie,
 	getWatchlistStatus,
 	insertIntoWatchlist,
-	type NewMovieInsert,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
 export const addToWatchlist = createServerFn({ method: "POST" })
-	.validator(
-		(data: { status?: WatchlistStatusInsert; movie: NewMovieInsert }) => data,
-	)
+	.validator((data: { status?: WatchlistStatusInsert; tmdbId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
-		const movieRow = await findOrCreateMovie(data.movie);
+		const movieRow = await findOrCreateMovie(data.tmdbId);
 
 		if (!movieRow) {
 			throw new Error("Failed to find or create movie");
 		}
 
-		const [newRow] = await insertIntoWatchlist(
-			session.user.id,
-			data.status,
-			movieRow.id,
-		);
+		const [newRow] = await insertIntoWatchlist({
+			userId: session.user.id,
+			movieId: movieRow.id,
+			status: data.status,
+		});
 
 		if (!newRow) {
 			throw new Error("Movie already in watchlist");
