@@ -18,7 +18,7 @@ function WatchlistPage() {
 
 			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
 				{watchlistItems.map((item) => (
-					<MovieCard key={item.movie.id} movie={item.movie} />
+					<MovieCard key={item.movie.id} {...item.movie} />
 				))}
 			</div>
 		</div>

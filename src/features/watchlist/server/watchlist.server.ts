@@ -5,6 +5,7 @@ import { getMovieDetails } from "#/features/movies/server/movies.functions";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
 export type NewMovieInsert = typeof movie.$inferInsert;
+export type Movie = typeof movie.$inferSelect;
 
 export async function insertIntoWatchlist({
 	userId,

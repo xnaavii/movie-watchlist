@@ -59,7 +59,13 @@ function SearchPage() {
 			) : (
 				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
 					{movies.map((movie) => (
-						<MovieCard key={movie.id} movie={movie} />
+						<MovieCard
+							key={movie.id}
+							id={movie.id}
+							title={movie.title}
+							posterPath={movie.poster_path ?? null}
+							releaseDate={movie.release_date}
+						/>
 					))}
 				</div>
 			)}

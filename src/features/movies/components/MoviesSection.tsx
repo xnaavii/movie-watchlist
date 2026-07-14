@@ -32,7 +32,10 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 				{movies.map((movie) => (
 					<MovieCard
 						key={movie.id}
-						movie={movie}
+						id={movie.id}
+						title={movie.title}
+						posterPath={movie.poster_path ?? null}
+						releaseDate={movie.release_date}
 						className="shrink-0 snap-start max-w-3xs md:max-w-2xs"
 					/>
 				))}

@@ -6,27 +6,35 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
-import type { NewMovieInsert } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 
 type MovieCardProps = {
-	movie: NewMovieInsert;
+	id: number | string;
+	title: string;
+	posterPath: string | null;
+	releaseDate: string | null;
 	className?: string;
 };
 
-export function MovieCard({ movie, className }: MovieCardProps) {
+export function MovieCard({
+	id,
+	title,
+	posterPath,
+	releaseDate,
+	className,
+}: MovieCardProps) {
 	return (
 		<Card className={cn("mx-auto w-full max-w-sm pt-0", className)}>
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
-					params={{ id: `${movie.tmdbId}` }}
+					params={{ id: `${id}` }}
 					className="block size-full"
 				>
-					{movie.posterPath ? (
+					{posterPath ? (
 						<img
-							src={movie.posterPath}
-							alt={movie.title}
+							src={posterPath}
+							alt={title}
 							className="size-full object-cover"
 							loading="lazy"
 						/>
@@ -38,11 +46,9 @@ export function MovieCard({ movie, className }: MovieCardProps) {
 				</Link>
 			</AspectRatio>
 			<CardHeader>
-				<CardTitle className="line-clamp-1">{movie.title}</CardTitle>
+				<CardTitle className="line-clamp-1">{title}</CardTitle>
 				<CardDescription>
-					{movie.releaseDate
-						? new Date(movie.releaseDate).getFullYear()
-						: "N/A"}
+					{releaseDate ? new Date(releaseDate).getFullYear() : "N/A"}
 				</CardDescription>
 			</CardHeader>
 		</Card>
