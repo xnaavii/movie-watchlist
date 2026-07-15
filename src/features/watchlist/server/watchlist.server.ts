@@ -7,18 +7,10 @@ export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
 export type NewMovieInsert = typeof movie.$inferInsert;
 export type Movie = typeof movie.$inferSelect;
 
-export async function insertIntoWatchlist({
-	userId,
-	movieId,
-	status,
-}: {
-	userId: string;
-	movieId: string;
-	status: WatchlistStatusInsert;
-}) {
+export async function addToWatchlist(userId: string, movieId: string) {
 	return await db
 		.insert(watchlist)
-		.values({ userId, movieId, status })
+		.values({ userId, movieId })
 		.onConflictDoNothing()
 		.returning();
 }

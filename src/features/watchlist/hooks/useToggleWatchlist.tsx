@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { authClient } from "#/lib/auth-client";
 import { watchlistQueries } from "../queries";
 import {
-	addToWatchlist,
+	addToWatchlistFn,
 	removeFromWatchlist,
 } from "../server/watchlist.functions";
 
@@ -14,7 +14,7 @@ interface UseToggleWatchlistProps {
 }
 
 export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
-	const addToWatchlistFn = useServerFn(addToWatchlist);
+	const addToWatchlist = useServerFn(addToWatchlistFn);
 	const removeFromWatchlistFn = useServerFn(removeFromWatchlist);
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
@@ -39,7 +39,7 @@ export function useToggleWatchlist({ tmdbId }: UseToggleWatchlistProps) {
 				await removeFromWatchlistFn({ data: { tmdbId } });
 				toast.success("Removed from watchlist");
 			} else {
-				const result = await addToWatchlistFn({ data: { tmdbId } });
+				const result = await addToWatchlist({ data: { tmdbId } });
 				toast.success(
 					result === null ? "Already in your watchlist" : "Added to watchlist",
 				);

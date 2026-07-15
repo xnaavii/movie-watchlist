@@ -1,7 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+import { X } from "lucide-react";
+import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/auth-client";
+import { cn } from "#/lib/utils";
+import { useRemoveFromWatchlist } from "../hooks/useRemoveFromWatchlist";
 import { useUpdateWatchlistStatus } from "../hooks/useUpdateWatchlistStatus";
 import { watchlistQueries } from "../queries";
+import { AddToWatchlistButton } from "./AddToWatchlistButton";
+import { RemoveFromWatchlistButton } from "./RemoveFromWatchlistButton";
 import { WatchlistStatusButtonView } from "./WatchlistStatusButtonView";
 
 type WatchlistStatusButtonProps = {
@@ -18,14 +24,22 @@ export function WatchlistStatusButton({
 		...watchlistQueries.status(tmdbId),
 		enabled: !!session,
 	});
-	const { updateStatus, isPending } = useUpdateWatchlistStatus({ tmdbId });
+	const { updateStatus, isPending: isUpdating } = useUpdateWatchlistStatus({
+		tmdbId,
+	});
+
+	if (status == null) {
+		return <AddToWatchlistButton tmdbId={tmdbId} className={className} />;
+	}
 
 	return (
-		<WatchlistStatusButtonView
-			status={status}
-			isPending={isPending}
-			onSelect={updateStatus}
-			className={className}
-		/>
+		<div className={cn("flex items-center gap-2", className)}>
+			<WatchlistStatusButtonView
+				status={status}
+				isPending={isUpdating}
+				onSelect={updateStatus}
+			/>
+			<RemoveFromWatchlistButton tmdbId={tmdbId} />
+		</div>
 	);
 }
