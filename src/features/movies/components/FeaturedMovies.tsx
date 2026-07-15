@@ -2,9 +2,8 @@ import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 
-const TIMER_INTERVAL = 5000;
+const TIMER_INTERVAL = 10000;
 
 export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,14 +45,12 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 					</h1>
 					<p className="text text-muted-foreground">{movie.overview}</p>
 				</div>
-				<div className="flex gap-2">
-					<AddToWatchlistButton tmdbId={movie.id} />
-					<Button variant="secondary" asChild>
-						<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
-							More Details
-						</Link>
-					</Button>
-				</div>
+
+				<Button variant="secondary" className="w-fit" asChild>
+					<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
+						More Details
+					</Link>
+				</Button>
 			</div>
 		</div>
 	);
