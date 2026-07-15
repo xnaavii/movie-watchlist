@@ -28,15 +28,14 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 			<h2 className="text-2xl md:text-3xl tracking-tighter font-medium">
 				{title}
 			</h2>
-			<div className="flex gap-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory">
+			<div className="flex gap-2.5 overflow-x-auto scrollbar-thin space-y-5 snap-x snap-mandatory">
 				{movies.map((movie) => (
 					<MovieCard
 						key={movie.id}
 						id={movie.id}
 						title={movie.title}
 						posterPath={movie.poster_path ?? null}
-						releaseDate={movie.release_date}
-						className="shrink-0 snap-start max-w-3xs md:max-w-2xs"
+						className="shrink-0 snap-start"
 					/>
 				))}
 			</div>
