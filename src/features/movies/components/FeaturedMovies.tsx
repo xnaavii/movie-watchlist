@@ -42,7 +42,7 @@ export function FeaturedMovies({ movies }: { movies: MovieResultItem[] }) {
 			) : (
 				<p>No Image</p>
 			)}
-			<div className="absolute inset-0 bg-linear-to-t from-black to-transparent z-1" />
+			<div className="absolute inset-0 bg-linear-to-t from-background to-transparent z-1" />
 			<div className="absolute inset-0 p-2 md:p-6 flex flex-col gap-6 max-w-5xl justify-end z-9">
 				<div className="flex flex-col gap-2">
 					<h1 className="font-semibold text-4xl md:text-5xl min-w-0">
