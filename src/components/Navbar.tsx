@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { Compass, Search, User, VenetianMask } from "lucide-react";
+import { Compass, ListVideo, Search, User, VenetianMask } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function Navbar() {
@@ -57,6 +57,20 @@ export function Navbar() {
 								activeProps={{ className: "text-sidebar-primary" }}
 							>
 								<User className="size-5" />
+							</Link>
+						</Button>
+					</li>
+					<li>
+						<Button
+							size="icon-lg"
+							asChild
+							variant={matchRoute({ to: "/watchlist" }) ? "link" : "ghost"}
+						>
+							<Link
+								to="/profile"
+								activeProps={{ className: "text-sidebar-primary" }}
+							>
+								<ListVideo className="size-5" />
 							</Link>
 						</Button>
 					</li>
