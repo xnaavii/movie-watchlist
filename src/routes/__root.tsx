@@ -49,7 +49,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider defaultTheme="system" storageKey="theme">
+				<ThemeProvider defaultTheme="dark" storageKey="theme">
 					<div className="grid grid-cols-1 md:grid-cols-[auto_1fr] h-dvh overflow-hidden">
 						<Navbar />
 						<Sidebar />
