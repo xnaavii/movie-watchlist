@@ -1,6 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { Compass, ListVideo, Search, User, VenetianMask } from "lucide-react";
-import { UserMenu } from "#/features/auth/components/UserMenu";
 import { cn } from "#/lib/utils";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
@@ -19,9 +18,11 @@ export function Sidebar({ className }: SidebarProps) {
 				className,
 			)}
 		>
-			<div className="size-12 flex items-center justify-center p-3">
-				<VenetianMask className="text-sidebar-primary" />
-			</div>
+			<Button size="icon-lg" asChild variant="ghost">
+				<Link to="/">
+					<VenetianMask className="size-5 text-sidebar-primary" />
+				</Link>
+			</Button>
 			<nav>
 				<ul className="flex flex-col items-center gap-4">
 					<Button
@@ -66,7 +67,6 @@ export function Sidebar({ className }: SidebarProps) {
 				</ul>
 			</nav>
 			<div className="flex flex-col gap-4 items-center">
-				<UserMenu />
 				<ModeToggle />
 			</div>
 		</aside>
