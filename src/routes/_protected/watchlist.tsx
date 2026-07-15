@@ -16,9 +16,15 @@ function WatchlistPage() {
 				Your Watchlist
 			</h1>
 
-			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
+			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 				{watchlistItems.map((item) => (
-					<MovieCard key={item.movie.id} {...item.movie} />
+					<MovieCard
+						key={item.movie.id}
+						id={item.movie.tmdbId}
+						title={item.movie.title}
+						posterPath={item.movie.posterPath}
+						releaseDate={item.movie.releaseDate}
+					/>
 				))}
 			</div>
 		</div>
