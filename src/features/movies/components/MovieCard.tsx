@@ -1,18 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "#/components/ui/card";
+import { Card } from "#/components/ui/card";
 import { cn } from "#/lib/utils";
 
 type MovieCardProps = {
 	id: number | string;
 	title: string;
 	posterPath: string | null;
-	releaseDate: string | null;
 	className?: string;
 };
 
@@ -20,11 +14,13 @@ export function MovieCard({
 	id,
 	title,
 	posterPath,
-	releaseDate,
 	className,
 }: MovieCardProps) {
 	return (
-		<Card className={cn("mx-auto w-full max-w-sm pt-0", className)}>
+		<Card
+			className={cn("mx-auto w-full max-w-sm py-0", className)}
+			title={title}
+		>
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
@@ -45,12 +41,6 @@ export function MovieCard({
 					)}
 				</Link>
 			</AspectRatio>
-			<CardHeader>
-				<CardTitle className="line-clamp-1">{title}</CardTitle>
-				<CardDescription>
-					{releaseDate ? new Date(releaseDate).getFullYear() : "N/A"}
-				</CardDescription>
-			</CardHeader>
 		</Card>
 	);
 }
