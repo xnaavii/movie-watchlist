@@ -12,8 +12,7 @@ import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
-import { WatchlistToggleButton } from "#/features/watchlist/components/WatchlistToggleButton";
-import { useToggleWatchlist } from "#/features/watchlist/hooks/useToggleWatchlist";
+import { WatchlistStatusButton } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
 
 export const Route = createFileRoute("/movies/$id")({
@@ -74,11 +73,6 @@ function MovieDetailsPage() {
 	);
 	const director = credits.data.crew.find((m) => m.job === "Director");
 	const topCast = credits.data.cast.slice(0, 5);
-
-	// Watchlist
-	const { isInWatchlist, toggleWatchlist } = useToggleWatchlist({
-		tmdbId: movie.id,
-	});
 
 	const router = useRouter();
 
@@ -162,10 +156,7 @@ function MovieDetailsPage() {
 									IMDB: {imdbRating?.imdbRating ?? "—"}
 								</p>
 							)}
-							<WatchlistToggleButton
-								isInWatchlist={isInWatchlist}
-								onToggle={() => toggleWatchlist(movie.id)}
-							/>
+							<WatchlistStatusButton tmdbId={movie.id} />
 						</div>
 					</div>
 				</div>

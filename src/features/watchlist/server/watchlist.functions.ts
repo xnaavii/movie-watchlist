@@ -7,6 +7,7 @@ import {
 	getWatchlistStatus,
 	insertIntoWatchlist,
 	selectUserWatchlist,
+	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
@@ -48,12 +49,32 @@ export const removeFromWatchlist = createServerFn({ method: "POST" })
 		});
 	});
 
+export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
+	.validator((data: { tmdbId: number; status: WatchlistStatusInsert }) => data)
+	.handler(async ({ data }) => {
+		const session = await ensureSession();
+
+		const movieRow = await findOrCreateMovie(data.tmdbId);
+
+		const updated = await updateWatchlistStatus({
+			userId: session.user.id,
+			movieId: movieRow.id,
+			status: data.status,
+		});
+
+		if (!updated) {
+			throw new Error("Failed updating status");
+		}
+
+		return updated;
+	});
+
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
 	.validator((data: { tmdbId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 
-		if (!session) return false;
+		if (!session) return null;
 
 		return await getWatchlistStatus(session.user.id, data.tmdbId);
 	});

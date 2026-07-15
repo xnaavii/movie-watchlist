@@ -38,6 +38,26 @@ export async function deleteFromWatchlist({
 	return deleted ?? null;
 }
 
+export async function updateWatchlistStatus({
+	userId,
+	movieId,
+	status,
+}: {
+	userId: string;
+	movieId: string;
+	status: WatchlistStatusInsert;
+}) {
+	const [upserted] = await db
+		.insert(watchlist)
+		.values({ userId, movieId, status })
+		.onConflictDoUpdate({
+			target: [watchlist.userId, watchlist.movieId],
+			set: { status },
+		})
+		.returning();
+
+	return upserted ?? null;
+}
 export async function findOrCreateMovie(tmdbId: number) {
 	const [existingMovie] = await db
 		.select()
@@ -80,12 +100,12 @@ export async function findMovieByTmdbId(tmdbId: number) {
 
 export async function getWatchlistStatus(userId: string, tmdbId: number) {
 	const [existing] = await db
-		.select({ id: watchlist.id })
+		.select({ status: watchlist.status })
 		.from(watchlist)
 		.innerJoin(movie, eq(watchlist.movieId, movie.id))
 		.where(and(eq(watchlist.userId, userId), eq(movie.tmdbId, tmdbId)));
 
-	return Boolean(existing);
+	return existing?.status ?? null;
 }
 
 export async function selectUserWatchlist(userId: string) {
