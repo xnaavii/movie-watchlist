@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import type {
 	MovieCreditsParams,
 	MovieDetails,
@@ -12,7 +13,7 @@ import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
 import type { TMDBMovieList } from "../types";
 
-const OMDB_API_KEY = process.env.OMDB_API_KEY;
+const OMDB_API_KEY = env.OMDB_API_KEY;
 
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: MovieDetailsParams) => data)
@@ -108,7 +109,7 @@ export const searchMovies = createServerFn({ method: "GET" })
 export const getStreamingSources = createServerFn({ method: "GET" })
 	.validator((data: { imdbId: string }) => data)
 	.handler(async ({ data }) => {
-		if (!process.env.WATCHMODE_API_KEY) {
+		if (!env.WATCHMODE_API_KEY) {
 			throw new Error("Please provide WATCHMODE_API_KEY");
 		}
 
