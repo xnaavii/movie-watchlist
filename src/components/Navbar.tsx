@@ -67,7 +67,7 @@ export function Navbar() {
 							variant={matchRoute({ to: "/watchlist" }) ? "link" : "ghost"}
 						>
 							<Link
-								to="/profile"
+								to="/watchlist"
 								activeProps={{ className: "text-sidebar-primary" }}
 							>
 								<ListVideo className="size-5" />
