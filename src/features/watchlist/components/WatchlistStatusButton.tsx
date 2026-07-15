@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { X } from "lucide-react";
-import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
-import { useRemoveFromWatchlist } from "../hooks/useRemoveFromWatchlist";
 import { useUpdateWatchlistStatus } from "../hooks/useUpdateWatchlistStatus";
 import { watchlistQueries } from "../queries";
 import { AddToWatchlistButton } from "./AddToWatchlistButton";
