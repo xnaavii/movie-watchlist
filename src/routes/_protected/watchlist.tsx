@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MovieCard } from "#/features/movies/components/MovieCard";
+import { WatchlistCard } from "#/features/watchlist/components/WatchlistCard";
 import { getUserWatchlist } from "#/features/watchlist/server/watchlist.functions";
 
 export const Route = createFileRoute("/_protected/watchlist")({
@@ -18,7 +18,7 @@ function WatchlistPage() {
 
 			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 				{watchlistItems.map((item) => (
-					<MovieCard
+					<WatchlistCard
 						key={item.movie.id}
 						id={item.movie.tmdbId}
 						title={item.movie.title}
