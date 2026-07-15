@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { Compass, List, Search, User, VenetianMask } from "lucide-react";
+import { Compass, ListVideo, Search, User, VenetianMask } from "lucide-react";
 import { UserMenu } from "#/features/auth/components/UserMenu";
 import { cn } from "#/lib/utils";
 import { ModeToggle } from "./ModeToggle";
@@ -48,7 +48,7 @@ export function Sidebar({ className }: SidebarProps) {
 						variant={matchRoute({ to: "/watchlist" }) ? "default" : "secondary"}
 					>
 						<Link to="/watchlist">
-							<List />
+							<ListVideo />
 						</Link>
 					</Button>
 					<Button
