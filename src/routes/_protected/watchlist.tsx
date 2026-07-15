@@ -11,7 +11,7 @@ function WatchlistPage() {
 	const watchlistItems = Route.useLoaderData();
 
 	return (
-		<div className="mt-10 p-2 md:p-6 md:mt-0 flex flex-col gap-8">
+		<div className="mt-16 p-2 md:p-6 md:mt-0 flex flex-col gap-8">
 			<h1 className="font-semibold text-3xl md:text-4xl min-w-0">
 				Your Watchlist
 			</h1>
