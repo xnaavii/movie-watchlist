@@ -11,8 +11,8 @@ export const Route = createFileRoute("/discover")({
 	validateSearch: (search) => ({
 		genreId: search.genreId ? Number(search.genreId) : undefined,
 	}),
-	loader: ({ context }) => {
-		return Promise.all([
+	loader: async ({ context }) => {
+		return await Promise.all([
 			context.queryClient.ensureQueryData(movieQueries.list("now_playing")),
 			getMovieGenres(),
 		]);
