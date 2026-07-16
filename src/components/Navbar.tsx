@@ -36,10 +36,10 @@ export function Navbar() {
 						<Button
 							size="icon-lg"
 							asChild
-							variant={matchRoute({ to: "/explore" }) ? "link" : "ghost"}
+							variant={matchRoute({ to: "/discover" }) ? "link" : "ghost"}
 						>
 							<Link
-								to="/explore"
+								to="/discover"
 								activeProps={{ className: "text-sidebar-primary" }}
 							>
 								<Compass className="size-5" />

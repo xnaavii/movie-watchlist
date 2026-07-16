@@ -4,13 +4,13 @@ import { FeaturedMovies } from "#/features/movies/components/FeaturedMovies";
 import { MoviesSection } from "#/features/movies/components/MoviesSection";
 import { movieQueries } from "#/features/movies/queries";
 
-export const Route = createFileRoute("/explore")({
-	component: ExplorePage,
+export const Route = createFileRoute("/discover")({
+	component: DiscoverPage,
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(movieQueries.list("now_playing")),
 });
 
-function ExplorePage() {
+function DiscoverPage() {
 	const { data } = useSuspenseQuery(movieQueries.list("now_playing"));
 
 	return (

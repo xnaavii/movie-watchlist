@@ -37,9 +37,9 @@ export function Sidebar({ className }: SidebarProps) {
 					<Button
 						size="icon-lg"
 						asChild
-						variant={matchRoute({ to: "/explore" }) ? "default" : "secondary"}
+						variant={matchRoute({ to: "/discover" }) ? "default" : "secondary"}
 					>
-						<Link to="/explore">
+						<Link to="/discover">
 							<Compass />
 						</Link>
 					</Button>
