@@ -162,7 +162,9 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 			<TrailerSection movie={movie} />
-			<StreamingSources tmdbId={movie.imdb_id ?? ""} />
+
+			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}
+			{/* <StreamingSources tmdbId={movie.imdb_id ?? ""} /> */}
 		</div>
 	);
 }
