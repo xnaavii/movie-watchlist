@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import type {
+	DiscoverMovieParams,
 	MovieCreditsParams,
 	MovieDetails,
 	MovieDetailsParams,
@@ -92,6 +93,20 @@ export const getMovieVideos = createServerFn({ method: "GET" })
 		}
 	});
 
+export const getMovieGenres = createServerFn({ method: "GET" }).handler(
+	async () => {
+		try {
+			return await tmdb.genres.movie_list();
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get movie genres",
+			);
+		}
+	},
+);
+
 export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: SearchMoviesParams) => data)
 	.handler(async ({ data }) => {
@@ -102,6 +117,18 @@ export const searchMovies = createServerFn({ method: "GET" })
 				error instanceof TMDBError
 					? error.message
 					: "Failed to get search results",
+			);
+		}
+	});
+
+export const discoverMovies = createServerFn({ method: "GET" })
+	.validator((data: DiscoverMovieParams) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.discover.movie({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError ? error.message : "Failed to get results",
 			);
 		}
 	});
