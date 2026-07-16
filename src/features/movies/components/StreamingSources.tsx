@@ -31,7 +31,7 @@ export function StreamingSources({ tmdbId }: StreamingSourcesProps) {
 	}
 
 	if (isError) {
-		return <p>{error.message}</p>;
+		return <p className="p-6">{error.message}</p>;
 	}
 
 	const streamingSources = data || [];
