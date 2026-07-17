@@ -1,4 +1,5 @@
 import type {
+	DiscoverMovieParams,
 	MovieCreditsParams,
 	MovieDetailsParams,
 	MovieListParams,
@@ -7,6 +8,7 @@ import type {
 } from "@lorenzopant/tmdb";
 import { queryOptions } from "@tanstack/react-query";
 import {
+	discoverMovies,
 	getImdbRating,
 	getMovieCredits,
 	getMovieDetails,
@@ -42,6 +44,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "search", { ...params }],
 			queryFn: () => searchMovies({ data: { ...params } }),
+		}),
+	discover: (params: DiscoverMovieParams) =>
+		queryOptions({
+			queryKey: ["movies", "discover", { ...params }],
+			queryFn: () => discoverMovies({ data: { ...params } }),
 		}),
 };
 

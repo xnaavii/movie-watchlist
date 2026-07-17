@@ -35,7 +35,7 @@ export function MoviesSection({ title, list }: MoviesSectionProps) {
 						id={movie.id}
 						title={movie.title}
 						posterPath={movie.poster_path ?? null}
-						className="shrink-0 snap-start"
+						className="shrink-0 snap-start max-w-50 md:max-w-70"
 					/>
 				))}
 			</div>

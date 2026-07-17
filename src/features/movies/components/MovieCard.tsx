@@ -17,10 +17,7 @@ export function MovieCard({
 	className,
 }: MovieCardProps) {
 	return (
-		<Card
-			className={cn("mx-auto w-full max-w-50 md:max-w-70 py-0", className)}
-			title={title}
-		>
+		<Card className={cn("mx-auto w-full py-0", className)} title={title}>
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
