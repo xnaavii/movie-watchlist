@@ -29,7 +29,6 @@ export function GenreList({ genres }: GenreListProps) {
 							<Link
 								to="/discover"
 								search={{ genreId: genre.id }}
-								resetScroll={false}
 								preload="intent"
 							>
 								<ItemContent>

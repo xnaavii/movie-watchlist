@@ -1,4 +1,7 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useSuspenseInfiniteQuery,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { Button } from "#/components/ui/button";
@@ -7,6 +10,7 @@ import { GenreList } from "#/features/movies/components/GenreList";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { MoviesSection } from "#/features/movies/components/MoviesSection";
 import { movieQueries } from "#/features/movies/queries";
+import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
 export const Route = createFileRoute("/discover")({
 	component: DiscoverPage,
@@ -18,10 +22,10 @@ export const Route = createFileRoute("/discover")({
 	loaderDeps: ({ search }) => ({ genreId: search.genreId }),
 	loader: async ({ context, deps }) => {
 		return await Promise.all([
-			context.queryClient.ensureQueryData(
+			context.queryClient.ensureQueryData(movieQueries.genres({})),
+			context.queryClient.ensureInfiniteQueryData(
 				movieQueries.discover({ with_genres: deps.genreId }),
 			),
-			context.queryClient.ensureQueryData(movieQueries.genres({})),
 		]);
 	},
 });
@@ -29,21 +33,28 @@ export const Route = createFileRoute("/discover")({
 function DiscoverPage() {
 	const { genreId } = Route.useSearch();
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
-	const { data: moviesByGenre } = useSuspenseQuery(
-		movieQueries.discover({ with_genres: genreId }),
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+		useSuspenseInfiniteQuery(movieQueries.discover({ with_genres: genreId }));
+
+	const movies = Array.from(
+		new Map(
+			data.pages
+				.flatMap((page) => page.results)
+				.map((movie) => [movie.id, movie]),
+		).values(),
 	);
+
+	const sentinelRef = useInfiniteScrollTrigger(() => {
+		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+	}, hasNextPage);
 
 	return (
 		<div className="relative flex flex-col gap-6">
-			<FeaturedMovies movies={moviesByGenre.results} />
-			<div className="p-6 sticky top-6 flex gap-2.5 items-center w-full md:top-0 md:bg-linear-to-b from-background to-transparent via-background via-50% z-20">
+			<FeaturedMovies movies={movies} />
+			<div className="p-6 sticky top-6 flex gap-2.5 items-center w-full md:top-0 md:bg-linear-to-b from-background to-transparent via-background via-50% z-20 overflow-hidden">
 				{genreId && (
 					<Button disabled={!genreId} size="icon" variant="secondary" asChild>
-						<Link
-							to="/discover"
-							search={{ genreId: undefined }}
-							resetScroll={false}
-						>
+						<Link to="/discover" search={{ genreId: undefined }}>
 							<X />
 						</Link>
 					</Button>
@@ -51,8 +62,8 @@ function DiscoverPage() {
 				<GenreList genres={genres.genres} />
 			</div>
 			{genreId ? (
-				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2.5 p-6">
-					{moviesByGenre.results.map((movie) => (
+				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2.5 p-6">
+					{movies.map((movie) => (
 						<MovieCard
 							key={movie.id}
 							id={movie.id}
@@ -60,6 +71,7 @@ function DiscoverPage() {
 							posterPath={movie.poster_path ?? null}
 						/>
 					))}
+					<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
 				</div>
 			) : (
 				<div className="flex flex-col gap-20 p-2 md:p-6">

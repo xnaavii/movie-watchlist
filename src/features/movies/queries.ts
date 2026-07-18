@@ -7,7 +7,7 @@ import type {
 	SearchMoviesParams,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
 	discoverMovies,
 	getImdbRating,
@@ -48,9 +48,15 @@ export const movieQueries = {
 			queryFn: () => searchMovies({ data: { ...params } }),
 		}),
 	discover: (params: DiscoverMovieParams) =>
-		queryOptions({
+		infiniteQueryOptions({
 			queryKey: ["movies", "discover", { ...params }],
-			queryFn: () => discoverMovies({ data: { ...params } }),
+			queryFn: ({ pageParam }) =>
+				discoverMovies({ data: { ...params, page: pageParam } }),
+			initialPageParam: 1,
+			getNextPageParam: (lastPage) => {
+				if (lastPage.page >= lastPage.total_pages) return undefined;
+				return lastPage.page + 1;
+			},
 		}),
 	genres: (params: WithLanguage) =>
 		queryOptions({
