@@ -12,6 +12,7 @@ import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
 	discoverMovies,
 	getImdbRating,
+	getLanguages,
 	getMovieCredits,
 	getMovieDetails,
 	getMovieGenres,
@@ -60,15 +61,23 @@ export const movieQueries = {
 			queryFn: ({ pageParam }) =>
 				discoverMovies({ data: { ...params, page: pageParam } }),
 			initialPageParam: 1,
-			getNextPageParam: (lastPage) => {
-				if (lastPage.page >= lastPage.total_pages) return undefined;
-				return lastPage.page + 1;
-			},
+			getNextPageParam: (lastPage) =>
+				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
 		}),
 	genres: (params: WithLanguage) =>
 		queryOptions({
 			queryKey: ["movies", "genres", { ...params }],
 			queryFn: () => getMovieGenres({ data: { ...params } }),
+		}),
+	languages: () =>
+		queryOptions({
+			queryKey: ["movies", "languages"],
+			queryFn: () => getLanguages(),
+			staleTime: Infinity,
+			select: (languages) =>
+				[...languages].sort((a, b) =>
+					a.english_name.localeCompare(b.english_name),
+				),
 		}),
 };
 

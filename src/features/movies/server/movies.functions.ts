@@ -109,6 +109,18 @@ export const getMovieGenres = createServerFn({ method: "GET" })
 		}
 	});
 
+export const getLanguages = createServerFn({ method: "GET" }).handler(
+	async () => {
+		try {
+			return await tmdb.configuration.languages();
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError ? error.message : "Failed to get languages",
+			);
+		}
+	},
+);
+
 export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: SearchMoviesParams) => data)
 	.handler(async ({ data }) => {
