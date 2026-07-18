@@ -3,12 +3,14 @@ import {
 	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { SITE_CONFIG } from "#/config/site";
 import { GenreList } from "#/features/movies/components/GenreList";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { MoviesCarousel } from "#/features/movies/components/MoviesCarousel";
 import { MoviesSection } from "#/features/movies/components/MoviesSection";
 import { movieQueries } from "#/features/movies/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
+import { seo } from "#/utils/seo";
 
 export const Route = createFileRoute("/discover")({
 	component: DiscoverPage,
@@ -19,12 +21,29 @@ export const Route = createFileRoute("/discover")({
 	}),
 	loaderDeps: ({ search }) => ({ genreId: search.genreId }),
 	loader: async ({ context, deps }) => {
-		return await Promise.all([
+		const [genres] = await Promise.all([
 			context.queryClient.ensureQueryData(movieQueries.genres({})),
 			context.queryClient.ensureInfiniteQueryData(
 				movieQueries.discover({ with_genres: deps.genreId }),
 			),
 		]);
+		return { genres, genreId: deps.genreId };
+	},
+	head: ({ loaderData }) => {
+		const selectedGenre = loaderData?.genres.genres.find(
+			(genre) => genre.id === loaderData?.genreId,
+		);
+
+		return {
+			meta: seo({
+				title: selectedGenre
+					? `${selectedGenre.name} Movies | ${SITE_CONFIG.name}`
+					: `Discover Movies | ${SITE_CONFIG.name}`,
+				description: selectedGenre
+					? `Browse the best ${selectedGenre.name.toLowerCase()} movies to watch right now.`
+					: "Discover popular, top rated, upcoming, and now playing movies.",
+			}),
+		};
 	},
 });
 
