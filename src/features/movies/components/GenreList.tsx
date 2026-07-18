@@ -1,5 +1,7 @@
 import type { Genre } from "@lorenzopant/tmdb";
 import { getRouteApi, Link } from "@tanstack/react-router";
+import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
+import { X } from "lucide-react";
 import {
 	Carousel,
 	CarouselContent,
@@ -16,23 +18,29 @@ const routeApi = getRouteApi("/discover");
 export function GenreList({ genres }: GenreListProps) {
 	const { genreId } = routeApi.useSearch();
 
+	const selectedGenre = genres?.find((genre) => genre.id === genreId);
+	const visibleGenres = selectedGenre ? [selectedGenre] : genres;
+
 	return (
-		<Carousel opts={{ dragFree: true, align: "start" }} className="w-full">
+		<Carousel
+			opts={{ dragFree: true, align: "start" }}
+			plugins={[WheelGesturesPlugin()]}
+			className="w-full"
+		>
 			<CarouselContent className="-ml-2.5">
-				{genres?.map((genre) => (
+				{visibleGenres?.map((genre) => (
 					<CarouselItem key={genre.id} className="pl-2.5 basis-auto">
-						<Item
-							variant={genreId === genre.id ? "muted" : "default"}
-							asChild
-							className="w-fit"
-						>
+						<Item variant="muted" asChild className="w-fit">
 							<Link
 								to="/discover"
-								search={{ genreId: genre.id }}
+								search={{
+									genreId: genreId === genre.id ? undefined : genre.id,
+								}}
 								preload="intent"
 							>
-								<ItemContent>
+								<ItemContent className="flex-row items-center gap-1.5">
 									<ItemTitle>{genre.name}</ItemTitle>
+									{genreId === genre.id && <X className="size-3.5" />}
 								</ItemContent>
 							</Link>
 						</Item>

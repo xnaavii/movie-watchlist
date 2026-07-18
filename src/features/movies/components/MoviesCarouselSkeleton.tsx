@@ -1,6 +1,6 @@
 import { Skeleton } from "#/components/ui/skeleton";
 
-export function FeaturedMoviesSkeleton() {
+export function MoviesCarouselSkeleton() {
 	return (
 		<div className="relative bg-background h-[60vh] md:h-[80vh] overflow-hidden">
 			<Skeleton className="size-full rounded-none" />
