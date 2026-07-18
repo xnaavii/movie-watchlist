@@ -59,36 +59,32 @@ export function MoviesCarousel({ movies }: { movies: MovieResultItem[] }) {
 				<CarouselContent>
 					{movies.map((movie) => (
 						<CarouselItem key={movie.id}>
-							<div className="relative h-[clamp(30vh,60vh+10svh,90vh)] overflow-hidden rounded-4xl">
-								{movie.backdrop_path ? (
-									<img
-										src={movie.backdrop_path}
-										alt={movie.title}
-										className="absolute inset-0 size-full object-cover object-top shadow-2xl"
-									/>
-								) : (
-									<p>No Image</p>
-								)}
-								<div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
-								<div className="absolute inset-0 p-2 md:p-6 flex flex-col gap-6 justify-end">
-									<div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
-										<div className="flex flex-col gap-2 max-w-5xl">
-											<h1 className="font-medium tracking-tight text-2xl md:text-4xl lg:text-5xl min-w-0">
-												{movie.title}
-											</h1>
-											<p className="text text-sm md:text-base text-muted-foreground line-clamp-2">
-												{movie.overview}
-											</p>
+							<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
+								<div className="relative h-[clamp(30vh,60vh+10svh,90vh)] overflow-hidden rounded-4xl">
+									{movie.backdrop_path ? (
+										<img
+											src={movie.backdrop_path}
+											alt={movie.title}
+											className="absolute inset-0 size-full object-cover object-top shadow-2xl"
+										/>
+									) : (
+										<p>No Image</p>
+									)}
+									<div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
+									<div className="absolute inset-0 p-2 md:p-6 flex flex-col gap-6 justify-end">
+										<div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
+											<div className="flex flex-col gap-2 max-w-5xl">
+												<h1 className="font-medium tracking-tight text-2xl md:text-4xl lg:text-5xl min-w-0">
+													{movie.title}
+												</h1>
+												<p className="text text-sm md:text-base text-muted-foreground line-clamp-2">
+													{movie.overview}
+												</p>
+											</div>
 										</div>
-
-										<Button variant="secondary" className="w-fit" asChild>
-											<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
-												More Details
-											</Link>
-										</Button>
 									</div>
 								</div>
-							</div>
+							</Link>
 						</CarouselItem>
 					))}
 				</CarouselContent>
