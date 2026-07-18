@@ -6,7 +6,6 @@ import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { Poster } from "#/features/movies/components/Poster";
-import { StreamingSources } from "#/features/movies/components/StreamingSources";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
