@@ -2,7 +2,6 @@ import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import AutoPlay from "embla-carousel-autoplay";
-import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
 import { useEffect, useRef, useState } from "react";
 import {
