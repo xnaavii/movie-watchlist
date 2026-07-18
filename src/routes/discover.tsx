@@ -46,8 +46,7 @@ function DiscoverPage() {
 		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
 	}, hasNextPage);
 
-
-  // TODO: Display movies list and allow user to select which list they want to see;
+	// TODO: Display movies list and allow user to select which list they want to see;
 
 	return (
 		<div className="flex flex-col gap-10 p-2 md:p-6 mt-16 md:mt-0">

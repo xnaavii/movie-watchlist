@@ -4,6 +4,7 @@ import type {
 	MovieCreditsParams,
 	MovieDetails,
 	MovieDetailsParams,
+	MovieImagesParams,
 	MovieListParams,
 	MovieVideosParams,
 	SearchMoviesParams,
@@ -130,6 +131,20 @@ export const discoverMovies = createServerFn({ method: "GET" })
 		} catch (error) {
 			throw new Error(
 				error instanceof TMDBError ? error.message : "Failed to get results",
+			);
+		}
+	});
+
+export const getMovieImages = createServerFn({ method: "GET" })
+	.validator((data: MovieImagesParams) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.movies.images({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get movie images",
 			);
 		}
 	});

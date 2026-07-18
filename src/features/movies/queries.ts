@@ -2,6 +2,7 @@ import type {
 	DiscoverMovieParams,
 	MovieCreditsParams,
 	MovieDetailsParams,
+	MovieImagesParams,
 	MovieListParams,
 	MovieVideosParams,
 	SearchMoviesParams,
@@ -14,6 +15,7 @@ import {
 	getMovieCredits,
 	getMovieDetails,
 	getMovieGenres,
+	getMovieImages,
 	getMovieList,
 	getMovieVideos,
 	getStreamingSources,
@@ -31,6 +33,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "details", { id: params.movie_id }],
 			queryFn: () => getMovieDetails({ data: { ...params } }),
+		}),
+	images: (params: MovieImagesParams) =>
+		queryOptions({
+			queryKey: ["movies", "images", { ...params }],
+			queryFn: () => getMovieImages({ data: { ...params, language: "en" } }),
 		}),
 	videos: (params: MovieVideosParams) =>
 		queryOptions({
