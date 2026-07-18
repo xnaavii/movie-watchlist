@@ -1,27 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useInfiniteScrollTrigger(
 	onIntersect: () => void,
 	enabled: boolean,
 ) {
-	const ref = useRef<HTMLDivElement>(null);
+	const [node, setNode] = useState<HTMLDivElement | null>(null);
 	const onIntersectRef = useRef(onIntersect);
 
 	useEffect(() => {
 		onIntersectRef.current = onIntersect;
 	});
 
+	const ref = useCallback((el: HTMLDivElement | null) => {
+		setNode(el);
+	}, []);
+
 	useEffect(() => {
-		if (!enabled || !ref.current) return;
+		if (!enabled || !node) return;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0]?.isIntersecting) onIntersectRef.current();
 			},
-			{ rootMargin: "400px" },
+			{ rootMargin: "800px" },
 		);
-		observer.observe(ref.current);
+		observer.observe(node);
 		return () => observer.disconnect();
-	}, [enabled]);
+	}, [enabled, node]);
 
 	return ref;
 }

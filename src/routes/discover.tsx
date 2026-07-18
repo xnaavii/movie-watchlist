@@ -72,6 +72,7 @@ function DiscoverPage() {
 						/>
 					))}
 					<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
+					{isFetchingNextPage && <p>Loading more...</p>}
 				</div>
 			) : (
 				<div className="flex flex-col gap-20 p-2 md:p-6">
