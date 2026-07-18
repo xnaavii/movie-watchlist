@@ -1,6 +1,11 @@
 import type { Genre } from "@lorenzopant/tmdb";
 import { getRouteApi, Link } from "@tanstack/react-router";
-import { Item, ItemContent, ItemGroup, ItemTitle } from "#/components/ui/item";
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+} from "#/components/ui/carousel";
+import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
 
 interface GenreListProps {
 	genres: Genre[];
@@ -12,27 +17,29 @@ export function GenreList({ genres }: GenreListProps) {
 	const { genreId } = routeApi.useSearch();
 
 	return (
-		<ItemGroup className="flex flex-row items-center gap-2.5 overflow-x-auto scrollbar-none">
-			{genres?.map((genre) => (
-				<Item
-					key={genre.id}
-					variant={genreId === genre.id ? "muted" : "default"}
-					asChild
-					className="w-fit"
-				>
-					<Link
-						to="/discover"
-						search={{ genreId: genre.id }}
-						className="shrink-0"
-						resetScroll={false}
-						preload="intent"
-					>
-						<ItemContent>
-							<ItemTitle>{genre.name}</ItemTitle>
-						</ItemContent>
-					</Link>
-				</Item>
-			))}
-		</ItemGroup>
+		<Carousel opts={{ dragFree: true, align: "start" }} className="w-full">
+			<CarouselContent className="-ml-2.5">
+				{genres?.map((genre) => (
+					<CarouselItem key={genre.id} className="pl-2.5 basis-auto">
+						<Item
+							variant={genreId === genre.id ? "muted" : "default"}
+							asChild
+							className="w-fit"
+						>
+							<Link
+								to="/discover"
+								search={{ genreId: genre.id }}
+								resetScroll={false}
+								preload="intent"
+							>
+								<ItemContent>
+									<ItemTitle>{genre.name}</ItemTitle>
+								</ItemContent>
+							</Link>
+						</Item>
+					</CarouselItem>
+				))}
+			</CarouselContent>
+		</Carousel>
 	);
 }
