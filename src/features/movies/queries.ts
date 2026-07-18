@@ -5,6 +5,7 @@ import type {
 	MovieListParams,
 	MovieVideosParams,
 	SearchMoviesParams,
+	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { queryOptions } from "@tanstack/react-query";
 import {
@@ -12,6 +13,7 @@ import {
 	getImdbRating,
 	getMovieCredits,
 	getMovieDetails,
+	getMovieGenres,
 	getMovieList,
 	getMovieVideos,
 	getStreamingSources,
@@ -49,6 +51,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "discover", { ...params }],
 			queryFn: () => discoverMovies({ data: { ...params } }),
+		}),
+	genres: (params: WithLanguage) =>
+		queryOptions({
+			queryKey: ["movies", "genres", { ...params }],
+			queryFn: () => getMovieGenres({ data: { ...params } }),
 		}),
 };
 

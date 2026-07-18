@@ -7,6 +7,7 @@ import type {
 	MovieListParams,
 	MovieVideosParams,
 	SearchMoviesParams,
+	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
@@ -93,10 +94,11 @@ export const getMovieVideos = createServerFn({ method: "GET" })
 		}
 	});
 
-export const getMovieGenres = createServerFn({ method: "GET" }).handler(
-	async () => {
+export const getMovieGenres = createServerFn({ method: "GET" })
+	.validator((data: WithLanguage) => data)
+	.handler(async ({ data }) => {
 		try {
-			return await tmdb.genres.movie_list();
+			return await tmdb.genres.movie_list({ ...data });
 		} catch (error) {
 			throw new Error(
 				error instanceof TMDBError
@@ -104,8 +106,7 @@ export const getMovieGenres = createServerFn({ method: "GET" }).handler(
 					: "Failed to get movie genres",
 			);
 		}
-	},
-);
+	});
 
 export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: SearchMoviesParams) => data)
