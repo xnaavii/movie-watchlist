@@ -41,12 +41,12 @@ export const movieQueries = {
 		}),
 	videos: (params: MovieVideosParams) =>
 		queryOptions({
-			queryKey: ["movies", "details", "videos", { ...params }],
+			queryKey: ["movies", "videos", { ...params }],
 			queryFn: () => getMovieVideos({ data: { ...params } }),
 		}),
 	credits: (params: MovieCreditsParams) =>
 		queryOptions({
-			queryKey: ["movies", "details", "credits", { ...params }],
+			queryKey: ["movies", "credits", { ...params }],
 			queryFn: () => getMovieCredits({ data: { ...params } }),
 		}),
 	search: (params: SearchMoviesParams) =>
