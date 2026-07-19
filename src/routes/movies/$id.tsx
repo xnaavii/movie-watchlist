@@ -1,5 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
@@ -14,21 +15,28 @@ import { WatchlistStatusButton } from "#/features/watchlist/components/Watchlist
 import { watchlistQueries } from "#/features/watchlist/queries";
 
 export const Route = createFileRoute("/movies/$id")({
-	loader: async ({ params, context }) =>
-		await Promise.all([
-			context.queryClient.ensureQueryData(
-				movieQueries.details({ movie_id: Number(params.id) }),
-			),
-			context.queryClient.ensureQueryData(
-				movieQueries.recommendations({ movie_id: Number(params.id) }),
-			),
-			context.queryClient.ensureQueryData(
-				movieQueries.images({ movie_id: Number(params.id) }),
-			),
-			context.queryClient.ensureQueryData(
-				watchlistQueries.status(Number(params.id)),
-			),
-		]),
+	loader: async ({ params, context }) => {
+		const movieId = Number(params.id);
+		if (Number.isNaN(movieId)) {
+			throw notFound();
+		}
+		try {
+			return await Promise.all([
+				context.queryClient.ensureQueryData(
+					movieQueries.details({ movie_id: movieId }),
+				),
+				context.queryClient.ensureQueryData(
+					movieQueries.recommendations({ movie_id: movieId }),
+				),
+				context.queryClient.ensureQueryData(
+					movieQueries.images({ movie_id: movieId }),
+				),
+				context.queryClient.ensureQueryData(watchlistQueries.status(movieId)),
+			]);
+		} catch {
+			throw notFound();
+		}
+	},
 	head: ({ loaderData, params }) => {
 		if (!loaderData) {
 			return { meta: [{ title: "Movie not found" }] };
@@ -58,6 +66,18 @@ export const Route = createFileRoute("/movies/$id")({
 	pendingComponent: () => (
 		<div className="flex flex-col gap-20 animate-pulse">
 			<div className="w-full h-[clamp(30vh,80vh+10svh,90vh)] bg-muted" />
+		</div>
+	),
+	notFoundComponent: () => (
+		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">
+			<h1 className="text-3xl font-medium tracking-tighter">Movie not found</h1>
+			<p className="text-muted-foreground">
+				We couldn't find that movie. It may have been removed or the link is
+				incorrect.
+			</p>
+			<Button asChild>
+				<Link to="/discover">Back to Discover</Link>
+			</Button>
 		</div>
 	),
 });
