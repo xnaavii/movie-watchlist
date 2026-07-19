@@ -57,6 +57,15 @@ export const movieQueries = {
 			queryKey: ["movies", "search", { ...params }],
 			queryFn: () => searchMovies({ data: { ...params } }),
 		}),
+	infiniteSearch: (params: SearchMoviesParams) =>
+		infiniteQueryOptions({
+			queryKey: ["movies", "search", { ...params }],
+			queryFn: ({ pageParam }) =>
+				searchMovies({ data: { ...params, page: pageParam } }),
+			initialPageParam: 1,
+			getNextPageParam: (lastPage) =>
+				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
+		}),
 	discover: (params: DiscoverMovieParams) =>
 		infiniteQueryOptions({
 			queryKey: ["movies", "discover", { ...params }],
