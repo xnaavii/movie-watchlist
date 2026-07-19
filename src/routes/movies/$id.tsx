@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
+import { MovieOverview } from "#/features/movies/components/MovieOverview";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
@@ -46,6 +47,11 @@ export const Route = createFileRoute("/movies/$id")({
 		};
 	},
 	component: MovieDetailsPage,
+	pendingComponent: () => (
+		<div className="flex flex-col gap-20 animate-pulse">
+			<div className="w-full h-[60vh] bg-muted" />
+		</div>
+	),
 });
 
 function MovieDetailsPage() {
@@ -91,9 +97,13 @@ function MovieDetailsPage() {
 				)}
 
 				<div className="flex flex-col md:flex-row gap-4 justify-between md:items-end z-20 w-full">
-					<div className="flex flex-col gap-2">
+					<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
 						<MovieLogo tmdbId={movie.id} title={movie.title} />
+						<p className="text-muted-foreground">
+							{new Date(movie.release_date).getFullYear()}
+						</p>
 						<Genres genres={movie.genres} />
+						{movie.overview && <MovieOverview overview={movie.overview} />}
 						{director && (
 							<div className="flex gap-1 items-center">
 								<p className="text-muted-foreground">Director</p>
@@ -111,9 +121,6 @@ function MovieDetailsPage() {
 								))}
 							</div>
 						)}
-						<p className="text-muted-foreground">
-							{new Date(movie.release_date).getFullYear()}
-						</p>
 						{isPending ? (
 							<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
 						) : isError ? (

@@ -7,7 +7,7 @@ type GenresProps = {
 
 export function Genres({ genres }: GenresProps) {
 	return (
-		<div className="flex gap-0.5 items-center">
+		<div className="flex gap-0.5 items-center flex-wrap">
 			{genres.map((genre, i) => (
 				<div className="flex items-center" key={genre.id}>
 					<span className="text-medium">{genre.name}</span>
