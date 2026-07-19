@@ -76,7 +76,7 @@ function SearchPage() {
 			) : (
 				<div className="flex flex-col gap-6">
 					<h2 className="text-xl">Showing results for {q}</h2>
-					<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2.5">
+					<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 						{movies.map((movie) => (
 							<MovieCard
 								key={movie.id}
