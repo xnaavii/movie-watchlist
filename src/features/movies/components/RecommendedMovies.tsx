@@ -21,7 +21,7 @@ export function RecommendedMovies({ tmdbId }: RecommendedMoviesProps) {
 
 	if (isError)
 		return (
-			<div className="p-2 md:p-6 text-red-500">
+			<div className="text-red-500">
 				There was an error: {error.message}
 			</div>
 		);
