@@ -31,7 +31,7 @@ export function RecommendedMovies({ tmdbId }: RecommendedMoviesProps) {
 	if (movies.length === 0) return null;
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-6">
 			<h2 className="text-2xl tracking-tighter font-medium">Similar movies</h2>
 			<Carousel
 				opts={{ align: "start", dragFree: true }}

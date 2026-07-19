@@ -86,7 +86,7 @@ function MovieDetailsPage() {
 	const topCast = credits.data.cast.slice(0, 5);
 
 	return (
-		<div className="flex flex-col gap-10" key={movie.id}>
+		<div className="flex flex-col gap-6" key={movie.id}>
 			{/* Backdrop image and overlay */}
 			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-10 items-end">
 				{movie.backdrop_path ? (
@@ -104,7 +104,7 @@ function MovieDetailsPage() {
 					</div>
 				)}
 
-				<div className="flex flex-col md:flex-row gap-4 justify-between md:items-end z-20 w-full">
+				<div className="flex flex-col md:flex-row gap-6 justify-between md:items-end z-20 w-full">
 					<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
 						<MovieLogo tmdbId={movie.id} title={movie.title} />
 						<p className="text-muted-foreground">
