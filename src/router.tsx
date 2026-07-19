@@ -17,6 +17,7 @@ export function getRouter() {
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
 		scrollToTopSelectors: ["#main-scrollable-area"],
+    defaultViewTransition: true,
 	});
 
 	setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient });

@@ -23,6 +23,9 @@ export const Route = createFileRoute("/movies/$id")({
 				movieQueries.recommendations({ movie_id: Number(params.id) }),
 			),
 			context.queryClient.ensureQueryData(
+				movieQueries.images({ movie_id: Number(params.id) }),
+			),
+			context.queryClient.ensureQueryData(
 				watchlistQueries.status(Number(params.id)),
 			),
 		]),
@@ -51,9 +54,10 @@ export const Route = createFileRoute("/movies/$id")({
 		};
 	},
 	component: MovieDetailsPage,
+	pendingMinMs: 3000,
 	pendingComponent: () => (
 		<div className="flex flex-col gap-20 animate-pulse">
-			<div className="w-full h-[60vh] bg-muted" />
+			<div className="w-full h-[clamp(30vh,80vh+10svh,90vh)] bg-muted" />
 		</div>
 	),
 });
@@ -67,7 +71,7 @@ function MovieDetailsPage() {
 	);
 	const {
 		data: imdbRating,
-		isPending,
+		isLoading,
 		isError,
 		error,
 	} = useQuery({
@@ -82,7 +86,7 @@ function MovieDetailsPage() {
 	const topCast = credits.data.cast.slice(0, 5);
 
 	return (
-		<div className="flex flex-col gap-10">
+		<div className="flex flex-col gap-10" key={movie.id}>
 			{/* Backdrop image and overlay */}
 			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-10 items-end">
 				{movie.backdrop_path ? (
@@ -125,7 +129,7 @@ function MovieDetailsPage() {
 								))}
 							</div>
 						)}
-						{isPending ? (
+						{isLoading ? (
 							<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
 						) : isError ? (
 							<p>{error.message}</p>
