@@ -25,7 +25,7 @@ export function TrailerSection({ movie, autoPlay, mute }: TrailerSectionProps) {
 
 	if (isError)
 		return (
-			<div className="p-4 text-red-500">
+			<div className="text-red-500">
 				Error loading trailer {error.message}
 			</div>
 		);
