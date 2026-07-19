@@ -6,6 +6,7 @@ import type {
 	MovieDetailsParams,
 	MovieImagesParams,
 	MovieListParams,
+	MovieRecommendationsParams,
 	MovieVideosParams,
 	SearchMoviesParams,
 	WithLanguage,
@@ -63,6 +64,20 @@ export const getMovieList = createServerFn({ method: "GET" })
 				error instanceof TMDBError
 					? error.message
 					: "Failed to get the movie list",
+			);
+		}
+	});
+
+export const getMovieRecommendations = createServerFn({ method: "GET" })
+	.validator((data: MovieRecommendationsParams) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.movies.recommendations({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get movie recommendations",
 			);
 		}
 	});

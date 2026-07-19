@@ -4,6 +4,7 @@ import type {
 	MovieDetailsParams,
 	MovieImagesParams,
 	MovieListParams,
+	MovieRecommendationsParams,
 	MovieVideosParams,
 	SearchMoviesParams,
 	WithLanguage,
@@ -18,6 +19,7 @@ import {
 	getMovieGenres,
 	getMovieImages,
 	getMovieList,
+	getMovieRecommendations,
 	getMovieVideos,
 	getStreamingSources,
 	searchMovies,
@@ -63,6 +65,11 @@ export const movieQueries = {
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) =>
 				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
+		}),
+	recommendations: (params: MovieRecommendationsParams) =>
+		queryOptions({
+			queryKey: ["movies", "recommendations", { ...params }],
+			queryFn: () => getMovieRecommendations({ data: { ...params } }),
 		}),
 	genres: (params: WithLanguage) =>
 		queryOptions({

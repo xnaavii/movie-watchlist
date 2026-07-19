@@ -4,6 +4,7 @@ import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
+import { RecommendedMovies } from "#/features/movies/components/RecommendedMovies";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
@@ -17,6 +18,9 @@ export const Route = createFileRoute("/movies/$id")({
 		await Promise.all([
 			context.queryClient.ensureQueryData(
 				movieQueries.details({ movie_id: Number(params.id) }),
+			),
+			context.queryClient.ensureQueryData(
+				movieQueries.recommendations({ movie_id: Number(params.id) }),
 			),
 			context.queryClient.ensureQueryData(
 				watchlistQueries.status(Number(params.id)),
@@ -136,7 +140,8 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-4 p-4 md:p-10">
+			<div className="flex flex-col gap-20 p-4 md:p-10">
+				<RecommendedMovies tmdbId={movie.id} />
 				<TrailerSection movie={movie} />
 			</div>
 

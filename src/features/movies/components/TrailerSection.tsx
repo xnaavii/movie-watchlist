@@ -33,8 +33,8 @@ export function TrailerSection({ movie, autoPlay, mute }: TrailerSectionProps) {
 	const trailer = videos?.results.find((v) => v.type === "Trailer");
 
 	return (
-		<section className="flex flex-col gap-6">
-			<h2 className="text-xl tracking-tight font-medium">Watch The Trailer</h2>
+		<section className="flex flex-col gap-4">
+			<h2 className="text-2xl tracking-tight font-medium">Watch The Trailer</h2>
 			{trailer ? (
 				<div className="flex gap-4 w-full overflow-x-auto scrollbar-none snap-x snap-mandatory">
 					<div className="w-full max-w-xl rounded-4xl bg-muted overflow-hidden snap-start shrink-0">
