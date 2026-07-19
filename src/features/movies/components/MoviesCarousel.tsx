@@ -97,7 +97,7 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 										) : (
 											<p>No Image</p>
 										)}
-										<div className="absolute inset-0 p-2 md:p-6 flex flex-col gap-6 justify-end bg-linear-to-t from-background to-transparent">
+										<div className="absolute inset-0 p-4 md:p-10 flex flex-col gap-6 justify-end bg-linear-to-t from-background to-transparent">
 											<div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
 												<div className="flex flex-col gap-4 max-w-5xl">
 													{!isLoading && !isError && images?.logos?.[0] ? (
@@ -114,7 +114,7 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 															{movie.title}
 														</h1>
 													)}
-													<p className="text text-sm md:text-base text-muted-foreground line-clamp-2">
+													<p className="text text-sm md:text-base text-muted-foreground line-clamp-2 max-w-xl">
 														{movie.overview}
 													</p>
 												</div>

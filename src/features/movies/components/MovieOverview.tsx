@@ -6,10 +6,16 @@ import {
 	DialogHeader,
 	DialogTrigger,
 } from "#/components/ui/dialog";
+import { cn } from "#/lib/utils";
 
-export function MovieOverview({ overview }: { overview: string }) {
+interface MovieOverviewProps {
+	overview: string;
+	className?: string;
+}
+
+export function MovieOverview({ overview, className }: MovieOverviewProps) {
 	return (
-		<div className="flex items-end wrap-normal">
+		<div className={cn("flex items-end wrap-normal", className)}>
 			<p className="text-muted-foreground line-clamp-2">{overview}</p>
 			<Dialog>
 				<DialogTrigger asChild>

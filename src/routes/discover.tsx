@@ -1,8 +1,5 @@
 import type { LanguageISO6391 } from "@lorenzopant/tmdb";
-import {
-	useSuspenseInfiniteQuery,
-	useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { SITE_CONFIG } from "#/config/site";
@@ -83,7 +80,6 @@ export const Route = createFileRoute("/discover")({
 
 function DiscoverPage() {
 	const { genreId, year, sortBy, minRating, language } = Route.useSearch();
-	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useSuspenseInfiniteQuery(
 			movieQueries.discover(
@@ -103,16 +99,8 @@ function DiscoverPage() {
 		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
 	}, hasNextPage);
 
-	const selectedGenreName = genres.genres.find((g) => g.id === genreId)?.name;
-
-	const heading = selectedGenreName
-		? `${selectedGenreName} Movies${year ? ` (${year})` : ""}`
-		: year
-			? `${year} Movies`
-			: "Trending Movies";
-
 	return (
-		<div className="flex flex-col gap-10 p-2 md:p-6 mt-16 md:mt-0">
+		<div className="flex flex-col gap-6 p-4 md:p-10 mt-10 md:mt-0">
 			<MoviesCarousel movies={movies} />
 			<div className="flex items-center gap-2 flex-wrap">
 				<YearFilter />
@@ -123,10 +111,7 @@ function DiscoverPage() {
 			</div>
 
 			<div className="flex flex-col gap-6">
-				<h2 className="text-xl md:text-3xl tracking-tighter font-medium">
-					{heading}
-				</h2>
-				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2.5">
+				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 					{movies.map((movie) => (
 						<MovieCard
 							key={movie.id}
