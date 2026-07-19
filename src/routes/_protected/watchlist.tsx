@@ -9,6 +9,14 @@ import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
 export const Route = createFileRoute("/_protected/watchlist")({
 	component: WatchlistPage,
+	pendingComponent: WatchlistPending,
+	errorComponent: ({ error }) => (
+		<div className="p-4 md:p-6 lg:p-8 mt-16 md:mt-0">
+			<p className="text-destructive">
+				Failed to load your watchlist: {error.message}
+			</p>
+		</div>
+	),
 	loader: async ({ context }) => {
 		await context.queryClient.ensureInfiniteQueryData(
 			watchlistQueries.infiniteList(),
@@ -53,6 +61,22 @@ function WatchlistPage() {
 					/>
 				))}
 				<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
+			</div>
+		</div>
+	);
+}
+
+function WatchlistPending() {
+	const skeletonItems = Array.from({ length: 10 }, (_, i) => ({
+		id: i,
+	}));
+	return (
+		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-16 md:mt-0 animate-pulse">
+			<div className="h-8 w-48 bg-muted rounded" />
+			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+				{skeletonItems.map((item) => (
+					<div key={item.id} className="aspect-2/3 bg-muted rounded-lg" />
+				))}
 			</div>
 		</div>
 	);
