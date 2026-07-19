@@ -1,6 +1,6 @@
 import type { LanguageISO6391 } from "@lorenzopant/tmdb";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { SITE_CONFIG } from "#/config/site";
 import { GenreFilter } from "#/features/movies/components/GenreFilter";
@@ -14,6 +14,7 @@ import { movieQueries } from "#/features/movies/queries";
 import { buildDiscoverParams } from "#/features/movies/utils";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { seo } from "#/utils/seo";
+import { Button } from "#/components/ui/button";
 
 const discoverMoviesSchema = z.object({
 	genreId: z.coerce.number().optional(),
@@ -40,7 +41,17 @@ type DiscoverMoviesSearch = Omit<
 export const Route = createFileRoute("/discover")({
 	component: DiscoverPage,
 	pendingComponent: () => <p>Loading...</p>,
-	errorComponent: ({ error }) => <p>{error.message}</p>,
+	errorComponent: ({ error }) => (
+		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">
+			<h1 className="text-2xl font-medium tracking-tighter">
+				Something went wrong
+			</h1>
+			<p className="text-muted-foreground">{error.message}</p>
+			<Button asChild>
+				<Link to="/discover">Try again</Link>
+			</Button>
+		</div>
+	),
 	validateSearch: (search): DiscoverMoviesSearch =>
 		discoverMoviesSchema.parse(search) as DiscoverMoviesSearch,
 	loaderDeps: ({ search }) => ({
