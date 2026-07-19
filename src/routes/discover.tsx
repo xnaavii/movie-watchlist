@@ -14,7 +14,7 @@ import { YearFilter } from "#/features/movies/components/YearFilter";
 import { movieQueries } from "#/features/movies/queries";
 import { buildDiscoverParams } from "#/features/movies/utils";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
-import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
+import { seo } from "#/utils/seo";
 
 const discoverMoviesSchema = z.object({
 	genreId: z.coerce.number().optional(),
