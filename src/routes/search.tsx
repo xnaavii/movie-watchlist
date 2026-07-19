@@ -68,7 +68,7 @@ function SearchPage() {
 	);
 
 	return (
-		<div className="flex flex-col gap-6 p-2 md:p-6 mt-16 md:mt-0">
+		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8  mt-16 md:mt-0">
 			<SearchBar value={draft} onChange={setDraft} />
 			{!q ? (
 				<p className="text-muted-foreground">
