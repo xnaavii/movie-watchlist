@@ -78,7 +78,7 @@ function MovieDetailsPage() {
 	const topCast = credits.data.cast.slice(0, 5);
 
 	return (
-		<div className="flex flex-col gap-20">
+		<div className="flex flex-col gap-10">
 			{/* Backdrop image and overlay */}
 			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-10 items-end">
 				{movie.backdrop_path ? (
@@ -136,7 +136,9 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<TrailerSection movie={movie} />
+			<div className="flex flex-col gap-4 p-4 md:p-10">
+				<TrailerSection movie={movie} />
+			</div>
 
 			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}
 			{/* <StreamingSources tmdbId={movie.imdb_id ?? ""} /> */}
