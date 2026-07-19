@@ -7,6 +7,7 @@ import {
 	findOrCreateMovie,
 	getWatchlistStatus,
 	selectUserWatchlist,
+	selectUserWatchlistPage,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
@@ -78,3 +79,26 @@ export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
 		return await selectUserWatchlist(session.user.id);
 	},
 );
+
+const WATCHLIST_PAGE_SIZE = 20;
+
+export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(async ({ data }) => {
+		const session = await getSession();
+		if (!session) {
+			return { results: [], page: data.page, hasMore: false };
+		}
+
+		const offset = (data.page - 1) * WATCHLIST_PAGE_SIZE;
+		const rows = await selectUserWatchlistPage(session.user.id, {
+			limit: WATCHLIST_PAGE_SIZE,
+			offset,
+		});
+
+		return {
+			results: rows,
+			page: data.page,
+			hasMore: rows.length === WATCHLIST_PAGE_SIZE,
+		};
+	});

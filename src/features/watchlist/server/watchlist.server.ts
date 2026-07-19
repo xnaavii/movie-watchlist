@@ -108,3 +108,17 @@ export async function selectUserWatchlist(userId: string) {
 		.where(eq(watchlist.userId, userId))
 		.orderBy(desc(watchlist.addedAt));
 }
+
+export async function selectUserWatchlistPage(
+	userId: string,
+	{ limit, offset }: { limit: number; offset: number },
+) {
+	return await db
+		.select()
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.where(eq(watchlist.userId, userId))
+		.orderBy(desc(watchlist.addedAt))
+		.limit(limit)
+		.offset(offset);
+}
