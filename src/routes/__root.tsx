@@ -4,12 +4,14 @@ import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	HeadContent,
+	Link,
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Navbar } from "#/components/Navbar";
 import { Sidebar } from "#/components/Sidebar";
 import { ThemeProvider } from "#/components/ThemeProvider";
+import { Button } from "#/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -40,6 +42,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		],
 	}),
 	shellComponent: RootDocument,
+	notFoundComponent: NotFoundPage,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -75,5 +78,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Scripts />
 			</body>
 		</html>
+	);
+}
+
+function NotFoundPage() {
+	return (
+		<div className="flex flex-col items-center justify-center gap-4 h-screen text-center px-4">
+			<h1 className="text-6xl font-semibold tracking-tighter">404</h1>
+			<p className="text-muted-foreground">This page doesn't exist.</p>
+			<Button asChild>
+				<Link to="/discover">Go home</Link>
+			</Button>
+		</div>
 	);
 }
