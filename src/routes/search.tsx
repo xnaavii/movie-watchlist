@@ -21,6 +21,11 @@ export const Route = createFileRoute("/search")({
 			movieQueries.infiniteSearch({ query: deps.q }),
 		);
 	},
+	pendingComponent: () => (
+		<div className="p-2 md:p-6 mt-16 md:mt-0">
+			<p className="text-muted-foreground">Loading...</p>
+		</div>
+	),
 });
 
 function SearchPage() {
