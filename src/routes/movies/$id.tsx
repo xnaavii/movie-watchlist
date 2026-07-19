@@ -13,6 +13,7 @@ import {
 } from "#/features/movies/queries";
 import { WatchlistStatusButton } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
+import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/movies/$id")({
 	loader: async ({ params, context }) => {
@@ -44,19 +45,17 @@ export const Route = createFileRoute("/movies/$id")({
 		const movie = loaderData[0];
 		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
 		const imageUrl = movie.backdrop_path || undefined;
+		const pageTitle = `${truncateTitle(movie.title)} | ${SITE_CONFIG.name}`;
+
 		return {
 			meta: [
-				{ title: `${movie.title} | ${SITE_CONFIG.name}` },
-				{ name: "description", content: movie.overview },
-				{ property: "og:title", content: movie.title },
-				{ property: "og:description", content: movie.overview },
-				{ property: "og:image", content: imageUrl },
+				...seo({
+					title: pageTitle,
+					description: truncateForMeta(movie.overview),
+					image: imageUrl,
+				}),
 				{ property: "og:type", content: "video.movie" },
 				{ property: "og:url", content: pageUrl },
-				{ name: "twitter:card", content: "summary_large_image" },
-				{ name: "twitter:title", content: movie.title },
-				{ name: "twitter:description", content: movie.overview },
-				{ name: "twitter:image", content: imageUrl },
 				{ name: "twitter:url", content: pageUrl },
 			],
 		};

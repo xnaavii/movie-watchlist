@@ -12,6 +12,7 @@ import { Navbar } from "#/components/Navbar";
 import { Sidebar } from "#/components/Sidebar";
 import { ThemeProvider } from "#/components/ThemeProvider";
 import { Button } from "#/components/ui/button";
+import { seo } from "#/utils/seo";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -30,15 +31,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				name: "viewport",
 				content: "width=device-width, initial-scale=1",
 			},
-			{
+			...seo({
 				title: "Movie Watchlist",
-			},
+				description:
+					"Discover movies, build your watchlist, and track what you've watched.",
+			}),
 		],
 		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
+			{ rel: "stylesheet", href: appCss },
+			{ rel: "icon", href: "/favicon.ico", sizes: "any" },
+			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+			{ rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
 		],
 	}),
 	shellComponent: RootDocument,
