@@ -8,6 +8,7 @@ import {
 	getWatchlistStatus,
 	selectUserWatchlist,
 	selectUserWatchlistPage,
+	selectUserWatchlistStatuses,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
@@ -102,3 +103,11 @@ export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
 			hasMore: rows.length === WATCHLIST_PAGE_SIZE,
 		};
 	});
+
+export const getUserWatchlistStatusesFn = createServerFn({
+	method: "GET",
+}).handler(async () => {
+	const session = await getSession();
+	if (!session) return {};
+	return await selectUserWatchlistStatuses(session.user.id);
+});

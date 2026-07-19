@@ -1,5 +1,5 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { getUserWatchlistPageFn, getWatchlistStatusFn } from "./server/watchlist.functions";
+import { getUserWatchlistPageFn, getUserWatchlistStatusesFn, getWatchlistStatusFn } from "./server/watchlist.functions";
 
 export const watchlistQueries = {
 	status: (tmdbId: number) =>
@@ -16,4 +16,9 @@ export const watchlistQueries = {
 			getNextPageParam: (lastPage) =>
 				lastPage.hasMore ? lastPage.page + 1 : undefined,
 		}),
+	watchlistStatuses: () =>
+		queryOptions({
+			queryKey: ["watchlist", "statuses"],
+			queryFn: () => getUserWatchlistStatusesFn(),
+		})
 };

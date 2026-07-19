@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { Bookmark, Check } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
+import { Badge } from "#/components/ui/badge";
 import { Card } from "#/components/ui/card";
+import type { WatchlistStatusInsert } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 
 type MovieCardProps = {
@@ -8,6 +11,7 @@ type MovieCardProps = {
 	title: string;
 	posterPath: string | null;
 	className?: string;
+	watchlistStatus?: "want_to_watch" | "watched" | null;
 };
 
 export function MovieCard({
@@ -15,9 +19,18 @@ export function MovieCard({
 	title,
 	posterPath,
 	className,
+	watchlistStatus,
 }: MovieCardProps) {
 	return (
-		<Card className={cn("mx-auto w-full py-0", className)} title={title}>
+		<Card
+			className={cn("relative mx-auto w-full py-0", className)}
+			title={title}
+		>
+			{watchlistStatus && (
+				<div className="absolute top-2 right-2 z-10">
+					<WatchlistBadge status={watchlistStatus} />
+				</div>
+			)}
 			<AspectRatio ratio={2 / 3}>
 				<Link
 					to="/movies/$id"
@@ -28,7 +41,10 @@ export function MovieCard({
 						<img
 							src={posterPath}
 							alt={title}
-							className="size-full object-cover"
+							className={cn(
+								"size-full object-cover",
+								watchlistStatus === "want_to_watch" ? "saturate-0" : "",
+							)}
 							loading="lazy"
 						/>
 					) : (
@@ -39,5 +55,21 @@ export function MovieCard({
 				</Link>
 			</AspectRatio>
 		</Card>
+	);
+}
+
+function WatchlistBadge({ status }: { status: WatchlistStatusInsert }) {
+	return (
+		<Badge
+			variant={status === "watched" ? "default" : "secondary"}
+			className="gap-1"
+			title={status === "watched" ? "Watched" : "Want to watch"}
+		>
+			{status === "watched" ? (
+				<Check className="size-3" />
+			) : (
+				<Bookmark className="size-3" />
+			)}
+		</Badge>
 	);
 }

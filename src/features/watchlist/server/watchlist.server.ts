@@ -122,3 +122,13 @@ export async function selectUserWatchlistPage(
 		.limit(limit)
 		.offset(offset);
 }
+
+export async function selectUserWatchlistStatuses(userId: string) {
+	const rows = await db
+		.select({ tmdbId: movie.tmdbId, status: watchlist.status })
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.where(eq(watchlist.userId, userId));
+
+	return Object.fromEntries(rows.map((r) => [r.tmdbId, r.status]));
+}

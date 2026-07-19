@@ -1,4 +1,7 @@
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import {
+	useSuspenseInfiniteQuery,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -18,6 +21,9 @@ function WatchlistPage() {
 		useSuspenseInfiniteQuery(watchlistQueries.infiniteList());
 
 	const items = data.pages.flatMap((page) => page.results);
+	const { data: statuses } = useSuspenseQuery(
+		watchlistQueries.watchlistStatuses(),
+	);
 
 	const sentinelRef = useInfiniteScrollTrigger(() => {
 		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -43,6 +49,7 @@ function WatchlistPage() {
 						id={movie.tmdbId}
 						title={movie.title}
 						posterPath={movie.posterPath}
+						watchlistStatus={statuses[movie.tmdbId] ?? null}
 					/>
 				))}
 				<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
