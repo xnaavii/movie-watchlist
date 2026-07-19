@@ -3,11 +3,13 @@ export const seo = ({
 	description,
 	keywords,
 	image,
+	url,
 }: {
 	title: string;
 	description?: string;
 	image?: string;
 	keywords?: string;
+	url?: string;
 }) => {
 	const tags = [
 		{ title },
@@ -18,6 +20,12 @@ export const seo = ({
 		{ property: "og:type", content: "website" },
 		{ property: "og:title", content: title },
 		{ property: "og:description", content: description },
+		...(url
+			? [
+					{ property: "og:url", content: url },
+					{ name: "twitter:url", content: url },
+				]
+			: []),
 		...(image
 			? [
 					{ name: "twitter:image", content: image },
