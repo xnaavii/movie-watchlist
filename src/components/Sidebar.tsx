@@ -1,4 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 import { Compass, ListVideo, Search, User, VenetianMask } from "lucide-react";
 import { cn } from "#/lib/utils";
 import { ModeToggle } from "./ModeToggle";
@@ -8,13 +9,40 @@ type SidebarProps = {
 	className?: string;
 };
 
-export function Sidebar({ className }: SidebarProps) {
-	const matchRoute = useMatchRoute();
+type NavItem = {
+	to: string;
+	icon: LucideIcon;
+};
 
+const navItems: NavItem[] = [
+	{ to: "/search", icon: Search },
+	{ to: "/discover", icon: Compass },
+	{ to: "/watchlist", icon: ListVideo },
+	{ to: "/profile", icon: User },
+];
+
+function NavIconButton({ to, icon: Icon }: NavItem) {
+	const matchRoute = useMatchRoute();
+	const isActive = !!matchRoute({ to });
+
+	return (
+		<Button size="icon-lg" asChild variant={isActive ? "default" : "link"}>
+			<Link
+				to={to}
+				activeProps={{ className: "text-sidebar-primary-foreground" }}
+				inactiveProps={{ className: "text-sidebar-primary" }}
+			>
+				<Icon className="size-5" />
+			</Link>
+		</Button>
+	);
+}
+
+export function Sidebar({ className }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				"p-2 hidden md:flex flex-col justify-between items-center bg-sidebar",
+				"p-6 ml-2 my-2 hidden md:flex flex-col justify-between items-center bg-sidebar/60 drop-shadow-2xl rounded-2xl",
 				className,
 			)}
 		>
@@ -25,45 +53,9 @@ export function Sidebar({ className }: SidebarProps) {
 			</Button>
 			<nav>
 				<ul className="flex flex-col items-center gap-4">
-					<Button
-						size="icon-lg"
-						asChild
-						variant={matchRoute({ to: "/search" }) ? "default" : "secondary"}
-					>
-						<Link to="/search">
-							<Search />
-						</Link>
-					</Button>
-					<Button
-						size="icon-lg"
-						asChild
-						variant={matchRoute({ to: "/discover" }) ? "default" : "secondary"}
-					>
-						<Link to="/discover">
-							<Compass />
-						</Link>
-					</Button>
-					<Button
-						size="icon-lg"
-						asChild
-						variant={matchRoute({ to: "/watchlist" }) ? "default" : "secondary"}
-					>
-						<Link to="/watchlist">
-							<ListVideo />
-						</Link>
-					</Button>
-					<Button
-						size="icon-lg"
-						asChild
-						variant={matchRoute({ to: "/profile" }) ? "default" : "secondary"}
-					>
-						<Link
-							to="/profile"
-							activeProps={{ className: "text-sidebar-primary" }}
-						>
-							<User />
-						</Link>
-					</Button>
+					{navItems.map((item) => (
+						<NavIconButton key={item.to} {...item} />
+					))}
 				</ul>
 			</nav>
 			<div className="flex flex-col gap-4 items-center">
