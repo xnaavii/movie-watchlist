@@ -68,9 +68,9 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 						src={movie.backdrop_path}
 						alt=""
 						aria-hidden="true"
-						className="size-full object-cover blur-3xl opacity-70"
+						className="size-full object-cover blur-3xl"
 					/>
-					<div className="absolute inset-0 bg-linear-to-b from-transparent via-background/60 to-background" />
+					<div className="absolute inset-0 bg-linear-to-b from-transparent to-background/60" />
 				</div>
 			)}
 
@@ -92,12 +92,12 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 											<img
 												src={movie.backdrop_path}
 												alt={movie.title}
-												className="absolute inset-0 size-full object-cover object-top shadow-2xl"
+												className="absolute inset-0 size-full object-cover"
 											/>
 										) : (
 											<p>No Image</p>
 										)}
-										<div className="absolute inset-0 p-4 md:p-10 flex flex-col gap-6 justify-end bg-linear-to-t from-background to-transparent">
+										<div className="absolute inset-0 p-4 md:p-10 flex flex-col gap-6 justify-end bg-linear-to-b from-transparent to-background">
 											<div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
 												<div className="flex flex-col gap-4 max-w-5xl">
 													{!isLoading && !isError && images?.logos?.[0] ? (
