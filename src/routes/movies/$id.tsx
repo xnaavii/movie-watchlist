@@ -113,9 +113,9 @@ function MovieDetailsPage() {
 						<img
 							src={movie.backdrop_path}
 							alt={`${movie.title} banner`}
-							className="absolute right-0 bottom-0 object-cover size-full object-top"
+							className="absolute right-0 bottom-0 object-cover size-full object-center"
 						/>
-						<div className="absolute inset-0 bg-linear-to-b from-transparent via-background/60 to-background" />
+						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
 					</>
 				) : (
 					<div className="absolute right-0 bottom-0 size-full bg-muted-foreground flex flex-col items-center justify-center">
