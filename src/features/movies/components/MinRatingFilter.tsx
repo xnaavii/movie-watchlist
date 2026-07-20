@@ -8,7 +8,8 @@ import {
 	SelectValue,
 } from "#/components/ui/select";
 
-const routeApi = getRouteApi("/discover");
+const routeApi = getRouteApi("/_app/discover");
+
 const ANY_RATING_VALUE = "any";
 const RATING_OPTIONS = [9, 8, 7, 6, 5];
 

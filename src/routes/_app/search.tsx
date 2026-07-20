@@ -11,7 +11,7 @@ const searchParamsSchema = z.object({
 	q: z.string().catch(""),
 });
 
-export const Route = createFileRoute("/search")({
+export const Route = createFileRoute("/_app/search")({
 	component: SearchPage,
 	validateSearch: searchParamsSchema,
 	loaderDeps: ({ search }) => ({ q: search.q }),
@@ -68,7 +68,7 @@ function SearchPage() {
 	);
 
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8  mt-16 md:mt-0">
+		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-16 md:mt-0">
 			<SearchBar value={draft} onChange={setDraft} />
 			{!q ? (
 				<p className="text-muted-foreground">
@@ -81,7 +81,7 @@ function SearchPage() {
 			) : (
 				<div className="flex flex-col gap-6">
 					<h2 className="text-xl">Showing results for {q}</h2>
-					<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+					<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
 						{movies.map((movie) => (
 							<MovieCard
 								key={movie.id}

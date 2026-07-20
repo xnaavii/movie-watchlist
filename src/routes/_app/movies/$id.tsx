@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
@@ -15,24 +15,23 @@ import { WatchlistStatusButton } from "#/features/watchlist/components/Watchlist
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
-export const Route = createFileRoute("/movies/$id")({
-	loader: async ({ params, context }) => {
+export const Route = createFileRoute("/_app/movies/$id")({
+	loader: async ({ params }) => {
+		const queryClient = new QueryClient();
 		const movieId = Number(params.id);
 		if (Number.isNaN(movieId)) {
 			throw notFound();
 		}
 		try {
 			return await Promise.all([
-				context.queryClient.ensureQueryData(
+				queryClient.ensureQueryData(
 					movieQueries.details({ movie_id: movieId }),
 				),
-				context.queryClient.ensureQueryData(
+				queryClient.ensureQueryData(
 					movieQueries.recommendations({ movie_id: movieId }),
 				),
-				context.queryClient.ensureQueryData(
-					movieQueries.images({ movie_id: movieId }),
-				),
-				context.queryClient.ensureQueryData(watchlistQueries.status(movieId)),
+				queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
+				queryClient.ensureQueryData(watchlistQueries.status(movieId)),
 			]);
 		} catch {
 			throw notFound();
@@ -105,15 +104,15 @@ function MovieDetailsPage() {
 	const topCast = credits.data.cast.slice(0, 5);
 
 	return (
-		<div className="flex flex-col gap-6" key={movie.id}>
+		<div className="flex flex-col gap-6 relative" key={movie.id}>
 			{/* Backdrop image and overlay */}
-			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-10 items-end">
+			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-2 md:p-4 lg:p-8 items-end">
 				{movie.backdrop_path ? (
 					<>
 						<img
 							src={movie.backdrop_path}
 							alt={`${movie.title} banner`}
-							className="absolute right-0 bottom-0 object-cover size-full object-center"
+							className="absolute right-0 bottom-0 object-cover size-full object-top"
 						/>
 						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
 					</>
@@ -163,7 +162,7 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-20 p-4 md:p-10">
+			<div className="flex flex-col gap-20 p-2 md:p-4 lg:p-8">
 				<RecommendedMovies tmdbId={movie.id} />
 				<TrailerSection movie={movie} />
 			</div>

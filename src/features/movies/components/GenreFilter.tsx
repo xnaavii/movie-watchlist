@@ -9,7 +9,8 @@ import {
 } from "#/components/ui/select";
 import { movieQueries } from "#/features/movies/queries";
 
-const routeApi = getRouteApi("/discover");
+const routeApi = getRouteApi("/_app/discover");
+
 const ALL_GENRES_VALUE = "all";
 
 export function GenreFilter() {

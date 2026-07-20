@@ -9,100 +9,106 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DiscoverRouteImport } from './routes/discover'
-import { Route as ProtectedRouteImport } from './routes/_protected'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as MoviesIdRouteImport } from './routes/movies/$id'
-import { Route as ProtectedWatchlistRouteImport } from './routes/_protected/watchlist'
-import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppSignupRouteImport } from './routes/_app/signup'
+import { Route as AppSearchRouteImport } from './routes/_app/search'
+import { Route as AppLoginRouteImport } from './routes/_app/login'
+import { Route as AppDiscoverRouteImport } from './routes/_app/discover'
+import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AppMoviesIdRouteImport } from './routes/_app/movies/$id'
+import { Route as AppProtectedWatchlistRouteImport } from './routes/_app/_protected/watchlist'
+import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
 
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoverRoute = DiscoverRouteImport.update({
-  id: '/discover',
-  path: '/discover',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProtectedRoute = ProtectedRouteImport.update({
-  id: '/_protected',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const MoviesIdRoute = MoviesIdRouteImport.update({
-  id: '/movies/$id',
-  path: '/movies/$id',
-  getParentRoute: () => rootRouteImport,
+const AppSignupRoute = AppSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const ProtectedWatchlistRoute = ProtectedWatchlistRouteImport.update({
-  id: '/watchlist',
-  path: '/watchlist',
-  getParentRoute: () => ProtectedRoute,
+const AppSearchRoute = AppSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => ProtectedRoute,
+const AppLoginRoute = AppLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDiscoverRoute = AppDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProtectedRoute = AppProtectedRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppMoviesIdRoute = AppMoviesIdRouteImport.update({
+  id: '/movies/$id',
+  path: '/movies/$id',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProtectedWatchlistRoute = AppProtectedWatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => AppProtectedRoute,
+} as any)
+const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppProtectedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/discover': typeof DiscoverRoute
-  '/login': typeof LoginRoute
-  '/search': typeof SearchRoute
-  '/signup': typeof SignupRoute
-  '/profile': typeof ProtectedProfileRoute
-  '/watchlist': typeof ProtectedWatchlistRoute
-  '/movies/$id': typeof MoviesIdRoute
+  '/': typeof AppIndexRoute
+  '/discover': typeof AppDiscoverRoute
+  '/login': typeof AppLoginRoute
+  '/search': typeof AppSearchRoute
+  '/signup': typeof AppSignupRoute
+  '/profile': typeof AppProtectedProfileRoute
+  '/watchlist': typeof AppProtectedWatchlistRoute
+  '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/discover': typeof DiscoverRoute
-  '/login': typeof LoginRoute
-  '/search': typeof SearchRoute
-  '/signup': typeof SignupRoute
-  '/profile': typeof ProtectedProfileRoute
-  '/watchlist': typeof ProtectedWatchlistRoute
-  '/movies/$id': typeof MoviesIdRoute
+  '/': typeof AppIndexRoute
+  '/discover': typeof AppDiscoverRoute
+  '/login': typeof AppLoginRoute
+  '/search': typeof AppSearchRoute
+  '/signup': typeof AppSignupRoute
+  '/profile': typeof AppProtectedProfileRoute
+  '/watchlist': typeof AppProtectedWatchlistRoute
+  '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_protected': typeof ProtectedRouteWithChildren
-  '/discover': typeof DiscoverRoute
-  '/login': typeof LoginRoute
-  '/search': typeof SearchRoute
-  '/signup': typeof SignupRoute
-  '/_protected/profile': typeof ProtectedProfileRoute
-  '/_protected/watchlist': typeof ProtectedWatchlistRoute
-  '/movies/$id': typeof MoviesIdRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/_app/_protected': typeof AppProtectedRouteWithChildren
+  '/_app/discover': typeof AppDiscoverRoute
+  '/_app/login': typeof AppLoginRoute
+  '/_app/search': typeof AppSearchRoute
+  '/_app/signup': typeof AppSignupRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/_protected/profile': typeof AppProtectedProfileRoute
+  '/_app/_protected/watchlist': typeof AppProtectedWatchlistRoute
+  '/_app/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -130,93 +136,74 @@ export interface FileRouteTypes {
     | '/api/auth/$'
   id:
     | '__root__'
-    | '/'
-    | '/_protected'
-    | '/discover'
-    | '/login'
-    | '/search'
-    | '/signup'
-    | '/_protected/profile'
-    | '/_protected/watchlist'
-    | '/movies/$id'
+    | '/_app'
+    | '/_app/_protected'
+    | '/_app/discover'
+    | '/_app/login'
+    | '/_app/search'
+    | '/_app/signup'
+    | '/_app/'
+    | '/_app/_protected/profile'
+    | '/_app/_protected/watchlist'
+    | '/_app/movies/$id'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ProtectedRoute: typeof ProtectedRouteWithChildren
-  DiscoverRoute: typeof DiscoverRoute
-  LoginRoute: typeof LoginRoute
-  SearchRoute: typeof SearchRoute
-  SignupRoute: typeof SignupRoute
-  MoviesIdRoute: typeof MoviesIdRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discover': {
-      id: '/discover'
-      path: '/discover'
-      fullPath: '/discover'
-      preLoaderRoute: typeof DiscoverRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_protected': {
-      id: '/_protected'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof ProtectedRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/movies/$id': {
-      id: '/movies/$id'
-      path: '/movies/$id'
-      fullPath: '/movies/$id'
-      preLoaderRoute: typeof MoviesIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/signup': {
+      id: '/_app/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof AppSignupRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_protected/watchlist': {
-      id: '/_protected/watchlist'
-      path: '/watchlist'
-      fullPath: '/watchlist'
-      preLoaderRoute: typeof ProtectedWatchlistRouteImport
-      parentRoute: typeof ProtectedRoute
+    '/_app/search': {
+      id: '/_app/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AppSearchRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_protected/profile': {
-      id: '/_protected/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProtectedProfileRouteImport
-      parentRoute: typeof ProtectedRoute
+    '/_app/login': {
+      id: '/_app/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AppLoginRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/discover': {
+      id: '/_app/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof AppDiscoverRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/_protected': {
+      id: '/_app/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppProtectedRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -225,31 +212,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/movies/$id': {
+      id: '/_app/movies/$id'
+      path: '/movies/$id'
+      fullPath: '/movies/$id'
+      preLoaderRoute: typeof AppMoviesIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/_protected/watchlist': {
+      id: '/_app/_protected/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof AppProtectedWatchlistRouteImport
+      parentRoute: typeof AppProtectedRoute
+    }
+    '/_app/_protected/profile': {
+      id: '/_app/_protected/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProtectedProfileRouteImport
+      parentRoute: typeof AppProtectedRoute
+    }
   }
 }
 
-interface ProtectedRouteChildren {
-  ProtectedProfileRoute: typeof ProtectedProfileRoute
-  ProtectedWatchlistRoute: typeof ProtectedWatchlistRoute
+interface AppProtectedRouteChildren {
+  AppProtectedProfileRoute: typeof AppProtectedProfileRoute
+  AppProtectedWatchlistRoute: typeof AppProtectedWatchlistRoute
 }
 
-const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedProfileRoute: ProtectedProfileRoute,
-  ProtectedWatchlistRoute: ProtectedWatchlistRoute,
+const AppProtectedRouteChildren: AppProtectedRouteChildren = {
+  AppProtectedProfileRoute: AppProtectedProfileRoute,
+  AppProtectedWatchlistRoute: AppProtectedWatchlistRoute,
 }
 
-const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
-  ProtectedRouteChildren,
+const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(
+  AppProtectedRouteChildren,
+)
+
+interface AppRouteRouteChildren {
+  AppProtectedRoute: typeof AppProtectedRouteWithChildren
+  AppDiscoverRoute: typeof AppDiscoverRoute
+  AppLoginRoute: typeof AppLoginRoute
+  AppSearchRoute: typeof AppSearchRoute
+  AppSignupRoute: typeof AppSignupRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppMoviesIdRoute: typeof AppMoviesIdRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppProtectedRoute: AppProtectedRouteWithChildren,
+  AppDiscoverRoute: AppDiscoverRoute,
+  AppLoginRoute: AppLoginRoute,
+  AppSearchRoute: AppSearchRoute,
+  AppSignupRoute: AppSignupRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppMoviesIdRoute: AppMoviesIdRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ProtectedRoute: ProtectedRouteWithChildren,
-  DiscoverRoute: DiscoverRoute,
-  LoginRoute: LoginRoute,
-  SearchRoute: SearchRoute,
-  SignupRoute: SignupRoute,
-  MoviesIdRoute: MoviesIdRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

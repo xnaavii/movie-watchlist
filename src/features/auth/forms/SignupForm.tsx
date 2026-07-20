@@ -40,7 +40,7 @@ const formSchema = z
 		path: ["confirmPassword"],
 	});
 
-const routeApi = getRouteApi("/signup");
+const routeApi = getRouteApi("/_app/signup");
 
 export function SignupForm() {
 	const router = useRouter();

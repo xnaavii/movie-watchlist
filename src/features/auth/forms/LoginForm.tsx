@@ -26,7 +26,7 @@ const formSchema = z.object({
 	password: z.string().min(1, "Password is required"),
 });
 
-const routeApi = getRouteApi("/login");
+const routeApi = getRouteApi("/_app/login");
 
 export function LoginForm() {
 	const router = useRouter();

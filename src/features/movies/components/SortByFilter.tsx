@@ -7,7 +7,7 @@ import {
 	SelectValue,
 } from "#/components/ui/select";
 
-const routeApi = getRouteApi("/discover");
+const routeApi = getRouteApi("/_app/discover");
 
 const SORT_OPTIONS = [
 	{ value: "popularity.desc", label: "Most Popular" },

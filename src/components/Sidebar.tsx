@@ -42,7 +42,7 @@ export function Sidebar({ className }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				"p-6 ml-2 my-2 hidden md:flex flex-col justify-between items-center bg-sidebar/60 drop-shadow-2xl rounded-2xl",
+				"p-4 hidden md:flex flex-col justify-between items-center bg-sidebar/30 backdrop-blur-3xl",
 				className,
 			)}
 		>

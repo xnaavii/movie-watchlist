@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { authClient } from "#/lib/auth-client";
 
-export const Route = createFileRoute("/_protected/profile")({
+export const Route = createFileRoute("/_app/_protected/profile")({
 	component: ProfilePage,
 });
 

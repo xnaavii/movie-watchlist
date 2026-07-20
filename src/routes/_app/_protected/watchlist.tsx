@@ -7,11 +7,11 @@ import { MovieCard } from "#/features/movies/components/MovieCard";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
-export const Route = createFileRoute("/_protected/watchlist")({
+export const Route = createFileRoute("/_app/_protected/watchlist")({
 	component: WatchlistPage,
 	pendingComponent: WatchlistPending,
 	errorComponent: ({ error }) => (
-		<div className="p-4 md:p-6 lg:p-8 mt-16 md:mt-0">
+		<div className="p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
 			<p className="text-destructive">
 				Failed to load your watchlist: {error.message}
 			</p>
@@ -39,18 +39,18 @@ function WatchlistPage() {
 
 	if (items.length === 0) {
 		return (
-			<div className="p-2 md:p-6 mt-16 md:mt-0">
+			<div className="p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
 				<p className="text-muted-foreground">Your watchlist is empty.</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-16 md:mt-0">
+		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
 			<h1 className="text-2xl md:text-3xl tracking-tighter font-medium">
 				My Watchlist
 			</h1>
-			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
 				{items.map(({ movie }) => (
 					<MovieCard
 						key={movie.id}
@@ -71,7 +71,7 @@ function WatchlistPending() {
 		id: i,
 	}));
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-16 md:mt-0 animate-pulse">
+		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-10 md:mt-0 animate-pulse">
 			<div className="h-8 w-48 bg-muted rounded" />
 			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 				{skeletonItems.map((item) => (

@@ -38,7 +38,7 @@ type DiscoverMoviesSearch = Omit<
 	language?: LanguageISO6391;
 };
 
-export const Route = createFileRoute("/discover")({
+export const Route = createFileRoute("/_app/discover")({
 	component: DiscoverPage,
 	pendingComponent: () => {
 		const skeletonItems = Array.from({ length: 5 }, (_, i) => ({
@@ -137,7 +137,7 @@ function DiscoverPage() {
 	}, hasNextPage);
 
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-10 mt-10 md:mt-0">
+		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
 			<MoviesCarousel movies={movies} />
 			<div className="flex items-center gap-2 flex-wrap">
 				<YearFilter />
@@ -148,7 +148,7 @@ function DiscoverPage() {
 			</div>
 
 			<div className="flex flex-col gap-6">
-				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+				<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
 					{movies.map((movie) => (
 						<MovieCard
 							key={movie.id}

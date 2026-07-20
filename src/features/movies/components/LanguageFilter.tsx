@@ -20,7 +20,7 @@ import {
 import { movieQueries } from "#/features/movies/queries";
 import { cn } from "#/lib/utils";
 
-const routeApi = getRouteApi("/discover");
+const routeApi = getRouteApi("/_app/discover");
 
 export function LanguageFilter() {
 	const { language } = routeApi.useSearch();

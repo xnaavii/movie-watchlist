@@ -11,7 +11,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const RELEASE_YEARS = Array.from({ length: 40 }, (_, i) => CURRENT_YEAR - i);
 const ALL_YEARS_VALUE = "all";
 
-const routeApi = getRouteApi("/discover");
+const routeApi = getRouteApi("/_app/discover");
 
 export function YearFilter() {
 	const { year } = routeApi.useSearch();
