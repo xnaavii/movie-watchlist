@@ -21,9 +21,7 @@ export function RecommendedMovies({ tmdbId }: RecommendedMoviesProps) {
 
 	if (isError)
 		return (
-			<div className="text-red-500">
-				There was an error: {error.message}
-			</div>
+			<div className="text-red-500">There was an error: {error.message}</div>
 		);
 
 	const movies = data?.results || [];
@@ -47,6 +45,7 @@ export function RecommendedMovies({ tmdbId }: RecommendedMoviesProps) {
 								id={movie.id}
 								title={movie.title}
 								posterPath={movie.poster_path ?? null}
+								releaseDate={movie.release_date ?? null}
 							/>
 						</CarouselItem>
 					))}

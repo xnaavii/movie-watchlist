@@ -28,3 +28,10 @@ export function buildDiscoverParams(
 		with_original_language: filters.language,
 	};
 }
+
+export function formatReleaseYear(
+	releaseDate: string | null | undefined,
+): string {
+	if (!releaseDate || releaseDate.length < 4) return "N/A";
+	return releaseDate.slice(0, 4);
+}

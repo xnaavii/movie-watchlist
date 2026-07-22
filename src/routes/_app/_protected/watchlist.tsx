@@ -57,6 +57,7 @@ function WatchlistPage() {
 						id={movie.tmdbId}
 						title={movie.title}
 						posterPath={movie.posterPath}
+						releaseDate={movie.releaseDate ?? null}
 						watchlistStatus={statuses[movie.tmdbId] ?? null}
 					/>
 				))}

@@ -155,6 +155,7 @@ function DiscoverPage() {
 							id={movie.id}
 							title={movie.title}
 							posterPath={movie.poster_path ?? null}
+							releaseDate={movie.release_date ?? null}
 						/>
 					))}
 					<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />

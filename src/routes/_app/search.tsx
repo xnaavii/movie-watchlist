@@ -88,6 +88,7 @@ function SearchPage() {
 								id={movie.id}
 								title={movie.title}
 								posterPath={movie.poster_path ?? null}
+								releaseDate={movie.release_date ?? null}
 							/>
 						))}
 						<div
