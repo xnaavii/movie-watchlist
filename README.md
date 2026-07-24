@@ -1,6 +1,7 @@
 # Movie Watchlist
 
 A movie discovery and watchlist app built with TanStack Start, deployed on Cloudflare Workers.
+Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ## Stack
 
@@ -41,14 +42,14 @@ Copy `.env.example` to `.env` and fill in the values:
 cp .env.example .env
 ```
 
-| Variable | How to get it |
-|---|---|
-| `DATABASE_URL` | Auto-populated by [Neon Launchpad](https://neon.new) |
-| `BETTER_AUTH_URL` | Your app's base URL (e.g. `http://localhost:3000` in dev) |
-| `BETTER_AUTH_SECRET` | Generate with `npx -y @better-auth/cli secret` |
-| `TMDB_BEARER_TOKEN` | [TMDB API settings](https://www.themoviedb.org/settings/api) — v4 auth bearer token |
-| `OMDB_API_KEY` | [OMDb API](https://www.omdbapi.com/apikey.aspx) — used for IMDb ratings |
-| `WATCHMODE_API_KEY` | [Watchmode API](https://api.watchmode.com/) — used for streaming availability |
+| Variable             | How to get it                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| `DATABASE_URL`       | Auto-populated by [Neon Launchpad](https://neon.new)                                |
+| `BETTER_AUTH_URL`    | Your app's base URL (e.g. `http://localhost:3000` in dev)                           |
+| `BETTER_AUTH_SECRET` | Generate with `npx -y @better-auth/cli secret`                                      |
+| `TMDB_BEARER_TOKEN`  | [TMDB API settings](https://www.themoviedb.org/settings/api) — v4 auth bearer token |
+| `OMDB_API_KEY`       | [OMDb API](https://www.omdbapi.com/apikey.aspx) — used for IMDb ratings             |
+| `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
 
 ### 4. Push the database schema
 
