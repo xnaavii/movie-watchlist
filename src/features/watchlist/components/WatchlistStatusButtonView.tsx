@@ -25,6 +25,7 @@ export function WatchlistStatusButtonView({
 				variant={isWantToWatch ? "default" : "outline"}
 				disabled={isPending}
 				onClick={() => onSelect("want_to_watch")}
+				className="flex-1"
 			>
 				{isWantToWatch ? <Check /> : <Bookmark />}
 				Want to Watch
@@ -34,6 +35,7 @@ export function WatchlistStatusButtonView({
 				variant={isWatched ? "default" : "outline"}
 				disabled={isPending}
 				onClick={() => onSelect("watched")}
+				className="flex-1"
 			>
 				{isWatched ? <Check /> : <Eye />}
 				Watched

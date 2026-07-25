@@ -1,10 +1,12 @@
 import { QueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
+import { Poster } from "#/features/movies/components/Poster";
 import { RecommendedMovies } from "#/features/movies/components/RecommendedMovies";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
@@ -116,13 +118,23 @@ function MovieDetailsPage() {
 						/>
 						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
 					</>
+				) : movie.poster_path ? (
+					<>
+						<img
+							src={movie.poster_path}
+							alt={`${movie.title} poster`}
+							className="absolute inset-0 object-contain size-full object-center"
+						/>
+						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
+					</>
 				) : (
-					<div className="absolute right-0 bottom-0 size-full bg-muted-foreground flex flex-col items-center justify-center">
-						<p className="text-3xl">No Backdrop Image</p>
+					<div className="absolute right-0 bottom-0 size-full bg-muted flex flex-col items-center justify-center">
+						<ImageOff />
+						<p className="text-xl text-muted-foreground">No Backdrop Image</p>
 					</div>
 				)}
 
-				<div className="flex flex-col md:flex-row gap-6 justify-between md:items-end z-20 w-full">
+				<div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-end z-20 w-full">
 					<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
 						<MovieLogo tmdbId={movie.id} title={movie.title} />
 						<p className="text-muted-foreground">

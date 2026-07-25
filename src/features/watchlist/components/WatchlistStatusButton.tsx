@@ -35,6 +35,7 @@ export function WatchlistStatusButton({
 				status={status}
 				isPending={isUpdating}
 				onSelect={updateStatus}
+				className="flex-1"
 			/>
 			<RemoveFromWatchlistButton tmdbId={tmdbId} />
 		</div>
