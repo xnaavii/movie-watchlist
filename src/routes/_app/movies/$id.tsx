@@ -6,7 +6,6 @@ import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
-import { Poster } from "#/features/movies/components/Poster";
 import { RecommendedMovies } from "#/features/movies/components/RecommendedMovies";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
