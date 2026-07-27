@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { GenreFilter } from "#/features/movies/components/GenreFilter";
+import { GenresCarousel } from "#/features/movies/components/GenresCarousel";
 import { LanguageFilter } from "#/features/movies/components/LanguageFilter";
 import { MinRatingFilter } from "#/features/movies/components/MinRatingFilter";
 import { MovieCard } from "#/features/movies/components/MovieCard";
@@ -137,8 +138,9 @@ function DiscoverPage() {
 	}, hasNextPage);
 
 	return (
-		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
+		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-12 md:mt-0">
 			<MoviesCarousel movies={movies} />
+			<GenresCarousel />
 			<div className="flex items-center gap-2 flex-wrap">
 				<YearFilter />
 				<GenreFilter />

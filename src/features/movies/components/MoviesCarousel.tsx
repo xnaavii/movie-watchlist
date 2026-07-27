@@ -1,5 +1,5 @@
 import type { MovieResultItem } from "@lorenzopant/tmdb";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import AutoPlay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
@@ -14,6 +14,8 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { movieQueries } from "../queries";
+import { Genres } from "./Genres";
+import { MovieLogo } from "./MovieLogo";
 
 const TIMER_INTERVAL = 8000;
 
@@ -23,11 +25,7 @@ interface MoviesCarouselProps {
 
 export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 	const [api, setApi] = useState<CarouselApi>();
-	const imageQueries = useQueries({
-		queries: movies.map((movie) => {
-			return movieQueries.images({ movie_id: movie.id });
-		}),
-	});
+	const { data: genres } = useQuery(movieQueries.genres({}));
 
 	const autoplayPlugin = useRef(
 		AutoPlay({ delay: TIMER_INTERVAL, stopOnInteraction: false }),
@@ -62,8 +60,10 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 			className="w-full"
 		>
 			<CarouselContent>
-				{movies.map((movie, index) => {
-					const { data: images, isLoading, isError } = imageQueries[index];
+				{movies.map((movie) => {
+					const movieGenres = genres?.genres.filter((genre) =>
+						movie.genre_ids.includes(genre.id),
+					);
 
 					return (
 						<CarouselItem key={movie.id} title={movie.title}>
@@ -84,32 +84,16 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 									) : (
 										<div className="absolute right-0 bottom-0 -z-10 size-full bg-muted flex flex-col items-center justify-center">
 											<ImageOff />
-											<p className="text-xl text-muted-foreground">
-												No Backdrop Image
-											</p>
+											<p className="text-xl text-muted-foreground">No Image</p>
 										</div>
 									)}
-									<div className="absolute inset-0 p-4 md:p-6 lg:p-8 flex flex-col gap-6 justify-end bg-linear-to-b from-transparent via-transparent/80 to-background -z-10">
-										<div className="flex flex-col gap-4 md:flex-row justify-between md:items-end">
-											<div className="flex flex-col gap-4">
-												{!isLoading && !isError && images?.logos?.[0] ? (
-													<div className="relative inline-block self-start">
-														<div className="absolute inset-0 bg-foreground/10 blur-2xl rounded-full scale-150" />
-														<img
-															src={`https://image.tmdb.org/t/p/original${images.logos[0].file_path}`}
-															alt={movie.title}
-															className="relative w-auto object-contain"
-														/>
-													</div>
-												) : (
-													<h1 className="font-semibold text-4xl md:text-5xl min-w-0">
-														{movie.title}
-													</h1>
-												)}
-												<p className="text text-sm md:text-base text-muted-foreground line-clamp-2 max-w-xl">
-													{movie.overview}
-												</p>
-											</div>
+									<div className="absolute inset-0 p-4 md:p-6 lg:p-8 flex flex-col gap-6 justify-end bg-linear-to-b from-transparent via-transparent via-30% to-background -z-10">
+										<div className="flex flex-col gap-6">
+											<MovieLogo tmdbId={movie.id} title={movie.title} />
+											<p className="text text-sm md:text-base text-muted-foreground line-clamp-2 max-w-xl">
+												{movie.overview}
+											</p>
+											{movieGenres && <Genres genres={movieGenres} />}
 										</div>
 									</div>
 								</div>
@@ -119,7 +103,7 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 				})}
 			</CarouselContent>
 			<CarouselPrevious
-				className="absolute left-0 ml-8 translate-y-0"
+				className="absolute left-0 ml-4 md:ml-6 lg:ml-8 translate-y-0"
 				variant="secondary"
 				size={"icon-lg"}
 				onClick={() => {
@@ -128,7 +112,7 @@ export function MoviesCarousel({ movies }: MoviesCarouselProps) {
 				}}
 			/>
 			<CarouselNext
-				className="absolute right-0 mr-8 translate-y-0"
+				className="absolute right-0 mr-4 md:mr-6 lg:mr-8 translate-y-0"
 				variant="secondary"
 				size={"icon-lg"}
 				onClick={() => {

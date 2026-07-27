@@ -1,4 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "#/components/ui/skeleton";
 import { movieQueries } from "../queries";
 
 interface MovieLogoProps {
@@ -8,13 +9,17 @@ interface MovieLogoProps {
 }
 
 export function MovieLogo({ tmdbId, title, className }: MovieLogoProps) {
-	const { data: images, isError } = useSuspenseQuery(
-		movieQueries.images({ movie_id: tmdbId }),
-	);
+	const {
+		data: images,
+		isLoading,
+		isError,
+	} = useQuery(movieQueries.images({ movie_id: tmdbId }));
 
 	return (
 		<div className={className} title={title}>
-			{!isError && images?.logos?.[0] ? (
+			{isLoading ? (
+				<Skeleton className="w-[clamp(10rem,12vw,40rem)] h-16 md:h-20" />
+			) : !isError && images?.logos?.[0] ? (
 				<div className="relative inline-block self-start">
 					<div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-150" />
 					<img
