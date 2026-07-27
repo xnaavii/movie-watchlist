@@ -67,6 +67,11 @@ export const movieQueries = {
 				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
 		}),
 	discover: (params: DiscoverMovieParams) =>
+		queryOptions({
+			queryKey: ["movies", "discover", params],
+			queryFn: () => discoverMovies({ data: params }),
+		}),
+	infiniteDiscover: (params: DiscoverMovieParams) =>
 		infiniteQueryOptions({
 			queryKey: ["movies", "discover", { ...params }],
 			queryFn: ({ pageParam }) =>

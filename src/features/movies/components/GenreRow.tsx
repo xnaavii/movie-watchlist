@@ -13,7 +13,7 @@ import { movieQueries } from "../queries";
 
 const routeApi = getRouteApi("/_app/discover");
 
-export function GenresCarousel() {
+export function GenreRow() {
 	const { genreId } = routeApi.useSearch();
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
 
@@ -36,7 +36,11 @@ export function GenresCarousel() {
 								search={(prev) => ({ ...prev, genreId: genre.id })}
 							>
 								<ItemContent className="flex-row items-center justify-center gap-4">
-									<ItemTitle className={genre.id !== genreId ? "text-muted-foreground" : ""}>
+									<ItemTitle
+										className={
+											genre.id !== genreId ? "text-muted-foreground" : ""
+										}
+									>
 										{genre.name}
 									</ItemTitle>
 								</ItemContent>

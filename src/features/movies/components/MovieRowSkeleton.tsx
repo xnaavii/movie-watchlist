@@ -1,6 +1,6 @@
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
 
-export function MoviesSectionSkeleton() {
+export function MovieRowSkeleton() {
 	const skeletonItems = Array.from({ length: 10 }, (_, i) => ({
 		id: i,
 	}));

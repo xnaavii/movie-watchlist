@@ -1,19 +1,26 @@
 import type { LanguageISO6391 } from "@lorenzopant/tmdb";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import {
+	useQuery,
+	useSuspenseInfiniteQuery,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
 import { GenreFilter } from "#/features/movies/components/GenreFilter";
-import { GenresCarousel } from "#/features/movies/components/GenresCarousel";
+import { GenreRow } from "#/features/movies/components/GenreRow";
 import { LanguageFilter } from "#/features/movies/components/LanguageFilter";
 import { MinRatingFilter } from "#/features/movies/components/MinRatingFilter";
 import { MovieCard } from "#/features/movies/components/MovieCard";
-import { MoviesCarousel } from "#/features/movies/components/MoviesCarousel";
+import { MovieRow } from "#/features/movies/components/MovieRow";
+import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { SortByFilter } from "#/features/movies/components/SortByFilter";
 import { YearFilter } from "#/features/movies/components/YearFilter";
 import { movieQueries } from "#/features/movies/queries";
 import { buildDiscoverParams } from "#/features/movies/utils";
+import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { seo } from "#/utils/seo";
 
@@ -87,8 +94,9 @@ export const Route = createFileRoute("/_app/discover")({
 			context.queryClient.ensureQueryData(movieQueries.genres({})),
 			context.queryClient.ensureQueryData(movieQueries.languages()),
 			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.discover(buildDiscoverParams(deps)),
+				movieQueries.infiniteDiscover(buildDiscoverParams(deps)),
 			),
+			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
 		]);
 		return { genres, movies, ...deps };
 	},
@@ -120,10 +128,23 @@ function DiscoverPage() {
 	const { genreId, year, sortBy, minRating, language } = Route.useSearch();
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useSuspenseInfiniteQuery(
-			movieQueries.discover(
+			movieQueries.infiniteDiscover(
 				buildDiscoverParams({ genreId, year, sortBy, minRating, language }),
 			),
 		);
+	const { data: statuses } = useSuspenseQuery(
+		watchlistQueries.watchlistStatuses(),
+	);
+
+	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
+	const {
+		data: popularMovies,
+		isLoading: isLoadingPopularMovies,
+		isError: isErrorPopularMovies,
+		error: errorPopularMovies,
+	} = useQuery(movieQueries.list("popular"));
+
+	const genreName = genres.genres.find((genre) => genre.id === genreId)?.name;
 
 	const movies = Array.from(
 		new Map(
@@ -138,9 +159,32 @@ function DiscoverPage() {
 	}, hasNextPage);
 
 	return (
-		<div className="flex flex-col gap-6 p-2 md:p-4 lg:p-8 mt-12 md:mt-0">
-			<MoviesCarousel movies={movies} />
-			<GenresCarousel />
+		<div className="flex flex-col gap-12 p-2 md:p-4 lg:p-8 mt-12 md:mt-0">
+			<FeaturedMoviesCarousel movies={movies} />
+			<GenreRow />
+
+			{isLoadingPopularMovies ? (
+				<MovieRowSkeleton />
+			) : isErrorPopularMovies ? (
+				<p>There was an error: {errorPopularMovies.message}</p>
+			) : (
+				popularMovies &&
+				popularMovies?.results.length > 0 && (
+					<MovieRow
+						movies={popularMovies.results}
+						title="Popular"
+						watchlistStatuses={statuses}
+					/>
+				)
+			)}
+
+			{genreId && genreName && (
+				<MovieRow
+					movies={movies}
+					title={genreName}
+					watchlistStatuses={statuses}
+				/>
+			)}
 			<div className="flex items-center gap-2 flex-wrap">
 				<YearFilter />
 				<GenreFilter />
@@ -158,6 +202,7 @@ function DiscoverPage() {
 							title={movie.title}
 							posterPath={movie.poster_path ?? null}
 							releaseDate={movie.release_date ?? null}
+							watchlistStatus={statuses[movie.id] ?? null}
 						/>
 					))}
 					<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />

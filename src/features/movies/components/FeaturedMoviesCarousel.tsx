@@ -23,7 +23,7 @@ interface MoviesCarouselProps {
 	movies: MovieResultItem[];
 }
 
-export function MoviesCarousel({ movies }: MoviesCarouselProps) {
+export function FeaturedMoviesCarousel({ movies }: MoviesCarouselProps) {
 	const [api, setApi] = useState<CarouselApi>();
 	const { data: genres } = useQuery(movieQueries.genres({}));
 
