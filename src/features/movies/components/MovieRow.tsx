@@ -19,13 +19,13 @@ export function MovieRow({ title, movies, watchlistStatuses }: MovieRowProps) {
 	if (movies.length === 0) return null;
 
 	return (
-		<div className="flex flex-col gap-6">
-			<h2 className="text-2xl tracking-tighter">{title}</h2>
+		<div className="flex flex-col gap-2 md:gap-6">
+			<h2 className="text-xl md:text-2xl tracking-tighter">{title}</h2>
 			<Carousel
 				opts={{ align: "start", dragFree: true }}
 				plugins={[WheelGesturesPlugin()]}
 			>
-				<CarouselContent className="-ml-2.5">
+				<CarouselContent className="-ml-2.5 py-2.5">
 					{movies.map((movie) => (
 						<CarouselItem
 							key={movie.id}
