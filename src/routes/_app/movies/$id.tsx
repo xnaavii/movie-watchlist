@@ -108,7 +108,7 @@ function MovieDetailsPage() {
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
 			{/* Backdrop image and overlay */}
 			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-2 md:p-4 lg:p-8 items-end">
-				{movie.backdrop_path ? (
+				{movie?.backdrop_path ? (
 					<>
 						<img
 							src={movie.backdrop_path}
@@ -129,7 +129,7 @@ function MovieDetailsPage() {
 				) : (
 					<div className="absolute right-0 bottom-0 size-full bg-muted flex flex-col items-center justify-center">
 						<ImageOff />
-						<p className="text-xl text-muted-foreground">No Backdrop Image</p>
+						<p className="text-xl text-muted-foreground">No Image</p>
 					</div>
 				)}
 
