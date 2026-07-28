@@ -50,13 +50,22 @@ function DiscoverPage() {
 
 	return (
 		<>
-			<FeaturedMoviesCarousel movies={popularMovies.results} />
-			<GenreRow genres={genres.genres} />
-			<MovieRow
-				movies={popularMovies.results}
-				title="Popular"
-				watchlistStatuses={statuses}
-			/>
+			<div className="flex flex-col gap-4">
+				<h1 className="text-2xl lg:text-4xl tracking-tighter font-medium">
+					Your Next Watch
+				</h1>
+				<FeaturedMoviesCarousel movies={popularMovies.results} />
+			</div>
+			<div className="flex flex-col gap-4">
+				<h2 className="text-xl lg:text-2xl tracking-tighter">
+					Discover by genre
+				</h2>
+				<GenreRow genres={genres.genres} />
+			</div>
+			<div className="flex flex-col gap-4">
+				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
+				<MovieRow movies={popularMovies.results} watchlistStatuses={statuses} />
+			</div>
 		</>
 	);
 }

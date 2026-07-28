@@ -24,7 +24,7 @@ export function GenreRow({ genres }: GenreRowProps) {
 			<CarouselContent>
 				{genres?.map((genre) => (
 					<CarouselItem key={genre.id} className="pl-4 basis-auto">
-						<Item asChild className="w-30 h-20 md:w-40 md:h-30">
+						<Item asChild className="w-30 h-20 md:w-40 md:h-30" variant="muted">
 							<Link to="/discover/$genreId" params={{ genreId: genre.id }}>
 								<ItemContent className="flex-row items-center justify-center gap-4">
 									<ItemTitle>{genre.name}</ItemTitle>
