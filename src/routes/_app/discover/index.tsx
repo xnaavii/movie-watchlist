@@ -56,16 +56,16 @@ function DiscoverPage() {
 				</h1>
 				<FeaturedMoviesCarousel movies={popularMovies.results} />
 			</div>
-			<div className="flex flex-col gap-4">
+			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					Discover by genre
 				</h2>
 				<GenreRow genres={genres.genres} />
-			</div>
-			<div className="flex flex-col gap-4">
+			</section>
+			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
 				<MovieRow movies={popularMovies.results} watchlistStatuses={statuses} />
-			</div>
+			</section>
 		</>
 	);
 }
