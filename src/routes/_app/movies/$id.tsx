@@ -107,7 +107,7 @@ function MovieDetailsPage() {
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
 			{/* Backdrop image and overlay */}
-			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-2 md:p-4 lg:p-8 items-end">
+			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-6 lg:p-8 items-end">
 				{movie?.backdrop_path ? (
 					<>
 						<img
@@ -173,7 +173,7 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-20 p-2 md:p-4 lg:p-8">
+			<div className="flex flex-col gap-20 p-4 md:p-6 lg:p-8">
 				<RecommendedMovies tmdbId={movie.id} />
 				<TrailerSection movie={movie} />
 			</div>
