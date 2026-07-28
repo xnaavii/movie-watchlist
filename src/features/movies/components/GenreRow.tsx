@@ -1,5 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { getRouteApi, Link } from "@tanstack/react-router";
+import type { Genre } from "@lorenzopant/tmdb";
+import { Link } from "@tanstack/react-router";
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
 import {
 	Carousel,
@@ -9,14 +9,12 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
-import { movieQueries } from "../queries";
 
-const routeApi = getRouteApi("/_app/discover");
+interface GenreRowProps {
+	genres: Genre[];
+}
 
-export function GenreRow() {
-	const { genreId } = routeApi.useSearch();
-	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
-
+export function GenreRow({ genres }: GenreRowProps) {
 	return (
 		<Carousel
 			opts={{ dragFree: true, align: "start" }}
@@ -24,25 +22,12 @@ export function GenreRow() {
 			className="w-full relative"
 		>
 			<CarouselContent>
-				{genres?.genres.map((genre) => (
+				{genres?.map((genre) => (
 					<CarouselItem key={genre.id} className="pl-4 basis-auto">
-						<Item
-							variant={genre.id === genreId ? "muted" : "default"}
-							asChild
-							className="w-30 h-20 md:w-40 md:h-30"
-						>
-							<Link
-								to="/discover"
-								search={(prev) => ({ ...prev, genreId: genre.id })}
-							>
+						<Item asChild className="w-30 h-20 md:w-40 md:h-30">
+							<Link to="/discover/$genreId" params={{ genreId: genre.id }}>
 								<ItemContent className="flex-row items-center justify-center gap-4">
-									<ItemTitle
-										className={
-											genre.id !== genreId ? "text-muted-foreground" : ""
-										}
-									>
-										{genre.name}
-									</ItemTitle>
+									<ItemTitle>{genre.name}</ItemTitle>
 								</ItemContent>
 							</Link>
 						</Item>

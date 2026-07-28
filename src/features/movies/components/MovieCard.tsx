@@ -42,7 +42,7 @@ export function MovieCard({
 			<Link
 				to="/movies/$id"
 				params={{ id: `${id}` }}
-				className="block size-full rounded-[inherit] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+				className="block size-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 			>
 				<AspectRatio ratio={2 / 3}>
 					{posterPath ? (

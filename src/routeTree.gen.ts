@@ -14,10 +14,12 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppSignupRouteImport } from './routes/_app/signup'
 import { Route as AppSearchRouteImport } from './routes/_app/search'
 import { Route as AppLoginRouteImport } from './routes/_app/login'
-import { Route as AppDiscoverRouteImport } from './routes/_app/discover'
 import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
+import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
+import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppMoviesIdRouteImport } from './routes/_app/movies/$id'
+import { Route as AppDiscoverGenreIdRouteImport } from './routes/_app/discover/$genreId'
 import { Route as AppProtectedWatchlistRouteImport } from './routes/_app/_protected/watchlist'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
 
@@ -45,14 +47,19 @@ const AppLoginRoute = AppLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppDiscoverRoute = AppDiscoverRouteImport.update({
+const AppProtectedRoute = AppProtectedRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDiscoverRouteRoute = AppDiscoverRouteRouteImport.update({
   id: '/discover',
   path: '/discover',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppProtectedRoute = AppProtectedRouteImport.update({
-  id: '/_protected',
-  getParentRoute: () => AppRouteRoute,
+const AppDiscoverIndexRoute = AppDiscoverIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDiscoverRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -63,6 +70,11 @@ const AppMoviesIdRoute = AppMoviesIdRouteImport.update({
   id: '/movies/$id',
   path: '/movies/$id',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDiscoverGenreIdRoute = AppDiscoverGenreIdRouteImport.update({
+  id: '/$genreId',
+  path: '/$genreId',
+  getParentRoute: () => AppDiscoverRouteRoute,
 } as any)
 const AppProtectedWatchlistRoute = AppProtectedWatchlistRouteImport.update({
   id: '/watchlist',
@@ -77,39 +89,44 @@ const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/discover': typeof AppDiscoverRoute
+  '/discover': typeof AppDiscoverRouteRouteWithChildren
   '/login': typeof AppLoginRoute
   '/search': typeof AppSearchRoute
   '/signup': typeof AppSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/watchlist': typeof AppProtectedWatchlistRoute
+  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/discover/': typeof AppDiscoverIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/discover': typeof AppDiscoverRoute
   '/login': typeof AppLoginRoute
   '/search': typeof AppSearchRoute
   '/signup': typeof AppSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/watchlist': typeof AppProtectedWatchlistRoute
+  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/discover': typeof AppDiscoverIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
+  '/_app/discover': typeof AppDiscoverRouteRouteWithChildren
   '/_app/_protected': typeof AppProtectedRouteWithChildren
-  '/_app/discover': typeof AppDiscoverRoute
   '/_app/login': typeof AppLoginRoute
   '/_app/search': typeof AppSearchRoute
   '/_app/signup': typeof AppSignupRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
   '/_app/_protected/watchlist': typeof AppProtectedWatchlistRoute
+  '/_app/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/_app/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_app/discover/': typeof AppDiscoverIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,32 +138,37 @@ export interface FileRouteTypes {
     | '/signup'
     | '/profile'
     | '/watchlist'
+    | '/discover/$genreId'
     | '/movies/$id'
     | '/api/auth/$'
+    | '/discover/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/discover'
     | '/login'
     | '/search'
     | '/signup'
     | '/profile'
     | '/watchlist'
+    | '/discover/$genreId'
     | '/movies/$id'
     | '/api/auth/$'
+    | '/discover'
   id:
     | '__root__'
     | '/_app'
-    | '/_app/_protected'
     | '/_app/discover'
+    | '/_app/_protected'
     | '/_app/login'
     | '/_app/search'
     | '/_app/signup'
     | '/_app/'
     | '/_app/_protected/profile'
     | '/_app/_protected/watchlist'
+    | '/_app/discover/$genreId'
     | '/_app/movies/$id'
     | '/api/auth/$'
+    | '/_app/discover/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,19 +213,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLoginRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/discover': {
-      id: '/_app/discover'
-      path: '/discover'
-      fullPath: '/discover'
-      preLoaderRoute: typeof AppDiscoverRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/_app/_protected': {
       id: '/_app/_protected'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppProtectedRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/_app/discover': {
+      id: '/_app/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof AppDiscoverRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/discover/': {
+      id: '/_app/discover/'
+      path: '/'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof AppDiscoverIndexRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -218,6 +247,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/movies/$id'
       preLoaderRoute: typeof AppMoviesIdRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/_app/discover/$genreId': {
+      id: '/_app/discover/$genreId'
+      path: '/$genreId'
+      fullPath: '/discover/$genreId'
+      preLoaderRoute: typeof AppDiscoverGenreIdRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
     }
     '/_app/_protected/watchlist': {
       id: '/_app/_protected/watchlist'
@@ -236,6 +272,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppDiscoverRouteRouteChildren {
+  AppDiscoverGenreIdRoute: typeof AppDiscoverGenreIdRoute
+  AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
+}
+
+const AppDiscoverRouteRouteChildren: AppDiscoverRouteRouteChildren = {
+  AppDiscoverGenreIdRoute: AppDiscoverGenreIdRoute,
+  AppDiscoverIndexRoute: AppDiscoverIndexRoute,
+}
+
+const AppDiscoverRouteRouteWithChildren =
+  AppDiscoverRouteRoute._addFileChildren(AppDiscoverRouteRouteChildren)
+
 interface AppProtectedRouteChildren {
   AppProtectedProfileRoute: typeof AppProtectedProfileRoute
   AppProtectedWatchlistRoute: typeof AppProtectedWatchlistRoute
@@ -251,8 +300,8 @@ const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(
 )
 
 interface AppRouteRouteChildren {
+  AppDiscoverRouteRoute: typeof AppDiscoverRouteRouteWithChildren
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
-  AppDiscoverRoute: typeof AppDiscoverRoute
   AppLoginRoute: typeof AppLoginRoute
   AppSearchRoute: typeof AppSearchRoute
   AppSignupRoute: typeof AppSignupRoute
@@ -261,8 +310,8 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppDiscoverRouteRoute: AppDiscoverRouteRouteWithChildren,
   AppProtectedRoute: AppProtectedRouteWithChildren,
-  AppDiscoverRoute: AppDiscoverRoute,
   AppLoginRoute: AppLoginRoute,
   AppSearchRoute: AppSearchRoute,
   AppSignupRoute: AppSignupRoute,
