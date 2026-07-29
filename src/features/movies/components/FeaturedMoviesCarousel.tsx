@@ -17,7 +17,6 @@ import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import { movieQueries } from "../queries";
 import { Genres } from "./Genres";
 import { MovieLogo } from "./MovieLogo";
-import { MovieOverview } from "./MovieOverview";
 
 const TIMER_INTERVAL = 8000;
 
@@ -65,7 +64,7 @@ export function FeaturedMoviesCarousel({
 	return (
 		<Carousel
 			setApi={setApi}
-			opts={{ loop: true }}
+			opts={{ align: "center", loop: true }}
 			plugins={[autoplayPlugin.current, Fade()]}
 			className="w-full"
 		>
@@ -123,12 +122,12 @@ export function FeaturedMoviesCarousel({
 													{new Date(movie.release_date).getFullYear()}
 												</p>
 											)}
-											{movie.overview && (
-												<div className="pointer-events-auto">
-													<MovieOverview overview={movie.overview} />
-												</div>
-											)}
 											{movieGenres && <Genres genres={movieGenres} />}
+											{movie.overview && (
+												<p className="text-sm md:text-base text-muted-foreground line-clamp-2 max-w-xl">
+													{movie.overview}
+												</p>
+											)}
 										</div>
 									</div>
 								</div>
