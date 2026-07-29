@@ -142,7 +142,6 @@ export function FeaturedMoviesCarousel({
 			</CarouselContent>
 			<CarouselPrevious
 				className="absolute left-0 ml-4 md:ml-6 lg:ml-8 translate-y-0"
-				variant="secondary"
 				size={"icon-lg"}
 				onClick={() => {
 					api?.scrollPrev();
@@ -151,7 +150,6 @@ export function FeaturedMoviesCarousel({
 			/>
 			<CarouselNext
 				className="absolute right-0 mr-4 md:mr-6 lg:mr-8 translate-y-0"
-				variant="secondary"
 				size={"icon-lg"}
 				onClick={() => {
 					api?.scrollNext();
