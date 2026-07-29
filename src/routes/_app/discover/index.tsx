@@ -50,12 +50,7 @@ function DiscoverPage() {
 
 	return (
 		<>
-			<div className="flex flex-col gap-4">
-				<h1 className="text-2xl lg:text-4xl tracking-tighter font-medium">
-					Your Next Watch
-				</h1>
-				<FeaturedMoviesCarousel movies={popularMovies.results} />
-			</div>
+			<FeaturedMoviesCarousel movies={popularMovies.results} />
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					Discover by genre
