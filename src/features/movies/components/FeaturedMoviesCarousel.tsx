@@ -115,7 +115,7 @@ export function FeaturedMoviesCarousel({
 											)}
 										</div>
 										<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
-											<h1 className="font-semibold text-3xl md:text-4xl">
+											<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
 												{movie.title}
 											</h1>
 											{movie.release_date && (
