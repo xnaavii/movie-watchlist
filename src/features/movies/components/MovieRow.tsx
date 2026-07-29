@@ -22,11 +22,11 @@ export function MovieRow({ movies, watchlistStatuses }: MovieRowProps) {
 			opts={{ align: "start", dragFree: true }}
 			plugins={[WheelGesturesPlugin()]}
 		>
-			<CarouselContent className="-ml-2.5 py-2.5">
+			<CarouselContent className="-ml-4">
 				{movies.map((movie) => (
 					<CarouselItem
 						key={movie.id}
-						className="pl-2.5 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+						className="pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
 					>
 						<MovieCard
 							id={movie.id}
