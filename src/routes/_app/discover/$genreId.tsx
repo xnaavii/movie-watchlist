@@ -37,7 +37,7 @@ function DiscoverGenrePage() {
 			<h1 className="text-2xl lg:text-3xl tracking-tighter">
 				Discover {selectedGenre?.name}
 			</h1>
-			<FeaturedMoviesCarousel movies={movies.results} />
+			<FeaturedMoviesCarousel movies={movies.results} genres={genres.genres} />
 		</>
 	);
 }

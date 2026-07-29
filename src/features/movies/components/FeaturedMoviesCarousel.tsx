@@ -1,5 +1,4 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
-import { useQuery } from "@tanstack/react-query";
+import type { Genre, MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import AutoPlay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
@@ -14,7 +13,6 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
-import { movieQueries } from "../queries";
 import { Genres } from "./Genres";
 import { MovieLogo } from "./MovieLogo";
 
@@ -22,16 +20,16 @@ const TIMER_INTERVAL = 8000;
 
 interface MoviesCarouselProps {
 	movies: MovieResultItem[];
+	genres?: Genre[];
 	watchlistStatuses?: Record<number, "want_to_watch" | "watched" | null>;
 }
 
 export function FeaturedMoviesCarousel({
 	movies,
+	genres,
 	watchlistStatuses,
 }: MoviesCarouselProps) {
 	const [api, setApi] = useState<CarouselApi>();
-	const { data: genres } = useQuery(movieQueries.genres({}));
-
 	const autoplayPlugin = useRef(
 		AutoPlay({
 			delay: TIMER_INTERVAL,
@@ -70,7 +68,7 @@ export function FeaturedMoviesCarousel({
 		>
 			<CarouselContent>
 				{movies.map((movie) => {
-					const movieGenres = genres?.genres.filter((genre) =>
+					const movieGenres = genres?.filter((genre) =>
 						movie.genre_ids.includes(genre.id),
 					);
 					const watchlistStatus = watchlistStatuses?.[movie.id] ?? null;

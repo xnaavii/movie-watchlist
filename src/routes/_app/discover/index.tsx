@@ -52,6 +52,7 @@ function DiscoverPage() {
 		<>
 			<FeaturedMoviesCarousel
 				movies={popularMovies.results}
+				genres={genres.genres}
 				watchlistStatuses={statuses}
 			/>
 			<section className="flex flex-col gap-4">
