@@ -28,7 +28,11 @@ export function FeaturedMoviesCarousel({ movies }: MoviesCarouselProps) {
 	const { data: genres } = useQuery(movieQueries.genres({}));
 
 	const autoplayPlugin = useRef(
-		AutoPlay({ delay: TIMER_INTERVAL, stopOnInteraction: false }),
+		AutoPlay({
+			delay: TIMER_INTERVAL,
+			stopOnInteraction: false,
+			stopOnMouseEnter: true,
+		}),
 	);
 
 	useEffect(() => {
@@ -67,27 +71,32 @@ export function FeaturedMoviesCarousel({ movies }: MoviesCarouselProps) {
 
 					return (
 						<CarouselItem key={movie.id} title={movie.title}>
-							<Link to="/movies/$id" params={{ id: `${movie.id}` }}>
-								<div className="relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl inset-ring-2 inset-ring-muted">
+							<Link
+								to="/movies/$id"
+								params={{ id: `${movie.id}` }}
+								className="group"
+							>
+								<div className="relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl">
 									{movie.backdrop_path ? (
 										<img
 											src={movie.backdrop_path}
 											alt={movie.title}
-											className="absolute inset-0 -z-10 size-full object-cover object-top"
+											className="absolute inset-0 size-full object-cover object-top group-hover:scale-105 transition-all duration-200 "
 										/>
 									) : movie.poster_path ? (
 										<img
 											src={movie.poster_path}
 											alt={movie.title}
-											className="absolute inset-0 -z-10 size-full object-contain object-top"
+											className="absolute inset-0 size-full object-contain object-top"
 										/>
 									) : (
-										<div className="absolute right-0 bottom-0 -z-10 size-full bg-muted flex flex-col items-center justify-center">
+										<div className="absolute right-0 bottom-0 size-full bg-muted flex flex-col items-center justify-center">
 											<ImageOff />
 											<p className="text-xl text-muted-foreground">No Image</p>
 										</div>
 									)}
-									<div className="absolute inset-0 p-4 md:p-6 lg:p-8 flex flex-col gap-6 justify-end bg-linear-to-b from-transparent via-transparent via-30% to-background -z-10">
+
+									<div className="absolute inset-0 p-4 md:p-6 lg:p-8 flex flex-col gap-6 justify-end bg-linear-to-b from-transparent via-transparent via-30% to-background">
 										<div className="flex flex-col gap-6">
 											<MovieLogo tmdbId={movie.id} title={movie.title} />
 											<p className="text text-sm md:text-base text-muted-foreground line-clamp-2 max-w-xl">
@@ -96,6 +105,8 @@ export function FeaturedMoviesCarousel({ movies }: MoviesCarouselProps) {
 											{movieGenres && <Genres genres={movieGenres} />}
 										</div>
 									</div>
+
+									<div className="pointer-events-none absolute inset-0 rounded-xl inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground group-focus-visible:inset-ring-foreground" />
 								</div>
 							</Link>
 						</CarouselItem>
