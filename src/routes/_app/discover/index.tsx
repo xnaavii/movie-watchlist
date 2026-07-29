@@ -50,7 +50,10 @@ function DiscoverPage() {
 
 	return (
 		<>
-			<FeaturedMoviesCarousel movies={popularMovies.results} />
+			<FeaturedMoviesCarousel
+				movies={popularMovies.results}
+				watchlistStatuses={statuses}
+			/>
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					Discover by genre

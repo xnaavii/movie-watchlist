@@ -21,18 +21,16 @@ export function MovieLogo({ tmdbId, title, className }: MovieLogoProps) {
 				<Skeleton className="w-[clamp(10rem,12vw,40rem)] h-16 md:h-20" />
 			) : !isError && images?.logos?.[0] ? (
 				<div className="relative inline-block self-start">
-					<div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-150" />
+					<div className="absolute inset-0 bg-background/20 blur-2xl rounded-full scale-200" />
 					<img
 						src={`https://image.tmdb.org/t/p/original${images.logos[0].file_path}`}
 						alt={title}
-						className="relative w-[clamp(10rem,12vw,40rem)] object-contain"
+						className="relative w-[clamp(12rem,14vw,40rem)] object-contain drop-shadow-2xl"
 						loading="eager"
 						fetchPriority="high"
 					/>
 				</div>
-			) : (
-				<p className="font-semibold text-2xl md:text-3xl min-w-0">{title}</p>
-			)}
+			) : null}
 		</div>
 	);
 }

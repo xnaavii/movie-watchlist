@@ -17,7 +17,7 @@ export function RemoveFromWatchlistButton({
 
 	return (
 		<Button
-			size="icon"
+			size="icon-lg"
 			variant="ghost"
 			disabled={isPending}
 			onClick={() => remove()}

@@ -15,7 +15,12 @@ export function AddToWatchlistButton({
 	const { addToList, isPending } = useAddToWatchlist({ tmdbId });
 
 	return (
-		<Button disabled={isPending} onClick={addToList} className={cn(className)}>
+		<Button
+			disabled={isPending}
+			onClick={addToList}
+			className={cn(className)}
+			size="lg"
+		>
 			<Bookmark />
 			Add to Watchlist
 		</Button>

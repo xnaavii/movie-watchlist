@@ -22,20 +22,22 @@ export function WatchlistStatusButtonView({
 	return (
 		<div className={cn("flex gap-2", className)}>
 			<Button
-				variant={isWantToWatch ? "default" : "outline"}
+				variant={isWantToWatch ? "default" : "secondary"}
 				disabled={isPending}
 				onClick={() => onSelect("want_to_watch")}
 				className="flex-1"
+				size="lg"
 			>
 				{isWantToWatch ? <Check /> : <Bookmark />}
 				Want to Watch
 			</Button>
 
 			<Button
-				variant={isWatched ? "default" : "outline"}
+				variant={isWatched ? "default" : "secondary"}
 				disabled={isPending}
 				onClick={() => onSelect("watched")}
 				className="flex-1"
+				size="lg"
 			>
 				{isWatched ? <Check /> : <Eye />}
 				Watched

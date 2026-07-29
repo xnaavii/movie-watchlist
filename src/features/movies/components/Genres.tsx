@@ -7,10 +7,10 @@ type GenresProps = {
 
 export function Genres({ genres }: GenresProps) {
 	return (
-		<div className="flex gap-1 items-center flex-wrap">
+		<div className="flex items-center flex-wrap">
 			{genres.map((genre, i) => (
 				<div className="flex items-center" key={genre.id}>
-					<span className="text-medium text-sm">{genre.name}</span>
+					<span className="text-medium text-sm md:text-base">{genre.name}</span>
 					{genres.length > i + 1 ? (
 						<Dot className="text-muted-foreground" />
 					) : null}

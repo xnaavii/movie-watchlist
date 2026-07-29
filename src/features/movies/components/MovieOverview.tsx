@@ -19,11 +19,17 @@ export function MovieOverview({ overview, className }: MovieOverviewProps) {
 			<p className="text-muted-foreground line-clamp-2">{overview}</p>
 			<Dialog>
 				<DialogTrigger asChild>
-					<Button variant="secondary" size="sm">
+					<Button
+						variant="secondary"
+						size="sm"
+						onClick={(e) => {
+							e.stopPropagation();
+						}}
+					>
 						Read More
 					</Button>
 				</DialogTrigger>
-				<DialogContent>
+				<DialogContent onClick={(e) => e.stopPropagation()}>
 					<DialogHeader>
 						<DialogDescription>Movie Overview</DialogDescription>
 					</DialogHeader>

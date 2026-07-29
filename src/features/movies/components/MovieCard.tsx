@@ -18,7 +18,7 @@ type MovieCardProps = {
 	posterPath: string | null;
 	releaseDate: string | null;
 	className?: string;
-	watchlistStatus?: "want_to_watch" | "watched" | null;
+	watchlistStatus?: WatchlistStatusInsert;
 };
 
 export function MovieCard({
