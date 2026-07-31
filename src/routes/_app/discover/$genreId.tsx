@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { BackButton } from "#/components/BackButton";
 import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
 import { movieQueries } from "#/features/movies/queries";
 
@@ -34,9 +35,14 @@ function DiscoverGenrePage() {
 
 	return (
 		<>
-			<h1 className="text-2xl lg:text-3xl tracking-tighter">
-				Discover {selectedGenre?.name}
-			</h1>
+			<div className="flex items-center w-full justify-between">
+				<BackButton />
+
+				<h1 className="relative text-2xl lg:text-3xl tracking-tight font-medium">
+					{selectedGenre?.name}
+					<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
+				</h1>
+			</div>
 			<FeaturedMoviesCarousel movies={movies.results} genres={genres.genres} />
 		</>
 	);
