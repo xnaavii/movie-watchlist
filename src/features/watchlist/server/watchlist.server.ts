@@ -4,6 +4,7 @@ import { movie, watchlist } from "#/db/schema";
 import { getMovieDetails } from "#/features/movies/server/movies.functions";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
+export type WatchlistStatus = typeof watchlist.$inferSelect.status;
 export type NewMovieInsert = typeof movie.$inferInsert;
 export type Movie = typeof movie.$inferSelect;
 
@@ -123,12 +124,17 @@ export async function selectUserWatchlistPage(
 		.offset(offset);
 }
 
-export async function selectUserWatchlistStatuses(userId: string) {
+export async function selectUserWatchlistStatuses(
+	userId: string,
+): Promise<Record<number, WatchlistStatus>> {
 	const rows = await db
 		.select({ tmdbId: movie.tmdbId, status: watchlist.status })
 		.from(watchlist)
 		.innerJoin(movie, eq(watchlist.movieId, movie.id))
 		.where(eq(watchlist.userId, userId));
 
-	return Object.fromEntries(rows.map((r) => [r.tmdbId, r.status]));
+	return rows.reduce<Record<number, WatchlistStatus>>((acc, r) => {
+		acc[r.tmdbId] = r.status;
+		return acc;
+	}, {});
 }

@@ -8,7 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
-import type { WatchlistStatusInsert } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 import { formatReleaseYear } from "../utils";
 
@@ -18,7 +18,7 @@ type MovieCardProps = {
 	posterPath: string | null;
 	releaseDate: string | null;
 	className?: string;
-	watchlistStatus?: WatchlistStatusInsert;
+	watchlistStatus?: WatchlistStatus;
 };
 
 export function MovieCard({
@@ -31,10 +31,7 @@ export function MovieCard({
 }: MovieCardProps) {
 	return (
 		<Card
-			className={cn(
-				"relative mx-auto w-full py-0 group",
-				className,
-			)}
+			className={cn("relative mx-auto w-full py-0 group", className)}
 			title={title}
 		>
 			{watchlistStatus && (
@@ -74,7 +71,7 @@ export function MovieCard({
 	);
 }
 
-function WatchlistBadge({ status }: { status: WatchlistStatusInsert }) {
+function WatchlistBadge({ status }: { status: WatchlistStatus }) {
 	return (
 		<Badge
 			variant={status === "watched" ? "default" : "secondary"}

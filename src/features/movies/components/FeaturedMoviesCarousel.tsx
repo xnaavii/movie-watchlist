@@ -13,6 +13,7 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
+import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import { Genres } from "./Genres";
 import { MovieLogo } from "./MovieLogo";
 
@@ -21,7 +22,7 @@ const TIMER_INTERVAL = 8000;
 interface MoviesCarouselProps {
 	movies: MovieResultItem[];
 	genres?: Genre[];
-	watchlistStatuses?: Record<number, "want_to_watch" | "watched" | null>;
+	watchlistStatuses?: Record<number, WatchlistStatus>;
 }
 
 export function FeaturedMoviesCarousel({

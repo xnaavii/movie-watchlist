@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_app/discover/")({
 });
 
 function DiscoverPage() {
-	const { data: statuses } = useSuspenseQuery(
+	const { data: watchlistStatuses } = useSuspenseQuery(
 		watchlistQueries.watchlistStatuses(),
 	);
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
@@ -53,7 +53,7 @@ function DiscoverPage() {
 			<FeaturedMoviesCarousel
 				movies={popularMovies.results}
 				genres={genres.genres}
-				watchlistStatuses={statuses}
+				watchlistStatuses={watchlistStatuses}
 			/>
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
@@ -63,7 +63,10 @@ function DiscoverPage() {
 			</section>
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
-				<MovieRow movies={popularMovies.results} watchlistStatuses={statuses} />
+				<MovieRow
+					movies={popularMovies.results}
+					watchlistStatuses={watchlistStatuses}
+				/>
 			</section>
 		</>
 	);
