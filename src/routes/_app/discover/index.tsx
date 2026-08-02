@@ -70,6 +70,7 @@ function DiscoverPage() {
 				<MovieRow
 					movies={popularMovies.results}
 					watchlistStatuses={watchlistStatuses}
+					showRanks
 				/>
 			</section>
 		</>

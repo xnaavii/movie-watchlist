@@ -7,14 +7,22 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "#/components/ui/carousel";
+import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import { cn } from "#/lib/utils";
 import { MovieCard } from "./MovieCard";
+import { RankBadge } from "./RankBadge";
 
 interface MovieRowProps {
 	movies: MovieResultItem[];
-	watchlistStatuses?: Record<number, "want_to_watch" | "watched" | null>;
+	watchlistStatuses?: Record<number, WatchlistStatus>;
+	showRanks?: boolean;
 }
 
-export function MovieRow({ movies, watchlistStatuses }: MovieRowProps) {
+export function MovieRow({
+	movies,
+	watchlistStatuses,
+	showRanks,
+}: MovieRowProps) {
 	if (movies.length === 0) return null;
 
 	return (
@@ -23,18 +31,27 @@ export function MovieRow({ movies, watchlistStatuses }: MovieRowProps) {
 			plugins={[WheelGesturesPlugin()]}
 		>
 			<CarouselContent className="-ml-4">
-				{movies.map((movie) => (
+				{movies.map((movie, index) => (
 					<CarouselItem
 						key={movie.id}
-						className="pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+						className={cn(
+							"pl-4",
+							showRanks
+								? "basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+								: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/5",
+						)}
 					>
-						<MovieCard
-							id={movie.id}
-							title={movie.title}
-							posterPath={movie.poster_path ?? null}
-							releaseDate={movie.release_date ?? null}
-							watchlistStatus={watchlistStatuses?.[movie.id] ?? null}
-						/>
+						<div className="flex items-center">
+							{showRanks && <RankBadge rank={index + 1} className="z-0" />}
+							<MovieCard
+								id={movie.id}
+								title={movie.title}
+								posterPath={movie.poster_path ?? null}
+								releaseDate={movie.release_date ?? null}
+								watchlistStatus={watchlistStatuses?.[movie.id]}
+								className="relative z-10"
+							/>
+						</div>
 					</CarouselItem>
 				))}
 			</CarouselContent>

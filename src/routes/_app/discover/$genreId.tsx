@@ -54,6 +54,7 @@ function DiscoverGenrePage() {
 				genres={genres.genres}
 				watchlistStatuses={watchlistStatuses}
 			/>
+
 			<MovieGrid
 				movies={movies.results}
 				watchlistStatuses={watchlistStatuses}
