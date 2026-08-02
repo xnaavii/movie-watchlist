@@ -41,7 +41,7 @@ function DiscoverGenrePage() {
 
 	return (
 		<>
-			<div className="flex items-center w-full justify-between">
+			<div className="flex items-center w-full gap-6">
 				<BackButton />
 
 				<h1 className="relative text-2xl lg:text-3xl tracking-tight font-medium">
