@@ -18,14 +18,21 @@ interface MovieRowProps {
 	movies: Movie[];
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 	showRanks?: boolean;
+	variant?: "poster" | "backdrop";
 }
 
 export function MovieRow({
 	movies,
 	watchlistStatuses,
 	showRanks,
+	variant = "poster",
 }: MovieRowProps) {
 	if (movies.length === 0) return null;
+
+	const basisClass =
+		variant === "backdrop"
+			? "basis-full sm:basis md:basis-1/2"
+			: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/6";
 
 	return (
 		<Carousel
@@ -34,21 +41,18 @@ export function MovieRow({
 		>
 			<CarouselContent className="-ml-4">
 				{movies.map((movie, index) => (
-					<CarouselItem
-						key={movie.id}
-						className={cn(
-							"pl-4",
-							showRanks
-								? "basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-								: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/6",
-						)}
-					>
-						<div className="flex items-center">
-							{showRanks && <RankBadge rank={index + 1} className="z-0" />}
+					<CarouselItem key={movie.id} className={cn("pl-4", basisClass)}>
+						<div className="flex items-start">
+							{showRanks && (
+								<div className="shrink-0 flex items-center justify-center self-center z-0 -mr-3 sm:-mr-5">
+									<RankBadge rank={index + 1} />
+								</div>
+							)}
 							<MovieCard
 								movie={movie}
+								variant={variant}
 								watchlistStatus={watchlistStatuses?.[movie.id]}
-								className="relative z-10"
+								className="relative z-10 flex-1 min-w-0"
 							/>
 						</div>
 					</CarouselItem>

@@ -74,6 +74,7 @@ function DiscoverPage() {
 				<MovieRow
 					movies={popularMovies.results.map((movie) => normalizeMovie(movie))}
 					watchlistStatuses={watchlistStatuses}
+					variant="backdrop"
 					showRanks
 				/>
 			</section>
