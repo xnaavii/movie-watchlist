@@ -21,6 +21,7 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						params={{ id: `${movie.id}` }}
 						key={movie.id}
 						title={movie.title}
+						className="group/card"
 					>
 						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							<img
@@ -28,6 +29,9 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 								alt={`${movie.title}'s backdrop`}
 								className="h-full w-full object-cover rounded-md"
 							/>
+							<div className="absolute bottom-0 left-0 p-2 w-full translate-y-full bg-linear-to-t from-background to-transparent group-hover/card:translate-y-0">
+								<p className="text-xs font-medium">{movie.title}</p>
+							</div>
 						</div>
 					</Link>
 				))}
@@ -39,6 +43,7 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						params={{ id: `${movie.id}` }}
 						key={movie.id}
 						title={movie.title}
+						className="group/card"
 					>
 						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							<img
@@ -46,6 +51,9 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 								alt={`${movie.title}'s backdrop`}
 								className="h-full w-full object-cover rounded-md"
 							/>
+							<div className="absolute bottom-0 left-0 p-2 w-full translate-y-full bg-linear-to-t from-background to-transparent group-hover/card:translate-y-0">
+								<p className="text-xs font-medium">{movie.title}</p>
+							</div>
 						</div>
 					</Link>
 				))}
