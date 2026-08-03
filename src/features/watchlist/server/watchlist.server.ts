@@ -174,3 +174,25 @@ export async function selectUserWatchlistStatuses(
 		return acc;
 	}, {});
 }
+
+export async function selectWatchlistMoviesByGenreId(
+	userId: string,
+	genreId: number,
+) {
+	const movies = await db
+		.select({
+			id: movie.id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			backdropPath: movie.backdropPath,
+			releaseDate: movie.releaseDate,
+			addedAt: watchlist.addedAt,
+		})
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.innerJoin(movieToGenre, eq(movie.id, movieToGenre.movieId))
+		.where(and(eq(watchlist.userId, userId), eq(movieToGenre.genreId, genreId)))
+		.orderBy(desc(watchlist.addedAt));
+
+	return movies;
+}

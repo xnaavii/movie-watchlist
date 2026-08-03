@@ -2,6 +2,7 @@ import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
 	getUserWatchlistPageFn,
 	getUserWatchlistStatusesFn,
+	getWatchlistMoviesByGenreFn,
 	getWatchlistStatusFn,
 } from "./server/watchlist.functions";
 
@@ -10,6 +11,12 @@ export const watchlistQueries = {
 		queryOptions({
 			queryKey: ["watchlist", "status", movieId],
 			queryFn: () => getWatchlistStatusFn({ data: { movieId } }),
+		}),
+	moviesByGenreId: (genreId: number) =>
+		queryOptions({
+			queryKey: ["watchlist", "movies", "genre", genreId],
+			queryFn: () => getWatchlistMoviesByGenreFn({ data: { genreId } }),
+			enabled: !!genreId,
 		}),
 	list: () =>
 		queryOptions({

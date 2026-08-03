@@ -9,6 +9,7 @@ import {
 	selectUserWatchlist,
 	selectUserWatchlistPage,
 	selectUserWatchlistStatuses,
+	selectWatchlistMoviesByGenreId,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
@@ -112,3 +113,10 @@ export const getUserWatchlistStatusesFn = createServerFn({
 	if (!session) return {};
 	return await selectUserWatchlistStatuses(session.user.id);
 });
+
+export const getWatchlistMoviesByGenreFn = createServerFn({ method: "GET" })
+	.validator((data: { genreId: number }) => data)
+	.handler(async ({ data }) => {
+		const session = await ensureSession();
+		return await selectWatchlistMoviesByGenreId(session.user.id, data.genreId);
+	});

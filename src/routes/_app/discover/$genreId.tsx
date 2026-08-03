@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { BackButton } from "#/components/BackButton";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
+import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -20,6 +21,9 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 			context.queryClient.ensureQueryData(
 				movieQueries.discover({ with_genres: params.genreId }),
 			),
+			context.queryClient.ensureQueryData(
+				watchlistQueries.moviesByGenreId(params.genreId),
+			),
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
 		]);
 
@@ -33,6 +37,12 @@ function DiscoverGenrePage() {
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
 	const { data: movies } = useSuspenseQuery(
 		movieQueries.discover({ with_genres: genreId }),
+	);
+	const { data: watchlistStatuses } = useSuspenseQuery(
+		watchlistQueries.watchlistStatuses(),
+	);
+	const { data: watchlistMovies } = useSuspenseQuery(
+		watchlistQueries.moviesByGenreId(genreId),
 	);
 	const selectedGenre = genres.genres.find((genre) => genre.id === genreId);
 
@@ -48,6 +58,16 @@ function DiscoverGenrePage() {
 			<MovieBackdropMarquee
 				movies={movies.results.map((movie) => normalizeMovie(movie))}
 			/>
+			<section className="flex flex-col gap-4">
+				<h2 className="text-xl lg:text-2xl tracking-tighter">
+					{selectedGenre?.name} Movies in Your Watchlist
+				</h2>
+
+				<MovieRow
+					movies={watchlistMovies}
+					watchlistStatuses={watchlistStatuses}
+				/>
+			</section>
 		</>
 	);
 }
