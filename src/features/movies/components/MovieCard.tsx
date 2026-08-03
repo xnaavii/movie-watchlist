@@ -8,6 +8,7 @@ import type {
 } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 import { formatReleaseYear } from "../utils";
+import { MovieLogo } from "./MovieLogo";
 
 type MovieCardProps = {
 	movie: Movie;
@@ -45,7 +46,7 @@ export function MovieCard({
 					params={{ id: `${movie.id}` }}
 					className="block size-full focus:outline-none"
 				>
-					<AspectRatio ratio={aspectRatio}>
+					<AspectRatio ratio={aspectRatio} className="relative">
 						{imageSrc ? (
 							<img
 								src={imageSrc}
@@ -60,6 +61,13 @@ export function MovieCard({
 							<div className="bg-muted size-full flex items-center justify-center text-xs text-muted-foreground">
 								No image
 							</div>
+						)}
+						{variant === "backdrop" && (
+							<MovieLogo
+								tmdbId={movie.id}
+								title={movie.title}
+								className="w-40 absolute inset-0 p-4"
+							/>
 						)}
 					</AspectRatio>
 				</Link>

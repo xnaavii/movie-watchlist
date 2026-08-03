@@ -44,7 +44,7 @@ export function MovieRow({
 					<CarouselItem key={movie.id} className={cn("pl-4", basisClass)}>
 						<div className="flex items-start">
 							{showRanks && (
-								<div className="shrink-0 flex items-center justify-center self-center z-0 -mr-3 sm:-mr-5">
+								<div className="shrink-0 flex items-center justify-center z-0">
 									<RankBadge rank={index + 1} />
 								</div>
 							)}
