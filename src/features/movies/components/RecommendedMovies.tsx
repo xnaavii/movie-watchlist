@@ -8,6 +8,7 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { movieQueries } from "../queries";
+import { normalizeMovie } from "../utils";
 import { MovieCard } from "./MovieCard";
 
 interface RecommendedMoviesProps {
@@ -41,12 +42,7 @@ export function RecommendedMovies({ tmdbId }: RecommendedMoviesProps) {
 							key={movie.id}
 							className="pl-2.5 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
 						>
-							<MovieCard
-								id={movie.id}
-								title={movie.title}
-								posterPath={movie.poster_path ?? null}
-								releaseDate={movie.release_date ?? null}
-							/>
+							<MovieCard movie={normalizeMovie(movie)} />
 						</CarouselItem>
 					))}
 				</CarouselContent>

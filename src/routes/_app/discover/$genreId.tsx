@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BackButton } from "#/components/BackButton";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { movieQueries } from "#/features/movies/queries";
+import { normalizeMovie } from "#/features/movies/utils";
 import { watchlistQueries } from "#/features/watchlist/queries";
 
 export const Route = createFileRoute("/_app/discover/$genreId")({
@@ -33,9 +34,6 @@ function DiscoverGenrePage() {
 	const { data: movies } = useSuspenseQuery(
 		movieQueries.discover({ with_genres: genreId }),
 	);
-	const { data: watchlistStatuses } = useSuspenseQuery(
-		watchlistQueries.watchlistStatuses(),
-	);
 	const selectedGenre = genres.genres.find((genre) => genre.id === genreId);
 
 	return (
@@ -47,7 +45,9 @@ function DiscoverGenrePage() {
 					<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
 				</h1>
 			</div>
-			<MovieBackdropMarquee movies={movies.results} />
+			<MovieBackdropMarquee
+				movies={movies.results.map((movie) => normalizeMovie(movie))}
+			/>
 		</>
 	);
 }

@@ -1,4 +1,3 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
@@ -9,11 +8,6 @@ import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo } from "#/utils/seo";
-
-type WatchlistCardMovie = Pick<
-	MovieResultItem,
-	"id" | "title" | "poster_path" | "release_date"
->;
 
 export const Route = createFileRoute("/_app/discover/")({
 	component: DiscoverPage,
@@ -55,15 +49,7 @@ function DiscoverPage() {
 		movieQueries.list("popular"),
 	);
 	const { data: userWatchlist } = useSuspenseQuery(watchlistQueries.list());
-	const watchlistMovies = userWatchlist.results.map(
-		({ movie }) =>
-			({
-				id: movie.tmdbId,
-				title: movie.title,
-				poster_path: movie.posterPath || "",
-				release_date: movie.releaseDate || "",
-			}) satisfies WatchlistCardMovie,
-	);
+	const watchlistMovies = userWatchlist.results.map(({ movie }) => movie);
 
 	return (
 		<>
@@ -85,7 +71,13 @@ function DiscoverPage() {
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
 				<MovieRow
-					movies={popularMovies.results}
+					movies={popularMovies.results.map((movie) => ({
+						id: movie.id,
+						title: movie.title,
+						releaseDate: movie.release_date,
+						posterPath: movie.poster_path,
+						backdropPath: movie.backdrop_path,
+					}))}
 					watchlistStatuses={watchlistStatuses}
 					showRanks
 				/>

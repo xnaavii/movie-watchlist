@@ -1,4 +1,9 @@
-import type { DiscoverMovieParams, LanguageISO6391 } from "@lorenzopant/tmdb";
+import type {
+	DiscoverMovieParams,
+	LanguageISO6391,
+	MovieResultItem,
+} from "@lorenzopant/tmdb";
+import type { Movie } from "../watchlist/server/watchlist.server";
 
 type DiscoverFilters = {
 	genreId?: number;
@@ -34,4 +39,14 @@ export function formatReleaseYear(
 ): string {
 	if (!releaseDate || releaseDate.length < 4) return "N/A";
 	return releaseDate.slice(0, 4);
+}
+
+export function normalizeMovie(movie: MovieResultItem): Movie {
+	return {
+		id: movie.id,
+		title: movie.title,
+		posterPath: movie.poster_path,
+		backdropPath: movie.backdrop_path,
+		releaseDate: movie.release_date,
+	};
 }

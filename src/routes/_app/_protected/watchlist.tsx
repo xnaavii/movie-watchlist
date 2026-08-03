@@ -54,11 +54,8 @@ function WatchlistPage() {
 				{items.map(({ movie }) => (
 					<MovieCard
 						key={movie.id}
-						id={movie.tmdbId}
-						title={movie.title}
-						posterPath={movie.posterPath}
-						releaseDate={movie.releaseDate ?? null}
-						watchlistStatus={statuses[movie.tmdbId] ?? null}
+						movie={movie}
+						watchlistStatus={statuses[movie.id] ?? null}
 					/>
 				))}
 				<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />

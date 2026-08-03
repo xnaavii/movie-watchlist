@@ -84,11 +84,11 @@ export const verification = pgTable(
 );
 
 export const movie = pgTable("movie", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	tmdbId: integer("tmdb_id").notNull().unique(),
+	id: integer("id").primaryKey(),
 	title: text("title").notNull(),
 	releaseDate: text("release_date"),
 	posterPath: text("poster_path"),
+	backdropPath: text("backdrop_path"),
 	addedAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -104,7 +104,7 @@ export const watchlist = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
-		movieId: uuid("movie_id")
+		movieId: integer("movie_id")
 			.notNull()
 			.references(() => movie.id, { onDelete: "cascade" }),
 		status: watchlistStatusEnum().notNull().default("want_to_watch"),
@@ -113,6 +113,7 @@ export const watchlist = pgTable(
 			.defaultNow()
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
+		watchedAt: timestamp("watched_at"),
 	},
 	(table) => [
 		uniqueIndex("watchlist_user_movie_unique").on(table.userId, table.movieId),

@@ -1,4 +1,3 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
 import {
 	Carousel,
@@ -7,16 +6,16 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "#/components/ui/carousel";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type {
+	Movie,
+	WatchlistStatus,
+} from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 import { MovieCard } from "./MovieCard";
 import { RankBadge } from "./RankBadge";
 
 interface MovieRowProps {
-	movies: Pick<
-		MovieResultItem,
-		"id" | "title" | "poster_path" | "release_date"
-	>[];
+	movies: Movie[];
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 	showRanks?: boolean;
 }
@@ -47,10 +46,7 @@ export function MovieRow({
 						<div className="flex items-center">
 							{showRanks && <RankBadge rank={index + 1} className="z-0" />}
 							<MovieCard
-								id={movie.id}
-								title={movie.title}
-								posterPath={movie.poster_path ?? null}
-								releaseDate={movie.release_date ?? null}
+								movie={movie}
 								watchlistStatus={watchlistStatuses?.[movie.id]}
 								className="relative z-10"
 							/>

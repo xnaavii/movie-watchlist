@@ -5,6 +5,7 @@ import { z } from "zod";
 import { SearchBar } from "#/components/SearchBar";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { movieQueries } from "#/features/movies/queries";
+import { normalizeMovie } from "#/features/movies/utils";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
 const searchParamsSchema = z.object({
@@ -83,13 +84,7 @@ function SearchPage() {
 					<h2 className="text-xl">Showing results for {q}</h2>
 					<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
 						{movies.map((movie) => (
-							<MovieCard
-								key={movie.id}
-								id={movie.id}
-								title={movie.title}
-								posterPath={movie.poster_path ?? null}
-								releaseDate={movie.release_date ?? null}
-							/>
+							<MovieCard key={movie.id} movie={normalizeMovie(movie)} />
 						))}
 						<div
 							ref={sentinelRef}

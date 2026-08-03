@@ -8,31 +8,28 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type {
+	Movie,
+	WatchlistStatus,
+} from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 import { formatReleaseYear } from "../utils";
 
 type MovieCardProps = {
-	id: number | string;
-	title: string;
-	posterPath: string | null;
-	releaseDate: string | null;
+	movie: Movie;
 	className?: string;
 	watchlistStatus?: WatchlistStatus;
 };
 
 export function MovieCard({
-	id,
-	title,
-	posterPath,
-	releaseDate,
+	movie,
 	className,
 	watchlistStatus,
 }: MovieCardProps) {
 	return (
 		<Card
 			className={cn("relative mx-auto w-full py-0 group", className)}
-			title={title}
+			title={movie.title}
 		>
 			{watchlistStatus && (
 				<div className="absolute top-2 right-2 z-20">
@@ -41,14 +38,14 @@ export function MovieCard({
 			)}
 			<Link
 				to="/movies/$id"
-				params={{ id: `${id}` }}
+				params={{ id: `${movie.id}` }}
 				className="block size-full focus:outline-none"
 			>
 				<AspectRatio ratio={2 / 3}>
-					{posterPath ? (
+					{movie.posterPath ? (
 						<img
-							src={posterPath}
-							alt={title}
+							src={movie.posterPath}
+							alt={movie.title}
 							className={cn(
 								"size-full object-cover transition-all duration-200 group-hover:scale-105",
 								watchlistStatus === "want_to_watch" ? "saturate-0" : "",
@@ -63,8 +60,10 @@ export function MovieCard({
 				</AspectRatio>
 			</Link>
 			<CardHeader className="rounded-xl absolute inset-0 flex-col justify-end gap-2 p-4 size-full hidden group-hover:flex group-focus-within:flex bg-background/80 transition-discrete pointer-events-none">
-				<CardTitle className="text-sm md:text-base">{title}</CardTitle>
-				<CardDescription>{formatReleaseYear(releaseDate)}</CardDescription>
+				<CardTitle className="text-sm md:text-base">{movie.title}</CardTitle>
+				<CardDescription>
+					{formatReleaseYear(movie.releaseDate)}
+				</CardDescription>
 			</CardHeader>
 			<div className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground group-has-focus-visible:inset-ring-foreground" />
 		</Card>

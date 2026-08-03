@@ -1,10 +1,10 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Marquee } from "#/components/shadcn-space/animations/marquee";
+import type { Movie } from "#/features/watchlist/server/watchlist.server";
 
 interface MovieBackdropMarquee {
-	movies: MovieResultItem[];
+	movies: Movie[];
 	children?: ReactNode;
 }
 
@@ -24,11 +24,23 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						className="group/card"
 					>
 						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
-							<img
-								src={movie.backdrop_path}
-								alt={`${movie.title}'s backdrop`}
-								className="h-full w-full object-cover rounded-md"
-							/>
+							{movie.backdropPath ? (
+								<img
+									src={movie.backdropPath}
+									alt={`${movie.title}'s backdrop`}
+									className="h-full w-full object-cover rounded-md"
+								/>
+							) : movie.posterPath ? (
+								<img
+									src={movie.posterPath}
+									alt={`${movie.title}'s backdrop`}
+									className="w-full object-cover rounded-md aspect-video object-top"
+								/>
+							) : (
+								<div className="bg-primary/40 aspect-video rounded-md flex items-center justify-center">
+									<p className="text-xs font-medium">{movie.title}</p>
+								</div>
+							)}
 							<div className="absolute bottom-0 left-0 p-2 w-full translate-y-full bg-linear-to-t from-background to-transparent group-hover/card:translate-y-0">
 								<p className="text-xs font-medium">{movie.title}</p>
 							</div>
@@ -46,11 +58,23 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						className="group/card"
 					>
 						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
-							<img
-								src={movie.backdrop_path}
-								alt={`${movie.title}'s backdrop`}
-								className="h-full w-full object-cover rounded-md"
-							/>
+							{movie.backdropPath ? (
+								<img
+									src={movie.backdropPath}
+									alt={`${movie.title}'s backdrop`}
+									className="h-full w-full object-cover rounded-md"
+								/>
+							) : movie.posterPath ? (
+								<img
+									src={movie.posterPath}
+									alt={`${movie.title}'s backdrop`}
+									className="w-full object-cover rounded-md aspect-video object-top"
+								/>
+							) : (
+								<div className="bg-primary/40 aspect-video rounded-md flex items-center justify-center">
+									<p className="text-xs font-medium">{movie.title}</p>
+								</div>
+							)}
 							<div className="absolute bottom-0 left-0 p-2 w-full translate-y-full bg-linear-to-t from-background to-transparent group-hover/card:translate-y-0">
 								<p className="text-xs font-medium">{movie.title}</p>
 							</div>
