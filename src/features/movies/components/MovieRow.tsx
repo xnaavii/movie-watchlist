@@ -32,16 +32,19 @@ export function MovieRow({
 	const basisClass =
 		variant === "backdrop"
 			? "basis-full sm:basis md:basis-1/2"
-			: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/6";
+			: "basis-1/3 sm:basis-1/4 lg:basis-1/5 xl:basis-1/6";
 
 	return (
 		<Carousel
 			opts={{ align: "start", dragFree: true }}
 			plugins={[WheelGesturesPlugin()]}
 		>
-			<CarouselContent className="-ml-4">
+			<CarouselContent className="-ml-2 md:-ml-4">
 				{movies.map((movie, index) => (
-					<CarouselItem key={movie.id} className={cn("pl-4", basisClass)}>
+					<CarouselItem
+						key={movie.id}
+						className={cn("pl-2 md:pl-4", basisClass)}
+					>
 						<div className="flex items-start">
 							{showRanks && (
 								<div className="shrink-0 flex items-center justify-center z-0">
