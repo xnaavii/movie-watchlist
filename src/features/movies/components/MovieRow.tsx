@@ -13,7 +13,10 @@ import { MovieCard } from "./MovieCard";
 import { RankBadge } from "./RankBadge";
 
 interface MovieRowProps {
-	movies: MovieResultItem[];
+	movies: Pick<
+		MovieResultItem,
+		"id" | "title" | "poster_path" | "release_date"
+	>[];
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 	showRanks?: boolean;
 }

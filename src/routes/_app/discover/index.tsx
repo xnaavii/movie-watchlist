@@ -1,3 +1,4 @@
+import type { MovieResultItem } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
@@ -9,6 +10,11 @@ import { movieQueries } from "#/features/movies/queries";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo } from "#/utils/seo";
 
+type WatchlistCardMovie = Pick<
+	MovieResultItem,
+	"id" | "title" | "poster_path" | "release_date"
+>;
+
 export const Route = createFileRoute("/_app/discover/")({
 	component: DiscoverPage,
 	pendingComponent: DiscoverPagePending,
@@ -19,6 +25,7 @@ export const Route = createFileRoute("/_app/discover/")({
 			context.queryClient.ensureQueryData(movieQueries.languages()),
 			context.queryClient.ensureQueryData(movieQueries.list("popular")),
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
+			context.queryClient.ensureQueryData(watchlistQueries.list()),
 		]);
 		return { genres, movies, ...deps };
 	},
@@ -47,6 +54,16 @@ function DiscoverPage() {
 	const { data: popularMovies } = useSuspenseQuery(
 		movieQueries.list("popular"),
 	);
+	const { data: userWatchlist } = useSuspenseQuery(watchlistQueries.list());
+	const watchlistMovies = userWatchlist.results.map(
+		({ movie }) =>
+			({
+				id: movie.tmdbId,
+				title: movie.title,
+				poster_path: movie.posterPath || "",
+				release_date: movie.releaseDate || "",
+			}) satisfies WatchlistCardMovie,
+	);
 
 	return (
 		<>
@@ -73,6 +90,22 @@ function DiscoverPage() {
 					showRanks
 				/>
 			</section>
+			{watchlistMovies && (
+				<section className="flex flex-col gap-4">
+					<div className="flex justify-between">
+						<h2 className="text-xl lg:text-2xl tracking-tighter">
+							In Your Watchlist
+						</h2>
+						<Button variant="link" asChild>
+							<Link to="/watchlist">See all</Link>
+						</Button>
+					</div>
+					<MovieRow
+						movies={watchlistMovies}
+						watchlistStatuses={watchlistStatuses}
+					/>
+				</section>
+			)}
 		</>
 	);
 }
