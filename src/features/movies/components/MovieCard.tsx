@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Check } from "lucide-react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
-import { Badge } from "#/components/ui/badge";
+import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import type {
 	Movie,
 	WatchlistStatus,
@@ -96,17 +95,5 @@ export function MovieCard({
 				</div>
 			)}
 		</div>
-	);
-}
-
-function WatchlistBadge({ status }: { status: WatchlistStatus }) {
-	return (
-		<Badge
-			variant={status === "watched" ? "default" : "secondary"}
-			className="gap-1 rounded-full w-8 h-8"
-			title={status === "watched" ? "Watched" : "Want to watch"}
-		>
-			{status === "watched" ? <Check /> : <Bookmark />}
-		</Badge>
 	);
 }

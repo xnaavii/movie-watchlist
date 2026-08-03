@@ -13,16 +13,16 @@ export function WatchlistBadge({ status, className }: WatchlistBadgeProps) {
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-center gap-1 w-10 h-10 lg:w-12 lg:h-12 rounded-full",
+				"gap-1 rounded-full bg-secondary p-2 flex items-center justify-center w-fit h-fit border",
 				status === "watched" ? "bg-primary" : "bg-secondary",
 				className,
 			)}
-			title={status === "watched" ? "Watched" : "Want to watch"}
+			title={status === "watched" ? "Watched" : "In the Watchlist"}
 		>
 			{status === "watched" ? (
-				<Check className="size-4 lg:size-5" />
+				<Check className="size-3 lg:size-4" />
 			) : (
-				<Bookmark className="size-4 lg:size-5" />
+				<Bookmark className="size-3 lg:size-4" />
 			)}
 		</div>
 	);
