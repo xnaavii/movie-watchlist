@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "#/components/BackButton";
+import { Button } from "#/components/ui/button";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
@@ -59,9 +60,14 @@ function DiscoverGenrePage() {
 				movies={movies.results.map((movie) => normalizeMovie(movie))}
 			/>
 			<section className="flex flex-col gap-4">
-				<h2 className="text-xl lg:text-2xl tracking-tighter">
-					{selectedGenre?.name} Movies in Your Watchlist
-				</h2>
+				<div className="flex justify-between">
+					<h2 className="text-xl lg:text-2xl tracking-tighter">
+						{selectedGenre?.name} Movies in Your Watchlist
+					</h2>
+					<Button variant="link" asChild>
+						<Link to="/watchlist">See all</Link>
+					</Button>
+				</div>
 
 				<MovieRow
 					movies={watchlistMovies}

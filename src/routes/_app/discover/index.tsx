@@ -6,6 +6,7 @@ import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMov
 import { GenreRow } from "#/features/movies/components/GenreRow";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
+import { normalizeMovie } from "#/features/movies/utils";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo } from "#/utils/seo";
 
@@ -71,13 +72,7 @@ function DiscoverPage() {
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
 				<MovieRow
-					movies={popularMovies.results.map((movie) => ({
-						id: movie.id,
-						title: movie.title,
-						releaseDate: movie.release_date,
-						posterPath: movie.poster_path,
-						backdropPath: movie.backdrop_path,
-					}))}
+					movies={popularMovies.results.map((movie) => normalizeMovie(movie))}
 					watchlistStatuses={watchlistStatuses}
 					showRanks
 				/>
