@@ -8,25 +8,25 @@ import { RemoveFromWatchlistButton } from "./RemoveFromWatchlistButton";
 import { WatchlistStatusButtonView } from "./WatchlistStatusButtonView";
 
 type WatchlistStatusButtonProps = {
-	tmdbId: number;
+	movieId: number;
 	className?: string;
 };
 
 export function WatchlistStatusButton({
-	tmdbId,
+	movieId,
 	className,
 }: WatchlistStatusButtonProps) {
 	const { data: session } = authClient.useSession();
 	const { data: status } = useQuery({
-		...watchlistQueries.status(tmdbId),
+		...watchlistQueries.status(movieId),
 		enabled: !!session,
 	});
 	const { updateStatus, isPending: isUpdating } = useUpdateWatchlistStatus({
-		tmdbId,
+		movieId,
 	});
 
 	if (status == null) {
-		return <AddToWatchlistButton tmdbId={tmdbId} className={className} />;
+		return <AddToWatchlistButton movieId={movieId} className={className} />;
 	}
 
 	return (
@@ -37,7 +37,7 @@ export function WatchlistStatusButton({
 				onSelect={updateStatus}
 				className="flex-1"
 			/>
-			<RemoveFromWatchlistButton tmdbId={tmdbId} />
+			<RemoveFromWatchlistButton movieId={movieId} />
 		</div>
 	);
 }

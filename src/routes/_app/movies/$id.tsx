@@ -169,7 +169,7 @@ function MovieDetailsPage() {
 							</div>
 						)}
 					</div>
-					<WatchlistStatusButton tmdbId={movie.id} />
+					<WatchlistStatusButton movieId={movie.id} />
 				</div>
 			</div>
 

@@ -4,15 +4,15 @@ import { cn } from "#/lib/utils";
 import { useAddToWatchlist } from "../hooks/useAddToWatchlist";
 
 type AddToWatchlistButtonProps = {
-	tmdbId: number;
+	movieId: number;
 	className?: string;
 };
 
 export function AddToWatchlistButton({
-	tmdbId,
+	movieId,
 	className,
 }: AddToWatchlistButtonProps) {
-	const { addToList, isPending } = useAddToWatchlist({ tmdbId });
+	const { addToList, isPending } = useAddToWatchlist({ movieId });
 
 	return (
 		<Button

@@ -3,7 +3,7 @@ import { ensureSession, getSession } from "#/lib/auth.functions";
 import {
 	addToWatchlist,
 	deleteFromWatchlist,
-	findMovieByTmdbId,
+	findMovieById,
 	findOrCreateMovie,
 	getWatchlistStatus,
 	selectUserWatchlist,
@@ -13,11 +13,14 @@ import {
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
+const WATCHLIST_PAGE_SIZE = 20;
+
 export const addToWatchlistFn = createServerFn({ method: "POST" })
-	.validator((data: { tmdbId: number }) => data)
+	.validator((data: { movieId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
-		const movieRow = await findOrCreateMovie(data.tmdbId);
+
+		const movieRow = await findOrCreateMovie(data.movieId);
 
 		const [newRow] = await addToWatchlist(session.user.id, movieRow.id);
 
@@ -29,11 +32,11 @@ export const addToWatchlistFn = createServerFn({ method: "POST" })
 	});
 
 export const removeFromWatchlist = createServerFn({ method: "POST" })
-	.validator((data: { tmdbId: number }) => data)
+	.validator((data: { movieId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
-		const movieRow = await findMovieByTmdbId(data.tmdbId);
+		const movieRow = await findMovieById(data.movieId);
 		if (!movieRow) return null;
 
 		return await deleteFromWatchlist({
@@ -43,11 +46,11 @@ export const removeFromWatchlist = createServerFn({ method: "POST" })
 	});
 
 export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
-	.validator((data: { tmdbId: number; status: WatchlistStatusInsert }) => data)
+	.validator((data: { movieId: number; status: WatchlistStatusInsert }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
-		const movieRow = await findOrCreateMovie(data.tmdbId);
+		const movieRow = await findOrCreateMovie(data.movieId);
 
 		const updated = await updateWatchlistStatus({
 			userId: session.user.id,
@@ -63,13 +66,13 @@ export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
 	});
 
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
-	.validator((data: { tmdbId: number }) => data)
+	.validator((data: { movieId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 
 		if (!session) return null;
 
-		return await getWatchlistStatus(session.user.id, data.tmdbId);
+		return await getWatchlistStatus(session.user.id, data.movieId);
 	});
 
 export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
@@ -80,8 +83,6 @@ export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
 		return await selectUserWatchlist(session.user.id);
 	},
 );
-
-const WATCHLIST_PAGE_SIZE = 20;
 
 export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
 	.validator((data: { page: number }) => data)

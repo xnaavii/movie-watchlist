@@ -7,17 +7,17 @@ import { authClient } from "#/lib/auth-client";
 import { watchlistQueries } from "../queries";
 import { addToWatchlistFn } from "../server/watchlist.functions";
 
-export function useAddToWatchlist({ tmdbId }: { tmdbId: number }) {
+export function useAddToWatchlist({ movieId }: { movieId: number }) {
 	const addToWatchlist = useServerFn(addToWatchlistFn);
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
 	const navigate = useNavigate();
 
 	const mutation = useMutation({
-		mutationFn: () => addToWatchlist({ data: { tmdbId } }),
+		mutationFn: () => addToWatchlist({ data: { movieId } }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(tmdbId).queryKey,
+				queryKey: watchlistQueries.status(movieId).queryKey,
 			});
 			toast.success("Added to watchlist");
 		},

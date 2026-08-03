@@ -1,6 +1,6 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "#/db";
-import { movie, watchlist } from "#/db/schema";
+import { genre, movie, movieToGenre, watchlist } from "#/db/schema";
 import { getMovieDetails } from "#/features/movies/server/movies.functions";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
@@ -51,40 +51,74 @@ export async function updateWatchlistStatus({
 
 	return upserted ?? null;
 }
+
+export async function addMovieWithGenres({
+	newMovie,
+	genres,
+}: {
+	newMovie: Movie;
+	genres: { id: number; name: string }[];
+}) {
+	const [insertedMovie] = await db
+		.insert(movie)
+		.values(newMovie)
+		.onConflictDoUpdate({
+			target: movie.id,
+			set: {
+				title: newMovie.title,
+				posterPath: newMovie.posterPath,
+				backdropPath: newMovie.backdropPath,
+				releaseDate: newMovie.releaseDate,
+			},
+		})
+		.returning();
+
+	if (genres && genres.length > 0) {
+		await db.insert(genre).values(genres).onConflictDoNothing();
+
+		const junctionRows = genres.map((g) => ({
+			movieId: newMovie.id,
+			genreId: g.id,
+		}));
+
+		await db.insert(movieToGenre).values(junctionRows).onConflictDoNothing();
+	}
+
+	return insertedMovie;
+}
+
 export async function findOrCreateMovie(movieId: number) {
 	const [existingMovie] = await db
 		.select()
 		.from(movie)
 		.where(eq(movie.id, movieId));
 
-	if (existingMovie) return existingMovie;
+	if (existingMovie) {
+		const [{ genreCount }] = await db
+			.select({ genreCount: count(movieToGenre.genreId) })
+			.from(movieToGenre)
+			.where(eq(movieToGenre.movieId, movieId));
+
+		if (Number(genreCount) > 0) {
+			return existingMovie;
+		}
+	}
 
 	const details = await getMovieDetails({ data: { movie_id: movieId } });
 
-	const [insertedMovie] = await db
-		.insert(movie)
-		.values({
+	return await addMovieWithGenres({
+		newMovie: {
 			id: movieId,
 			title: details.title,
 			posterPath: details.poster_path,
 			backdropPath: details.backdrop_path,
 			releaseDate: details.release_date,
-		})
-		.onConflictDoUpdate({
-			target: movie.id,
-			set: {
-				title: details.title,
-				posterPath: details.poster_path,
-				backdropPath: details.backdrop_path,
-				releaseDate: details.release_date,
-			},
-		})
-		.returning();
-
-	return insertedMovie;
+		},
+		genres: details.genres ?? [],
+	});
 }
 
-export async function findMovieByTmdbId(movieId: number) {
+export async function findMovieById(movieId: number) {
 	const [existingMovie] = await db
 		.select()
 		.from(movie)

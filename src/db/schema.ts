@@ -5,6 +5,7 @@ import {
 	integer,
 	pgEnum,
 	pgTable,
+	primaryKey,
 	text,
 	timestamp,
 	uniqueIndex,
@@ -92,6 +93,24 @@ export const movie = pgTable("movie", {
 	addedAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const genre = pgTable("genre", {
+	id: integer("id").primaryKey(),
+	name: text("name").notNull(),
+});
+
+export const movieToGenre = pgTable(
+	"movie_to_genre",
+	{
+		movieId: integer("movie_id")
+			.notNull()
+			.references(() => movie.id, { onDelete: "cascade" }),
+		genreId: integer("genre_id")
+			.notNull()
+			.references(() => genre.id, { onDelete: "cascade" }),
+	},
+	(t) => [primaryKey({ columns: [t.movieId, t.genreId] })],
+);
+
 export const watchlistStatusEnum = pgEnum("status", [
 	"want_to_watch",
 	"watched",
@@ -143,6 +162,22 @@ export const accountRelations = relations(account, ({ one }) => ({
 
 export const movieRelations = relations(movie, ({ many }) => ({
 	watchlistEntries: many(watchlist),
+	movieToGenres: many(movieToGenre),
+}));
+
+export const genreRelations = relations(genre, ({ many }) => ({
+	movieToGenres: many(movieToGenre),
+}));
+
+export const movieToGenreRelations = relations(movieToGenre, ({ one }) => ({
+	movie: one(movie, {
+		fields: [movieToGenre.movieId],
+		references: [movie.id],
+	}),
+	genre: one(genre, {
+		fields: [movieToGenre.genreId],
+		references: [genre.id],
+	}),
 }));
 
 export const watchlistRelations = relations(watchlist, ({ one }) => ({

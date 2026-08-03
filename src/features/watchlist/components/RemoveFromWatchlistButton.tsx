@@ -5,15 +5,15 @@ import { cn } from "#/lib/utils";
 import { useRemoveFromWatchlist } from "../hooks/useRemoveFromWatchlist";
 
 type RemoveFromWatchlistButtonProps = {
-	tmdbId: number;
+	movieId: number;
 	className?: string;
 };
 
 export function RemoveFromWatchlistButton({
-	tmdbId,
+	movieId,
 	className,
 }: RemoveFromWatchlistButtonProps) {
-	const { remove, isPending } = useRemoveFromWatchlist({ tmdbId });
+	const { remove, isPending } = useRemoveFromWatchlist({ movieId });
 
 	return (
 		<Button

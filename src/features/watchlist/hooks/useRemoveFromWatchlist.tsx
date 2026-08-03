@@ -4,15 +4,15 @@ import { toast } from "sonner";
 import { watchlistQueries } from "../queries";
 import { removeFromWatchlist } from "../server/watchlist.functions";
 
-export function useRemoveFromWatchlist({ tmdbId }: { tmdbId: number }) {
+export function useRemoveFromWatchlist({ movieId }: { movieId: number }) {
 	const removeFromWatchlistFn = useServerFn(removeFromWatchlist);
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
-		mutationFn: () => removeFromWatchlistFn({ data: { tmdbId } }),
+		mutationFn: () => removeFromWatchlistFn({ data: { movieId } }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(tmdbId).queryKey,
+				queryKey: watchlistQueries.status(movieId).queryKey,
 			});
 			toast.success("Removed from watchlist");
 		},

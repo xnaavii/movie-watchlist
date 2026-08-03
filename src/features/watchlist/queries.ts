@@ -6,10 +6,10 @@ import {
 } from "./server/watchlist.functions";
 
 export const watchlistQueries = {
-	status: (tmdbId: number) =>
+	status: (movieId: number) =>
 		queryOptions({
-			queryKey: ["watchlist", "status", tmdbId],
-			queryFn: () => getWatchlistStatusFn({ data: { tmdbId } }),
+			queryKey: ["watchlist", "status", movieId],
+			queryFn: () => getWatchlistStatusFn({ data: { movieId } }),
 		}),
 	list: () =>
 		queryOptions({

@@ -8,10 +8,12 @@ import { updateWatchlistStatusFn } from "../server/watchlist.functions";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
 
 interface UseUpdateWatchlistStatus {
-	tmdbId: number;
+	movieId: number;
 }
 
-export function useUpdateWatchlistStatus({ tmdbId }: UseUpdateWatchlistStatus) {
+export function useUpdateWatchlistStatus({
+	movieId,
+}: UseUpdateWatchlistStatus) {
 	const updateWatchlistStatus = useServerFn(updateWatchlistStatusFn);
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
@@ -19,10 +21,10 @@ export function useUpdateWatchlistStatus({ tmdbId }: UseUpdateWatchlistStatus) {
 
 	const mutation = useMutation({
 		mutationFn: (status: WatchlistStatusInsert) =>
-			updateWatchlistStatus({ data: { tmdbId, status } }),
+			updateWatchlistStatus({ data: { movieId, status } }),
 		onSuccess: (_data, status) => {
 			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(tmdbId).queryKey,
+				queryKey: watchlistQueries.status(movieId).queryKey,
 			});
 			toast.success(
 				status === "watched" ? "Marked as watched" : "Marked as want to watch",
