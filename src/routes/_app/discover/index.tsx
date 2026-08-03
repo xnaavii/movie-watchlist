@@ -90,7 +90,7 @@ function DiscoverPage() {
 					showRanks
 				/>
 			</section>
-			{watchlistMovies && (
+			{watchlistMovies && watchlistMovies.length > 0 && (
 				<section className="flex flex-col gap-4">
 					<div className="flex justify-between">
 						<h2 className="text-xl lg:text-2xl tracking-tighter">
