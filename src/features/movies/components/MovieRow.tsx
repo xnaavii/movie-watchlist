@@ -41,7 +41,7 @@ export function MovieRow({
 							"pl-4",
 							showRanks
 								? "basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-								: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/5",
+								: "basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/6",
 						)}
 					>
 						<div className="flex items-center">
