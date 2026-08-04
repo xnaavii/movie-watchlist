@@ -136,11 +136,16 @@ function DiscoverGenrePage() {
 				</section>
 			)}
 
-			<MovieGrid
-				movies={movies.map((movie) => normalizeMovie(movie))}
-				watchlistStatuses={watchlistStatuses}
-			/>
-			<div ref={sentinelRef} className="h-1" aria-hidden="true" />
+			<section className="flex flex-col gap-4">
+				<h2 className="text-xl lg:text-2xl tracking-tighter">
+					{selectedGenre?.name} Popular
+				</h2>
+				<MovieGrid
+					movies={movies.map((movie) => normalizeMovie(movie))}
+					watchlistStatuses={watchlistStatuses}
+				/>
+				<div ref={sentinelRef} className="h-1" aria-hidden="true" />
+			</section>
 		</>
 	);
 }
