@@ -11,7 +11,7 @@ type MovieGridProps = {
 
 export function MovieGrid({ movies, watchlistStatuses }: MovieGridProps) {
 	return (
-		<ul className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
+		<ul className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 			{movies.map((movie) => (
 				<li key={movie.id}>
 					<MovieCard
