@@ -65,23 +65,8 @@ export const Route = createFileRoute("/_app/movies/$id")({
 	},
 	component: MovieDetailsPage,
 	pendingMinMs: 3000,
-	pendingComponent: () => (
-		<div className="flex flex-col gap-20 animate-pulse">
-			<div className="w-full h-[clamp(30vh,80vh+10svh,90vh)] bg-muted" />
-		</div>
-	),
-	notFoundComponent: () => (
-		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">
-			<h1 className="text-3xl font-medium tracking-tighter">Movie not found</h1>
-			<p className="text-muted-foreground">
-				We couldn't find that movie. It may have been removed or the link is
-				incorrect.
-			</p>
-			<Button asChild>
-				<Link to="/discover">Back to Discover</Link>
-			</Button>
-		</div>
-	),
+	pendingComponent: MovieDetailsPagePending,
+	notFoundComponent: MovieDetailsPageNotFound,
 });
 
 function MovieDetailsPage() {
@@ -183,6 +168,29 @@ function MovieDetailsPage() {
 
 			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}
 			{/* <StreamingSources tmdbId={movie.imdb_id ?? ""} /> */}
+		</div>
+	);
+}
+
+function MovieDetailsPagePending() {
+	return (
+		<div className="flex flex-col gap-20 animate-pulse">
+			<div className="w-full h-[clamp(30vh,80vh+10svh,90vh)] bg-muted" />
+		</div>
+	);
+}
+
+function MovieDetailsPageNotFound() {
+	return (
+		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">
+			<h1 className="text-3xl font-medium tracking-tighter">Movie not found</h1>
+			<p className="text-muted-foreground">
+				We couldn't find that movie. It may have been removed or the link is
+				incorrect.
+			</p>
+			<Button asChild>
+				<Link to="/discover">Back to Discover</Link>
+			</Button>
 		</div>
 	);
 }
