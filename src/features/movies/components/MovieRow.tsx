@@ -39,12 +39,9 @@ export function MovieRow({
 			opts={{ align: "start", dragFree: true }}
 			plugins={[WheelGesturesPlugin()]}
 		>
-			<CarouselContent className="-ml-2 md:-ml-4">
+			<CarouselContent className="-ml-4">
 				{movies.map((movie, index) => (
-					<CarouselItem
-						key={movie.id}
-						className={cn("pl-2 md:pl-4", basisClass)}
-					>
+					<CarouselItem key={movie.id} className={cn("pl-4", basisClass)}>
 						<div className="flex items-start">
 							{showRanks && (
 								<div className="shrink-0 flex items-center justify-center z-0">
