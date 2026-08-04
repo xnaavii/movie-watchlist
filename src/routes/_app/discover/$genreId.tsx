@@ -1,12 +1,19 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useQuery,
+	useSuspenseInfiniteQuery,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { BackButton } from "#/components/BackButton";
 import { Button } from "#/components/ui/button";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
+import { MovieGrid } from "#/features/movies/components/MovieGrid";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
 import { watchlistQueries } from "#/features/watchlist/queries";
+import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getSession } from "#/lib/auth.functions";
 
 export const Route = createFileRoute("/_app/discover/$genreId")({
@@ -23,8 +30,8 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 		const [genres, movies, watchlistMovies, watchlistStatuses] =
 			await Promise.all([
 				context.queryClient.ensureQueryData(movieQueries.genres({})),
-				context.queryClient.ensureQueryData(
-					movieQueries.discover({ with_genres: params.genreId }),
+				context.queryClient.ensureInfiniteQueryData(
+					movieQueries.infiniteDiscover({ with_genres: params.genreId }),
 				),
 				session
 					? context.queryClient.ensureQueryData(
@@ -52,10 +59,10 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 function DiscoverGenrePage() {
 	const { isAuthenticated } = Route.useLoaderData();
 	const { genreId } = Route.useParams();
+
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
-	const { data: movies } = useSuspenseQuery(
-		movieQueries.discover({ with_genres: genreId }),
-	);
+	const selectedGenre = genres.genres.find((genre) => genre.id === genreId);
+
 	const { data: watchlistStatuses } = useQuery({
 		...watchlistQueries.watchlistStatuses(),
 		enabled: isAuthenticated,
@@ -64,8 +71,29 @@ function DiscoverGenrePage() {
 		...watchlistQueries.moviesByGenreId(genreId),
 		enabled: isAuthenticated,
 	});
-	const selectedGenre = genres.genres.find((genre) => genre.id === genreId);
-	console.log(isAuthenticated);
+
+	const {
+		data: moviesPages,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useSuspenseInfiniteQuery(
+		movieQueries.infiniteDiscover({ with_genres: genreId }),
+	);
+
+	const movies = useMemo(() => {
+		const map = new Map();
+		for (const page of moviesPages.pages) {
+			for (const movie of page.results) {
+				map.set(movie.id, movie);
+			}
+		}
+		return [...map.values()];
+	}, [moviesPages]);
+
+	const sentinelRef = useInfiniteScrollTrigger(() => {
+		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+	}, hasNextPage);
 
 	return (
 		<>
@@ -77,7 +105,9 @@ function DiscoverGenrePage() {
 				</h1>
 			</div>
 			<MovieBackdropMarquee
-				movies={movies.results.map((movie) => normalizeMovie(movie))}
+				movies={moviesPages.pages[0].results.map((movie) =>
+					normalizeMovie(movie),
+				)}
 			/>
 
 			{isAuthenticated && (
@@ -99,6 +129,12 @@ function DiscoverGenrePage() {
 					) : null}
 				</section>
 			)}
+
+			<MovieGrid
+				movies={movies.map((movie) => normalizeMovie(movie))}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<div ref={sentinelRef} className="h-1" aria-hidden="true" />
 		</>
 	);
 }
