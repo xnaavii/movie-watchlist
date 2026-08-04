@@ -88,7 +88,7 @@ function MovieDetailsPage() {
 	);
 	const {
 		data: imdbRating,
-		isLoading: isLoadingImdbRating,
+		isLoading: isImdbRatingLoading,
 		isError: isImdbRatingError,
 		error: imdbRatingError,
 	} = useQuery({
@@ -166,7 +166,7 @@ function MovieDetailsPage() {
 							</>
 						)}
 
-						{isLoadingImdbRating ? (
+						{isImdbRatingLoading ? (
 							<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
 						) : isImdbRatingError ? (
 							<p>{imdbRatingError.message}</p>
@@ -182,8 +182,8 @@ function MovieDetailsPage() {
 			</div>
 
 			<div className="flex flex-col gap-20 p-4 md:p-6 lg:p-8">
-				<RecommendedMovies tmdbId={movie.id} />
 				<TrailerSection movie={movie} />
+				<RecommendedMovies tmdbId={movie.id} />
 			</div>
 
 			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}

@@ -15,15 +15,17 @@ export function MovieLogo({ tmdbId, title, className }: MovieLogoProps) {
 		isError,
 	} = useQuery(movieQueries.images({ movie_id: tmdbId }));
 
+	const logo = images?.logos[0].file_path;
+
 	return (
 		<div className={className} title={title}>
 			{isLoading ? (
 				<Skeleton className="w-[clamp(10rem,12vw,40rem)] h-16 md:h-20" />
-			) : !isError && images?.logos?.[0] ? (
+			) : !isError && logo ? (
 				<div className="relative inline-block self-start">
 					<div className="absolute inset-0 bg-background/20 blur-2xl rounded-full scale-200" />
 					<img
-						src={`https://image.tmdb.org/t/p/original${images.logos[0].file_path}`}
+						src={logo}
 						alt={title}
 						className="relative w-[clamp(12rem,14vw,40rem)] object-contain drop-shadow-2xl"
 						loading="eager"
