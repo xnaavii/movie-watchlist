@@ -17,12 +17,16 @@ import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/movies/$id")({
+	params: {
+		priority: 10,
+		parse: ({ id }) => {
+			if (!/^\d+$/.test(id)) throw notFound();
+			return { id: Number(id) };
+		},
+	},
 	loader: async ({ params }) => {
 		const queryClient = new QueryClient();
 		const movieId = Number(params.id);
-		if (Number.isNaN(movieId)) {
-			throw notFound();
-		}
 		try {
 			return await Promise.all([
 				queryClient.ensureQueryData(
@@ -86,7 +90,7 @@ function MovieDetailsPage() {
 
 	// Movie details
 	const { data: movie } = useSuspenseQuery(
-		movieQueries.details({ movie_id: Number(id) }),
+		movieQueries.details({ movie_id: id }),
 	);
 	const {
 		data: imdbRating,
