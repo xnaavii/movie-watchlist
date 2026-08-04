@@ -1,3 +1,4 @@
+import type { MovieDetails } from "@lorenzopant/tmdb";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
@@ -26,26 +27,36 @@ export const Route = createFileRoute("/_app/movies/$id")({
 	},
 	loader: async ({ params, context: { queryClient } }) => {
 		const movieId = params.id;
+
+		let movie: MovieDetails;
 		try {
-			return await Promise.all([
-				queryClient.ensureQueryData(
-					movieQueries.details({ movie_id: movieId }),
-				),
-				queryClient.ensureQueryData(
-					movieQueries.recommendations({ movie_id: movieId }),
-				),
-				queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
-				queryClient.ensureQueryData(watchlistQueries.status(movieId)),
-			]);
+			movie = await queryClient.ensureQueryData(
+				movieQueries.details({ movie_id: movieId }),
+			);
 		} catch {
 			throw notFound();
 		}
+
+		await queryClient.prefetchQuery(
+			movieQueries.credits({ movie_id: movieId }),
+		);
+
+		queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId }));
+		queryClient.prefetchQuery(watchlistQueries.status(movieId));
+		queryClient.prefetchQuery(
+			movieQueries.recommendations({ movie_id: movieId }),
+		);
+		if (movie.imdb_id) {
+			queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id));
+		}
+
+		return { movie };
 	},
 	head: ({ loaderData, params }) => {
 		if (!loaderData) {
 			return { meta: [{ title: "Movie not found" }] };
 		}
-		const movie = loaderData[0];
+		const movie = loaderData.movie;
 		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
 		const imageUrl = movie.backdrop_path || undefined;
 		const pageTitle = `${truncateTitle(movie.title)} | ${SITE_CONFIG.name}`;
@@ -72,25 +83,28 @@ export const Route = createFileRoute("/_app/movies/$id")({
 function MovieDetailsPage() {
 	const { id } = Route.useParams();
 
-	// Movie details
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: id }),
 	);
 	const {
 		data: imdbRating,
-		isLoading,
-		isError,
-		error,
+		isLoading: isLoadingImdbRating,
+		isError: isImdbRatingError,
+		error: imdbRatingError,
 	} = useQuery({
 		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
-		enabled: Boolean(movie.id),
+		enabled: Boolean(movie.imdb_id),
 	});
 
-	const credits = useSuspenseQuery(
-		movieQueries.credits({ movie_id: movie.id }),
-	);
-	const director = credits.data.crew.find((m) => m.job === "Director");
-	const topCast = credits.data.cast.slice(0, 5);
+	const {
+		data: credits,
+		isLoading: isCreditsLoading,
+		isError: isCreditsError,
+		error: creditsError,
+	} = useQuery(movieQueries.credits({ movie_id: movie.id }));
+
+	const director = credits?.crew.find((m) => m.job === "Director");
+	const topCast = credits?.cast.slice(0, 5);
 
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
@@ -129,27 +143,33 @@ function MovieDetailsPage() {
 						</p>
 						<Genres genres={movie.genres} />
 						{movie.overview && <MovieOverview overview={movie.overview} />}
-						{director && (
-							<div className="flex gap-1 items-center">
-								<p className="text-muted-foreground">Director</p>
-								<p>{director?.name}</p>
-							</div>
+
+						{isCreditsLoading ? (
+							<span className="bg-muted animate-pulse w-32 h-5 rounded" />
+						) : isCreditsError ? (
+							<p>There was an error loading credits: {creditsError.message}</p>
+						) : (
+							<>
+								<div className="flex gap-1 items-center">
+									<p className="text-muted-foreground">Director</p>
+									<p>{director?.name}</p>
+								</div>
+								<div className="flex gap-1 items-center flex-wrap">
+									<p className="text-muted-foreground">Starring</p>
+									{topCast?.map((cast, i) => (
+										<p key={cast.id}>
+											{cast?.name}
+											{topCast.length > i + 1 ? "," : null}
+										</p>
+									))}
+								</div>
+							</>
 						)}
-						{topCast && (
-							<div className="flex gap-1 items-center flex-wrap">
-								<p className="text-muted-foreground">Starring</p>
-								{topCast.map((cast, i) => (
-									<p key={cast.id}>
-										{cast?.name}
-										{topCast.length > i + 1 ? "," : null}
-									</p>
-								))}
-							</div>
-						)}
-						{isLoading ? (
+
+						{isLoadingImdbRating ? (
 							<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-						) : isError ? (
-							<p>{error.message}</p>
+						) : isImdbRatingError ? (
+							<p>{imdbRatingError.message}</p>
 						) : (
 							<div className="flex gap-1 items-center">
 								<p className="text-muted-foreground">IMDB</p>
