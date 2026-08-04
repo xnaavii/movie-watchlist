@@ -54,15 +54,17 @@ function DiscoverPage() {
 
 	return (
 		<>
-			<h1 className="relative text-2xl lg:text-3xl tracking-tight font-medium w-fit">
-				Your Next Watch
-				<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
-			</h1>
-			<FeaturedMoviesCarousel
-				movies={popularMovies.results}
-				genres={genres.genres}
-				watchlistStatuses={watchlistStatuses}
-			/>
+			<section className="flex flex-col gap-6">
+				<h1 className="relative text-2xl lg:text-3xl tracking-tight font-medium w-fit">
+					Your Next Watch
+					<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
+				</h1>
+				<FeaturedMoviesCarousel
+					movies={popularMovies.results}
+					genres={genres.genres}
+					watchlistStatuses={watchlistStatuses}
+				/>
+			</section>
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					Discover by genre
