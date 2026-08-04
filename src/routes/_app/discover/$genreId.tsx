@@ -3,7 +3,7 @@ import {
 	useSuspenseInfiniteQuery,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { BackButton } from "#/components/BackButton";
 import { Button } from "#/components/ui/button";
@@ -20,30 +20,37 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 	params: {
 		priority: 10,
 		parse: ({ genreId }) => {
-			if (!/^\d+$/.test(genreId)) return false;
+			if (!/^\d+$/.test(genreId)) throw notFound();
 			return { genreId: Number(genreId) };
 		},
 	},
 	loader: async ({ context, params }) => {
 		const session = await getSession();
 
-		const [genres, movies, watchlistMovies, watchlistStatuses] =
-			await Promise.all([
-				context.queryClient.ensureQueryData(movieQueries.genres({})),
-				context.queryClient.ensureInfiniteQueryData(
-					movieQueries.infiniteDiscover({ with_genres: params.genreId }),
-				),
-				session
-					? context.queryClient.ensureQueryData(
-							watchlistQueries.moviesByGenreId(params.genreId),
-						)
-					: null,
-				session
-					? context.queryClient.ensureQueryData(
-							watchlistQueries.watchlistStatuses(),
-						)
-					: null,
-			]);
+		const genres = await context.queryClient.ensureQueryData(
+			movieQueries.genres({}),
+		);
+
+		const genre = genres.genres.find((genre) => genre.id === params.genreId);
+		if (!genre) {
+			throw notFound();
+		}
+
+		const [movies, watchlistMovies, watchlistStatuses] = await Promise.all([
+			context.queryClient.ensureInfiniteQueryData(
+				movieQueries.infiniteDiscover({ with_genres: params.genreId }),
+			),
+			session
+				? context.queryClient.ensureQueryData(
+						watchlistQueries.moviesByGenreId(params.genreId),
+					)
+				: null,
+			session
+				? context.queryClient.ensureQueryData(
+						watchlistQueries.watchlistStatuses(),
+					)
+				: null,
+		]);
 
 		return {
 			genres,
@@ -54,6 +61,7 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 		};
 	},
 	component: DiscoverGenrePage,
+	notFoundComponent: DiscoverGenrePageNotFound,
 });
 
 function DiscoverGenrePage() {
@@ -147,5 +155,24 @@ function DiscoverGenrePage() {
 				<div ref={sentinelRef} className="h-1" aria-hidden="true" />
 			</section>
 		</>
+	);
+}
+
+function DiscoverGenrePageNotFound() {
+	return (
+		<div className="flex flex-col items-center justify-center gap-6 flex-1 h-full">
+			<div className="flex flex-col items-center gap-2">
+				<h1 className="relative isolate text-2xl lg:text-4xl tracking-tight font-medium">
+					Oops
+					<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
+				</h1>
+				<p className="text-sm lg:text-base text-muted-foreground">
+					This genre doesn't exist
+				</p>
+			</div>
+			<Button asChild>
+				<Link to="/discover">Go home</Link>
+			</Button>
+		</div>
 	);
 }
