@@ -1,4 +1,4 @@
-import { QueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
@@ -24,9 +24,8 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			return { id: Number(id) };
 		},
 	},
-	loader: async ({ params }) => {
-		const queryClient = new QueryClient();
-		const movieId = Number(params.id);
+	loader: async ({ params, context: { queryClient } }) => {
+		const movieId = params.id;
 		try {
 			return await Promise.all([
 				queryClient.ensureQueryData(
