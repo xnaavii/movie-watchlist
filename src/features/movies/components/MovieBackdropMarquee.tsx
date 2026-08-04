@@ -2,18 +2,28 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Marquee } from "#/components/shadcn-space/animations/marquee";
 import type { Movie } from "#/features/watchlist/server/watchlist.server";
+import { cn } from "#/lib/utils";
 
 interface MovieBackdropMarquee {
 	movies: Movie[];
+	className?: string;
 	children?: ReactNode;
 }
 
-export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
+export function MovieBackdropMarquee({
+	movies,
+	className,
+}: MovieBackdropMarquee) {
 	const firstRow = movies.slice(0, movies.length / 2);
 	const secondRow = movies.slice(movies.length / 2);
 
 	return (
-		<div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+		<div
+			className={cn(
+				"relative flex w-full flex-col items-center justify-center overflow-hidden",
+				className,
+			)}
+		>
 			<Marquee pauseOnHover className="[--duration:100s]">
 				{firstRow.map((movie) => (
 					<Link
@@ -23,7 +33,7 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						title={movie.title}
 						className="group/card"
 					>
-						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
+						<div className="relative h-full w-40 md:48 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							{movie.backdropPath ? (
 								<img
 									src={movie.backdropPath}
@@ -57,7 +67,7 @@ export function MovieBackdropMarquee({ movies }: MovieBackdropMarquee) {
 						title={movie.title}
 						className="group/card"
 					>
-						<div className="relative h-full w-48 md:w-64 cursor-pointer overflow-hidden border-border bg-card shadow-none">
+						<div className="relative h-full w-40 md:48 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							{movie.backdropPath ? (
 								<img
 									src={movie.backdropPath}
