@@ -7,12 +7,14 @@ import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
-import { RecommendedMovies } from "#/features/movies/components/RecommendedMovies";
+import { MovieRow } from "#/features/movies/components/MovieRow";
+import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { TrailerSection } from "#/features/movies/components/TrailerSection";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
+import { normalizeMovie } from "#/features/movies/utils";
 import { WatchlistStatusButton } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
@@ -103,6 +105,13 @@ function MovieDetailsPage() {
 		error: creditsError,
 	} = useQuery(movieQueries.credits({ movie_id: movie.id }));
 
+	const {
+		data: recommendedMovies,
+		isLoading: isRecommendedMoviesLoading,
+		isError: isRecommendedMoviesError,
+		error: recommendedMoviesError,
+	} = useQuery(movieQueries.recommendations({ movie_id: movie.id }));
+
 	const { data: images } = useQuery(
 		movieQueries.images({ movie_id: movie.id }),
 	);
@@ -191,7 +200,20 @@ function MovieDetailsPage() {
 
 			<div className="flex flex-col gap-20 p-4 md:p-6 lg:p-8">
 				<TrailerSection movie={movie} />
-				<RecommendedMovies tmdbId={movie.id} />
+				<section className="flex flex-col gap-4">
+					<h2 className="text-2xl tracking-tighter">Similar movies</h2>
+					{isRecommendedMoviesLoading ? (
+						<MovieRowSkeleton />
+					) : isRecommendedMoviesError ? (
+						<p>{recommendedMoviesError.message}</p>
+					) : recommendedMovies ? (
+						<MovieRow
+							movies={recommendedMovies.results.map((movie) =>
+								normalizeMovie(movie),
+							)}
+						/>
+					) : null}
+				</section>
 			</div>
 
 			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}
