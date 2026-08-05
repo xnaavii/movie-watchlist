@@ -21,12 +21,14 @@ const TIMER_INTERVAL = 8000;
 
 interface MoviesCarouselProps {
 	movies: MovieResultItem[];
+	movieLogos?: Record<number, string | undefined>;
 	genres?: Genre[];
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 }
 
 export function FeaturedMoviesCarousel({
 	movies,
+	movieLogos,
 	genres,
 	watchlistStatuses,
 }: MoviesCarouselProps) {
@@ -79,7 +81,7 @@ export function FeaturedMoviesCarousel({
 							<div className="group relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl">
 								<Link
 									to="/movies/$id"
-									params={{ id: `${movie.id}` }}
+									params={{ id: movie.id }}
 									className="absolute inset-0"
 								>
 									<span className="sr-only">View {movie.title}</span>
@@ -107,7 +109,10 @@ export function FeaturedMoviesCarousel({
 								<div className="pointer-events-none absolute bottom-0 size-full p-4 md:p-6 lg:p-8 z-10">
 									<div className="flex flex-col justify-between gap-6 h-full">
 										<div className="flex justify-between">
-											<MovieLogo tmdbId={movie.id} title={movie.title} />
+											<MovieLogo
+												logoSrc={movieLogos?.[movie.id]}
+												title={movie.title}
+											/>
 											{watchlistStatus && (
 												<WatchlistBadge status={watchlistStatus} />
 											)}

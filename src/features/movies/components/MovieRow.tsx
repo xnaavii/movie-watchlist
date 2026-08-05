@@ -16,6 +16,7 @@ import { RankBadge } from "./RankBadge";
 
 interface MovieRowProps {
 	movies: Movie[];
+	movieLogos?: Record<number, string | undefined>;
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 	showRanks?: boolean;
 	variant?: "poster" | "backdrop";
@@ -23,6 +24,7 @@ interface MovieRowProps {
 
 export function MovieRow({
 	movies,
+  movieLogos,
 	watchlistStatuses,
 	showRanks,
 	variant = "poster",
@@ -53,6 +55,7 @@ export function MovieRow({
 								variant={variant}
 								watchlistStatus={watchlistStatuses?.[movie.id]}
 								className="relative z-10 flex-1 min-w-0"
+								logoSrc={movieLogos?.[movie.id]}
 							/>
 						</div>
 					</CarouselItem>

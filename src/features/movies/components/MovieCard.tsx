@@ -12,15 +12,17 @@ import { MovieLogo } from "./MovieLogo";
 type MovieCardProps = {
 	movie: Movie;
 	variant?: "poster" | "backdrop";
-	className?: string;
 	watchlistStatus?: WatchlistStatus;
+	logoSrc?: string;
+	className?: string;
 };
 
 export function MovieCard({
 	movie,
-	className,
 	variant = "poster",
 	watchlistStatus,
+	logoSrc,
+	className,
 }: MovieCardProps) {
 	const isBackdrop = variant === "backdrop";
 	const imageSrc = isBackdrop ? movie.backdropPath : movie.posterPath;
@@ -42,7 +44,7 @@ export function MovieCard({
 				)}
 				<Link
 					to="/movies/$id"
-					params={{ id: `${movie.id}` }}
+					params={{ id: movie.id }}
 					className="block size-full focus:outline-none"
 				>
 					<AspectRatio ratio={aspectRatio} className="relative">
@@ -61,9 +63,9 @@ export function MovieCard({
 								No image
 							</div>
 						)}
-						{variant === "backdrop" && (
+						{variant === "backdrop" && logoSrc && (
 							<MovieLogo
-								tmdbId={movie.id}
+								logoSrc={logoSrc}
 								title={movie.title}
 								className="w-40 absolute inset-0 p-4"
 							/>

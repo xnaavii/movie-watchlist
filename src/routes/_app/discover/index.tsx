@@ -5,6 +5,7 @@ import { SITE_CONFIG } from "#/config/site";
 import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
 import { GenreRow } from "#/features/movies/components/GenreRow";
 import { MovieRow } from "#/features/movies/components/MovieRow";
+import { useMovieLogos } from "#/features/movies/hooks/useMovieLogos";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -14,15 +15,14 @@ export const Route = createFileRoute("/_app/discover/")({
 	component: DiscoverPage,
 	pendingComponent: DiscoverPagePending,
 	errorComponent: ({ error }) => <DiscoverPageError error={error} />,
-	loader: async ({ context, deps }) => {
+	loader: async ({ context }) => {
 		const [genres, , movies] = await Promise.all([
-			context.queryClient.ensureQueryData(movieQueries.genres({})),
-			context.queryClient.ensureQueryData(movieQueries.languages()),
-			context.queryClient.ensureQueryData(movieQueries.list("popular")),
+      context.queryClient.ensureQueryData(movieQueries.genres({})),
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
+			context.queryClient.ensureQueryData(movieQueries.list("popular")),
 			context.queryClient.ensureQueryData(watchlistQueries.list()),
 		]);
-		return { genres, movies, ...deps };
+		return { genres, movies };
 	},
 	head: ({ loaderData }) => {
 		const firstMovie = loaderData?.movies.results[0];
@@ -52,6 +52,9 @@ function DiscoverPage() {
 	const { data: userWatchlist } = useSuspenseQuery(watchlistQueries.list());
 	const watchlistMovies = userWatchlist.results.map(({ movie }) => movie);
 
+	const popularMoviesLogos = useMovieLogos(popularMovies.results);
+	const watchlistMoviesLogos = useMovieLogos(watchlistMovies);
+
 	return (
 		<>
 			<section className="flex flex-col gap-6">
@@ -63,6 +66,7 @@ function DiscoverPage() {
 					movies={popularMovies.results}
 					genres={genres.genres}
 					watchlistStatuses={watchlistStatuses}
+					movieLogos={popularMoviesLogos}
 				/>
 			</section>
 			<section className="flex flex-col gap-4">
@@ -75,6 +79,7 @@ function DiscoverPage() {
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
 				<MovieRow
 					movies={popularMovies.results.map((movie) => normalizeMovie(movie))}
+					movieLogos={popularMoviesLogos}
 					watchlistStatuses={watchlistStatuses}
 					variant="backdrop"
 					showRanks
@@ -92,6 +97,7 @@ function DiscoverPage() {
 					</div>
 					<MovieRow
 						movies={watchlistMovies}
+						movieLogos={watchlistMoviesLogos}
 						watchlistStatuses={watchlistStatuses}
 					/>
 				</section>
