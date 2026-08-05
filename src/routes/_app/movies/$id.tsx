@@ -207,7 +207,7 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-20 p-4 md:p-6 lg:p-8">
+			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
 				<TrailerSection movie={movie} />
 				<section className="flex flex-col gap-4">
 					<h2 className="text-2xl tracking-tighter">Similar movies</h2>
@@ -224,9 +224,6 @@ function MovieDetailsPage() {
 					) : null}
 				</section>
 			</div>
-
-			{/* TODO: Save streaming sources to the db to ensure api calls are reduced */}
-			{/* <StreamingSources tmdbId={movie.imdb_id ?? ""} /> */}
 		</div>
 	);
 }
