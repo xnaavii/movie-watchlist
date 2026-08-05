@@ -103,6 +103,14 @@ function MovieDetailsPage() {
 		error: creditsError,
 	} = useQuery(movieQueries.credits({ movie_id: movie.id }));
 
+	const { data: images } = useQuery(
+		movieQueries.images({ movie_id: movie.id }),
+	);
+
+	const logoSrc = images?.logos[0]
+		? `https://image.tmdb.org/t/p/original${images.logos[0].file_path}`
+		: undefined;
+
 	const director = credits?.crew.find((m) => m.job === "Director");
 	const topCast = credits?.cast.slice(0, 5);
 
@@ -137,7 +145,7 @@ function MovieDetailsPage() {
 
 				<div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-end z-20 w-full">
 					<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
-						<MovieLogo tmdbId={movie.id} title={movie.title} />
+						<MovieLogo logoSrc={logoSrc} title={movie.title} />
 						<p className="text-muted-foreground">
 							{new Date(movie.release_date).getFullYear()}
 						</p>
