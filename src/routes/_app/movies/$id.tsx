@@ -39,18 +39,18 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			throw notFound();
 		}
 
-		await queryClient.prefetchQuery(
-			movieQueries.credits({ movie_id: movieId }),
-		);
+		await Promise.all([
+			queryClient.prefetchQuery(movieQueries.credits({ movie_id: movieId })),
+			queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId })),
+			queryClient.prefetchQuery(
+				movieQueries.recommendations({ movie_id: movieId }),
+			),
+			...(movie.imdb_id
+				? [queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id))]
+				: []),
+		]);
 
-		queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId }));
 		queryClient.prefetchQuery(watchlistQueries.status(movieId));
-		queryClient.prefetchQuery(
-			movieQueries.recommendations({ movie_id: movieId }),
-		);
-		if (movie.imdb_id) {
-			queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id));
-		}
 
 		return { movie };
 	},
@@ -151,50 +151,60 @@ function MovieDetailsPage() {
 						<p className="text-xl text-muted-foreground">No Image</p>
 					</div>
 				)}
+				<div className="flex flex-col justify-between size-full">
+					<MovieLogo
+						logoSrc={logoSrc}
+						title={movie.title}
+						className="mt-12 md:mt-0"
+					/>
+					<div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-end z-20 w-full">
+						<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
+							<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
+								{movie.title}
+							</h1>
+							<p className="text-muted-foreground">
+								{new Date(movie.release_date).getFullYear()}
+							</p>
+							<Genres genres={movie.genres} />
+							{movie.overview && <MovieOverview overview={movie.overview} />}
 
-				<div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-end z-20 w-full">
-					<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
-						<MovieLogo logoSrc={logoSrc} title={movie.title} />
-						<p className="text-muted-foreground">
-							{new Date(movie.release_date).getFullYear()}
-						</p>
-						<Genres genres={movie.genres} />
-						{movie.overview && <MovieOverview overview={movie.overview} />}
+							{isCreditsLoading ? (
+								<span className="bg-muted animate-pulse w-32 h-5 rounded" />
+							) : isCreditsError ? (
+								<p>
+									There was an error loading credits: {creditsError.message}
+								</p>
+							) : (
+								<>
+									<div className="flex gap-1 items-center">
+										<p className="text-muted-foreground">Director</p>
+										<p>{director?.name}</p>
+									</div>
+									<div className="flex gap-1 items-center flex-wrap">
+										<p className="text-muted-foreground">Starring</p>
+										{topCast?.map((cast, i) => (
+											<p key={cast.id}>
+												{cast?.name}
+												{topCast.length > i + 1 ? "," : null}
+											</p>
+										))}
+									</div>
+								</>
+							)}
 
-						{isCreditsLoading ? (
-							<span className="bg-muted animate-pulse w-32 h-5 rounded" />
-						) : isCreditsError ? (
-							<p>There was an error loading credits: {creditsError.message}</p>
-						) : (
-							<>
+							{isImdbRatingLoading ? (
+								<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
+							) : isImdbRatingError ? (
+								<p>{imdbRatingError.message}</p>
+							) : (
 								<div className="flex gap-1 items-center">
-									<p className="text-muted-foreground">Director</p>
-									<p>{director?.name}</p>
+									<p className="text-muted-foreground">IMDB</p>
+									<p>{imdbRating?.imdbRating ?? "—"}</p>
 								</div>
-								<div className="flex gap-1 items-center flex-wrap">
-									<p className="text-muted-foreground">Starring</p>
-									{topCast?.map((cast, i) => (
-										<p key={cast.id}>
-											{cast?.name}
-											{topCast.length > i + 1 ? "," : null}
-										</p>
-									))}
-								</div>
-							</>
-						)}
-
-						{isImdbRatingLoading ? (
-							<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-						) : isImdbRatingError ? (
-							<p>{imdbRatingError.message}</p>
-						) : (
-							<div className="flex gap-1 items-center">
-								<p className="text-muted-foreground">IMDB</p>
-								<p>{imdbRating?.imdbRating ?? "—"}</p>
-							</div>
-						)}
+							)}
+						</div>
+						<WatchlistStatusButton movieId={movie.id} />
 					</div>
-					<WatchlistStatusButton movieId={movie.id} />
 				</div>
 			</div>
 
