@@ -48,9 +48,8 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			...(movie.imdb_id
 				? [queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
+			queryClient.prefetchQuery(watchlistQueries.status(movieId)),
 		]);
-
-		queryClient.prefetchQuery(watchlistQueries.status(movieId));
 
 		return { movie };
 	},
