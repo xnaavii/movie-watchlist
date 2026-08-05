@@ -8,7 +8,7 @@ import {
 	EmptyTitle,
 } from "#/components/ui/empty";
 
-export function TrailerSectionEmpty() {
+export function MovieTrailerEmpty() {
 	return (
 		<div className="w-full max-w-5xl rounded-4xl bg-muted overflow-hidden shrink-0">
 			<AspectRatio ratio={16 / 9}>

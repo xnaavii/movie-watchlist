@@ -9,7 +9,9 @@ import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
-import { TrailerSection } from "#/features/movies/components/TrailerSection";
+import { MovieTrailer } from "#/features/movies/components/MovieTrailer";
+import { MovieTrailerEmpty } from "#/features/movies/components/MovieTrailerEmpty";
+import { MovieTrailerSkeleton } from "#/features/movies/components/MovieTrailerSkeleton";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
@@ -42,6 +44,7 @@ export const Route = createFileRoute("/_app/movies/$id")({
 		await Promise.all([
 			queryClient.prefetchQuery(movieQueries.credits({ movie_id: movieId })),
 			queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId })),
+			queryClient.prefetchQuery(movieQueries.videos({ movie_id: movieId })),
 			queryClient.prefetchQuery(
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
@@ -115,10 +118,16 @@ function MovieDetailsPage() {
 		movieQueries.images({ movie_id: movie.id }),
 	);
 
+	const {
+		data: videos,
+		isLoading: isVideosLoading,
+		isError: isVideosError,
+	} = useQuery(movieQueries.videos({ movie_id: movie.id }));
+
 	const logoSrc = images?.logos[0]
 		? `https://image.tmdb.org/t/p/original${images.logos[0].file_path}`
 		: undefined;
-
+	const trailer = videos?.results.find((v) => v.type === "Trailer");
 	const director = credits?.crew.find((m) => m.job === "Director");
 	const topCast = credits?.cast.slice(0, 5);
 
@@ -208,7 +217,17 @@ function MovieDetailsPage() {
 			</div>
 
 			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
-				<TrailerSection movie={movie} />
+				<section className="flex flex-col gap-4">
+					<h2 className="text-2xl tracking-tighter">Watch the Trailer</h2>
+					{isVideosLoading ? (
+						<MovieTrailerSkeleton />
+					) : isVideosError || !trailer ? (
+						<MovieTrailerEmpty />
+					) : (
+						<MovieTrailer trailerId={trailer.key} title={movie.title} />
+					)}
+				</section>
+
 				<section className="flex flex-col gap-4">
 					<h2 className="text-2xl tracking-tighter">Similar movies</h2>
 					{isRecommendedMoviesLoading ? (
