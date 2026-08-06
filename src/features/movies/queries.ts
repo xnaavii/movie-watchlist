@@ -100,6 +100,11 @@ export const movieQueries = {
 					a.english_name.localeCompare(b.english_name),
 				),
 		}),
+	streamingSources: (imdbId: string) =>
+		queryOptions({
+			queryKey: ["movie", "streamingSources", imdbId],
+			queryFn: () => getStreamingSources({ data: { imdbId } }),
+		}),
 };
 
 export const imdbRatingQueryOptions = (imdbId: string) =>
@@ -107,10 +112,4 @@ export const imdbRatingQueryOptions = (imdbId: string) =>
 		queryKey: ["imdb-rating", imdbId],
 		queryFn: () => getImdbRating({ data: { imdbId } }),
 		staleTime: 1000 * 60 * 60 * 24,
-	});
-
-export const watchmodeStreamingSourcesQueryOptions = (imdbId: string) =>
-	queryOptions({
-		queryKey: ["watchmode-streaming-sources", imdbId],
-		queryFn: () => getStreamingSources({ data: { imdbId } }),
 	});

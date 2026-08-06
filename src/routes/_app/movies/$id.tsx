@@ -3,6 +3,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
+import { Skeleton } from "#/components/ui/skeleton";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
@@ -49,7 +50,12 @@ export const Route = createFileRoute("/_app/movies/$id")({
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
 			...(movie.imdb_id
-				? [queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id))]
+				? [
+						queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id)),
+						queryClient.prefetchQuery(
+							movieQueries.streamingSources(movie.imdb_id),
+						),
+					]
 				: []),
 			queryClient.prefetchQuery(watchlistQueries.status(movieId)),
 		]);
@@ -123,6 +129,12 @@ function MovieDetailsPage() {
 		isLoading: isVideosLoading,
 		isError: isVideosError,
 	} = useQuery(movieQueries.videos({ movie_id: movie.id }));
+
+	const { data: streamingSources, isLoading: isStreamingSourcesLoading } =
+		useQuery({
+			...movieQueries.streamingSources(movie.imdb_id ?? ""),
+			enabled: !!movie.imdb_id,
+		});
 
 	const logoSrc = images?.logos[0]
 		? `https://image.tmdb.org/t/p/original${images.logos[0].file_path}`
@@ -217,6 +229,45 @@ function MovieDetailsPage() {
 			</div>
 
 			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
+				<section className="flex flex-col gap-4">
+					<h2 className="text-2xl tracking-tighter">Find where to watch</h2>
+
+					<Button asChild variant="outline" className="w-fit">
+						<a
+							href={`https://www.justwatch.com/ie/search?q=${encodeURIComponent(movie.title)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Search on JustWatch
+						</a>
+					</Button>
+
+					{isStreamingSourcesLoading && !streamingSources ? (
+						<div className="flex gap-2">
+							{["a", "b", "c", "d", "e"].map((key) => (
+								<Skeleton key={key} className="size-10 rounded-full" />
+							))}
+						</div>
+					) : streamingSources && streamingSources.length > 0 ? (
+						<div className="flex gap-2 flex-wrap">
+							{streamingSources.map((source) => (
+								<a
+									key={source.source_id}
+									href={source.web_url ?? ""}
+									target="_blank"
+									rel="noopener noreferrer"
+									title={source.name}
+									className="size-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0 hover:ring-2 hover:ring-ring transition-all"
+								>
+									<span className="text-xs font-medium">
+										{source?.name?.slice(0, 2).toUpperCase()}
+									</span>
+								</a>
+							))}
+						</div>
+					) : null}
+				</section>
+
 				<section className="flex flex-col gap-4">
 					<h2 className="text-2xl tracking-tighter">Watch the Trailer</h2>
 					{isVideosLoading ? (

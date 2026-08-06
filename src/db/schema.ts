@@ -1,8 +1,10 @@
+import type { TitleSource } from "@watchmode/api-client";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
 	index,
 	integer,
+	jsonb,
 	pgEnum,
 	pgTable,
 	primaryKey,
@@ -139,6 +141,12 @@ export const watchlist = pgTable(
 		index("watchlist_user_id_idx").on(table.userId),
 	],
 );
+
+export const streamingSource = pgTable("streaming_source", {
+	imdbId: text("imdb_id").primaryKey(),
+	sources: jsonb("sources").$type<TitleSource[]>().notNull(),
+	fetchedAt: timestamp("fetched_at").notNull().defaultNow(),
+});
 
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),

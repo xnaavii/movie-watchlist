@@ -13,6 +13,9 @@ import type {
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
+import { db } from "#/db";
+import { streamingSource } from "#/db/schema";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
 import type { TMDBMovieList } from "../types";
@@ -176,15 +179,29 @@ export const getMovieImages = createServerFn({ method: "GET" })
 		}
 	});
 
+const STREAMING_SOURCE_TTL_MS = 24 * 60 * 60 * 1000;
+
 export const getStreamingSources = createServerFn({ method: "GET" })
 	.validator((data: { imdbId: string }) => data)
 	.handler(async ({ data }) => {
-		if (!env.WATCHMODE_API_KEY) {
-			throw new Error("Please provide WATCHMODE_API_KEY");
-		}
-
 		if (!data.imdbId) {
 			throw new Error("Please provide imdb id");
+		}
+
+		const cached = await db.query.streamingSource.findFirst({
+			where: eq(streamingSource.imdbId, data.imdbId),
+		});
+
+		const isFresh =
+			cached &&
+			Date.now() - cached.fetchedAt.getTime() < STREAMING_SOURCE_TTL_MS;
+
+		if (isFresh) {
+			return cached.sources;
+		}
+
+		if (!env.WATCHMODE_API_KEY) {
+			throw new Error("Please provide WATCHMODE_API_KEY");
 		}
 
 		const { data: sources, error } = await watchmode.title.getSources(
@@ -192,8 +209,17 @@ export const getStreamingSources = createServerFn({ method: "GET" })
 		);
 
 		if (error) {
+			if (cached) return cached.sources;
 			throw new Error("Failed to fetch streaming sources");
 		}
+
+		await db
+			.insert(streamingSource)
+			.values({ imdbId: data.imdbId, sources, fetchedAt: new Date() })
+			.onConflictDoUpdate({
+				target: streamingSource.imdbId,
+				set: { sources, fetchedAt: new Date() },
+			});
 
 		return sources;
 	});
