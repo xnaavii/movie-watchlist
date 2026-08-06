@@ -148,6 +148,13 @@ export const streamingSource = pgTable("streaming_source", {
 	fetchedAt: timestamp("fetched_at").notNull().defaultNow(),
 });
 
+export const imdbRating = pgTable("imdb_rating", {
+	imdbId: text("imdb_id").primaryKey(),
+	imdbRating: text("imdb_rating"),
+	imdbVotes: text("imdb_votes"),
+	fetchedAt: timestamp("fetched_at").notNull().defaultNow(),
+});
+
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
 	accounts: many(account),

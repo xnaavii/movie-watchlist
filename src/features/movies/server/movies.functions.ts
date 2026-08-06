@@ -15,12 +15,14 @@ import { TMDBError } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { db } from "#/db";
-import { streamingSource } from "#/db/schema";
+import { imdbRating, streamingSource } from "#/db/schema";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
-import type { TMDBMovieList } from "../types";
+import type { OmdbResponse, TMDBMovieList } from "../types";
 
 const OMDB_API_KEY = env.OMDB_API_KEY;
+const IMDB_RATING_TTL_MS = 24 * 60 * 60 * 1000;
+const STREAMING_SOURCE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: MovieDetailsParams) => data)
@@ -179,8 +181,6 @@ export const getMovieImages = createServerFn({ method: "GET" })
 		}
 	});
 
-const STREAMING_SOURCE_TTL_MS = 24 * 60 * 60 * 1000;
-
 export const getStreamingSources = createServerFn({ method: "GET" })
 	.validator((data: { imdbId: string }) => data)
 	.handler(async ({ data }) => {
@@ -227,23 +227,60 @@ export const getStreamingSources = createServerFn({ method: "GET" })
 export const getImdbRating = createServerFn({ method: "GET" })
 	.validator((data: { imdbId: string }) => data)
 	.handler(async ({ data }) => {
-		if (!OMDB_API_KEY) {
-			throw new Error("Please provide OMDB_API_KEY");
-		}
-
 		if (!data.imdbId) {
 			throw new Error("Please provide imdb id");
+		}
+
+		const cached = await db.query.imdbRating.findFirst({
+			where: eq(imdbRating.imdbId, data.imdbId),
+		});
+
+		const isFresh =
+			cached && Date.now() - cached.fetchedAt.getTime() < IMDB_RATING_TTL_MS;
+
+		if (isFresh) {
+			return {
+				imdbRating: cached.imdbRating,
+				imdbVotes: cached.imdbVotes,
+			};
+		}
+
+		if (!OMDB_API_KEY) {
+			throw new Error("Please provide OMDB_API_KEY");
 		}
 
 		const response = await fetch(
 			`https://www.omdbapi.com/?i=${data.imdbId}&apikey=${OMDB_API_KEY}`,
 		);
 
-		const result = await response.json();
+		const result: OmdbResponse = await response.json();
 
 		if (result.Response === "False") {
+			if (cached) {
+				return {
+					imdbRating: cached.imdbRating,
+					imdbVotes: cached.imdbVotes,
+				};
+			}
 			throw new Error(result.Error ?? "OMDb returned no result");
 		}
+
+		await db
+			.insert(imdbRating)
+			.values({
+				imdbId: data.imdbId,
+				imdbRating: result.imdbRating,
+				imdbVotes: result.imdbVotes,
+				fetchedAt: new Date(),
+			})
+			.onConflictDoUpdate({
+				target: imdbRating.imdbId,
+				set: {
+					imdbRating: result.imdbRating,
+					imdbVotes: result.imdbVotes,
+					fetchedAt: new Date(),
+				},
+			});
 
 		return {
 			imdbRating: result.imdbRating,

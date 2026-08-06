@@ -20,3 +20,12 @@ export type TMDBMovieList =
 	| "now_playing"
 	| "top_rated"
 	| "upcoming";
+
+export type OmdbResponse =
+	| {
+			Response: "True";
+			imdbRating: string;
+			imdbVotes: string;
+			[key: string]: unknown;
+	  }
+	| { Response: "False"; Error: string };
