@@ -30,7 +30,7 @@ function NavIconButton({ to, icon: Icon }: NavItem) {
 			<Link
 				to={to}
 				activeProps={{ className: "text-sidebar-primary-foreground" }}
-				inactiveProps={{ className: "text-sidebar-primary" }}
+				inactiveProps={{ className: "text-primary-foreground" }}
 			>
 				<Icon className="size-4" />
 			</Link>
