@@ -1,5 +1,5 @@
 // RemoveFromWatchlistButton.tsx
-import { X } from "lucide-react";
+import { BookmarkMinus } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { cn } from "#/lib/utils";
 import { useRemoveFromWatchlist } from "../hooks/useRemoveFromWatchlist";
@@ -17,14 +17,14 @@ export function RemoveFromWatchlistButton({
 
 	return (
 		<Button
-			size="icon-lg"
-			variant="ghost"
+			size={"icon-lg"}
+			variant="destructive"
 			disabled={isPending}
 			onClick={() => remove()}
 			aria-label="Remove from watchlist"
 			className={cn(className)}
 		>
-			<X />
+			<BookmarkMinus />
 		</Button>
 	);
 }

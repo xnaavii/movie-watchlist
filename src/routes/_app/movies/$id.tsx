@@ -3,7 +3,6 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { Skeleton } from "#/components/ui/skeleton";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
@@ -50,12 +49,7 @@ export const Route = createFileRoute("/_app/movies/$id")({
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
 			...(movie.imdb_id
-				? [
-						queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id)),
-						queryClient.prefetchQuery(
-							movieQueries.streamingSources(movie.imdb_id),
-						),
-					]
+				? [queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
 			queryClient.prefetchQuery(watchlistQueries.status(movieId)),
 		]);
@@ -130,12 +124,6 @@ function MovieDetailsPage() {
 		isError: isVideosError,
 	} = useQuery(movieQueries.videos({ movie_id: movie.id }));
 
-	const { data: streamingSources, isLoading: isStreamingSourcesLoading } =
-		useQuery({
-			...movieQueries.streamingSources(movie.imdb_id ?? ""),
-			enabled: !!movie.imdb_id,
-		});
-
 	const logoSrc = images?.logos[0]
 		? `https://image.tmdb.org/t/p/original${images.logos[0].file_path}`
 		: undefined;
@@ -146,128 +134,100 @@ function MovieDetailsPage() {
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
 			{/* Backdrop image and overlay */}
-			<div className="relative w-full h-[clamp(30vh,80vh+10svh,90vh)] flex p-4 md:p-6 lg:p-8 items-end">
+			<div className="relative w-full h-[clamp(30vh,90vh+10svh,100vh)] p-4 md:p-6 lg:p-8">
+				<div className="absolute inset-0 size-full bg-linear-to-b from-transparent via-background via-90% to-background z-10"></div>
 				{movie?.backdrop_path ? (
-					<>
-						<img
-							src={movie.backdrop_path}
-							alt={`${movie.title} banner`}
-							className="absolute right-0 bottom-0 object-cover size-full object-top"
-						/>
-						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
-					</>
+					<img
+						src={movie.backdrop_path}
+						alt={`${movie.title} banner`}
+						className="absolute inset-0 object-cover size-full object-top"
+					/>
 				) : movie.poster_path ? (
-					<>
-						<img
-							src={movie.poster_path}
-							alt={`${movie.title} poster`}
-							className="absolute inset-0 object-contain size-full object-center"
-						/>
-						<div className="absolute inset-0 bg-linear-to-b from-transparent to-background" />
-					</>
+					<img
+						src={movie.poster_path}
+						alt={`${movie.title} poster`}
+						className="absolute inset-0 object-contain size-full object-center"
+					/>
 				) : (
-					<div className="absolute right-0 bottom-0 size-full bg-muted flex flex-col items-center justify-center">
+					<div className="inset-0 size-full bg-muted flex flex-col items-center justify-center">
 						<ImageOff />
 						<p className="text-xl text-muted-foreground">No Image</p>
 					</div>
 				)}
+
 				<div className="flex flex-col justify-between size-full">
 					<MovieLogo
 						logoSrc={logoSrc}
 						title={movie.title}
 						className="mt-12 md:mt-0"
 					/>
-					<div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-end z-20 w-full">
-						<div className="flex flex-col gap-2 text-sm md:text-base max-w-xl">
-							<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
-								{movie.title}
-							</h1>
-							<p className="text-muted-foreground">
-								{new Date(movie.release_date).getFullYear()}
-							</p>
-							<Genres genres={movie.genres} />
-							{movie.overview && <MovieOverview overview={movie.overview} />}
 
-							{isCreditsLoading ? (
-								<span className="bg-muted animate-pulse w-32 h-5 rounded" />
-							) : isCreditsError ? (
-								<p>
-									There was an error loading credits: {creditsError.message}
+					<div className="grid grid-cols-1 gap-8">
+						<div className="flex flex-col gap-8 z-20">
+							<div className="flex flex-col gap-2 text-sm md:text-base max-w-[65ch]">
+								<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
+									{movie.title}
+								</h1>
+								<p className="text-muted-foreground">
+									{new Date(movie.release_date).getFullYear()}
 								</p>
-							) : (
-								<>
-									<div className="flex gap-1 items-center">
-										<p className="text-muted-foreground">Director</p>
-										<p>{director?.name}</p>
-									</div>
-									<div className="flex gap-1 items-center flex-wrap">
-										<p className="text-muted-foreground">Starring</p>
-										{topCast?.map((cast, i) => (
-											<p key={cast.id}>
-												{cast?.name}
-												{topCast.length > i + 1 ? "," : null}
-											</p>
-										))}
-									</div>
-								</>
-							)}
+								<Genres genres={movie.genres} />
+								{movie.overview && <MovieOverview overview={movie.overview} />}
 
-							{isImdbRatingLoading ? (
-								<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-							) : isImdbRatingError ? (
-								<p>{imdbRatingError.message}</p>
-							) : (
-								<div className="flex gap-1 items-center">
-									<p className="text-muted-foreground">IMDB</p>
-									<p>{imdbRating?.imdbRating ?? "—"}</p>
-								</div>
-							)}
+								{isCreditsLoading ? (
+									<span className="bg-muted animate-pulse w-32 h-5 rounded" />
+								) : isCreditsError ? (
+									<p>
+										There was an error loading credits: {creditsError.message}
+									</p>
+								) : (
+									<>
+										<div className="flex gap-1 items-center">
+											<p className="text-muted-foreground">Director</p>
+											<p>{director?.name}</p>
+										</div>
+										<div className="flex gap-1 items-center flex-wrap">
+											<p className="text-muted-foreground">Starring</p>
+											{topCast?.map((cast, i) => (
+												<p key={cast.id}>
+													{cast?.name}
+													{topCast.length > i + 1 ? "," : null}
+												</p>
+											))}
+										</div>
+									</>
+								)}
+
+								{isImdbRatingLoading ? (
+									<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
+								) : isImdbRatingError ? (
+									<p>{imdbRatingError.message}</p>
+								) : (
+									<div className="flex gap-1 items-center">
+										<p className="text-muted-foreground">IMDB</p>
+										<p>{imdbRating?.imdbRating ?? "—"}</p>
+									</div>
+								)}
+							</div>
+
+							<div className="flex gap-2">
+								<WatchlistStatusButton movieId={movie.id} />
+								<Button asChild variant="outline" size={"lg"}>
+									<a
+										href={`https://www.justwatch.com/ie/search?q=${encodeURIComponent(movie.title)}`}
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										Search on JustWatch
+									</a>
+								</Button>
+							</div>
 						</div>
-						<WatchlistStatusButton movieId={movie.id} />
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
-				<section className="flex flex-col gap-4">
-					<h2 className="text-2xl tracking-tighter">Find where to watch</h2>
-
-					<Button asChild variant="outline" className="w-fit">
-						<a
-							href={`https://www.justwatch.com/ie/search?q=${encodeURIComponent(movie.title)}`}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Search on JustWatch
-						</a>
-					</Button>
-
-					{isStreamingSourcesLoading && !streamingSources ? (
-						<div className="flex gap-2">
-							{["a", "b", "c", "d", "e"].map((key) => (
-								<Skeleton key={key} className="size-10 rounded-full" />
-							))}
-						</div>
-					) : streamingSources && streamingSources.length > 0 ? (
-						<div className="flex gap-2 flex-wrap">
-							{streamingSources.map((source) => (
-								<a
-									key={source.source_id}
-									href={source.web_url ?? ""}
-									target="_blank"
-									rel="noopener noreferrer"
-									title={source.name}
-									className="size-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0 hover:ring-2 hover:ring-ring transition-all"
-								>
-									<span className="text-xs font-medium">
-										{source?.name?.slice(0, 2).toUpperCase()}
-									</span>
-								</a>
-							))}
-						</div>
-					) : null}
-				</section>
-
 				<section className="flex flex-col gap-4">
 					<h2 className="text-2xl tracking-tighter">Watch the Trailer</h2>
 					{isVideosLoading ? (
