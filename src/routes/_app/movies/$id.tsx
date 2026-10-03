@@ -5,6 +5,7 @@ import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { Genres } from "#/features/movies/components/Genres";
+import { MovieBackdropImage } from "#/features/movies/components/MovieBackdropImage";
 import { MovieLogo } from "#/features/movies/components/MovieLogo";
 import { MovieOverview } from "#/features/movies/components/MovieOverview";
 import { MovieRow } from "#/features/movies/components/MovieRow";
@@ -133,28 +134,10 @@ function MovieDetailsPage() {
 
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
-			{/* Backdrop image and overlay */}
-			<div className="relative w-full h-[clamp(30vh,90vh+10svh,100vh)] p-4 md:p-6 lg:p-8">
-				<div className="absolute inset-0 size-full bg-linear-to-b from-transparent via-background via-90% to-background z-10"></div>
-				{movie?.backdrop_path ? (
-					<img
-						src={movie.backdrop_path}
-						alt={`${movie.title} banner`}
-						className="absolute inset-0 object-cover size-full object-top"
-					/>
-				) : movie.poster_path ? (
-					<img
-						src={movie.poster_path}
-						alt={`${movie.title} poster`}
-						className="absolute inset-0 object-contain size-full object-center"
-					/>
-				) : (
-					<div className="inset-0 size-full bg-muted flex flex-col items-center justify-center">
-						<ImageOff />
-						<p className="text-xl text-muted-foreground">No Image</p>
-					</div>
-				)}
-
+			<MovieBackdropImage
+				src={movie.backdrop_path}
+				alt={`${movie.title}'s backdrop image`}
+			>
 				<div className="flex flex-col justify-between size-full">
 					<MovieLogo
 						logoSrc={logoSrc}
@@ -225,7 +208,7 @@ function MovieDetailsPage() {
 						</div>
 					</div>
 				</div>
-			</div>
+			</MovieBackdropImage>
 
 			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
 				<section className="flex flex-col gap-4">
@@ -280,3 +263,5 @@ function MovieDetailsPageNotFound() {
 		</div>
 	);
 }
+
+// Separate sections into components etc.
