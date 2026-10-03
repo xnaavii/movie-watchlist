@@ -1,33 +1,18 @@
-import { ImageOff } from "lucide-react";
-import type { ReactNode } from "react";
-
 interface MovieBackdropImageProps {
 	src?: string;
-	alt: string;
-	children?: ReactNode;
+	title: string;
 }
 
-export function MovieBackdropImage({
-	src,
-	alt,
-	children,
-}: MovieBackdropImageProps) {
+export function MovieBackdropImage({ src, title }: MovieBackdropImageProps) {
 	return (
-		<div className="relative w-full h-[clamp(30vh,90vh+10svh,100vh)] p-4 md:p-6 lg:p-8">
-			<div className="absolute inset-0 size-full bg-linear-to-b from-transparent via-background via-90% to-background z-10"></div>
-			{src ? (
-				<img
-					src={src}
-					alt={alt}
-					className="absolute inset-0 object-cover size-full object-top"
-				/>
-			) : (
-				<div className="inset-0 size-full bg-muted flex flex-col items-center justify-center">
-					<ImageOff />
-					<p className="text-xl text-muted-foreground">No Image</p>
-				</div>
-			)}
-			{children}
+		<div className="relative min-h-svh h-full w-full">
+			<div className="absolute inset-0 size-full bg-radial-[at_120%_20%] from-transparent to-background to-60% z-10"></div>
+			<div className="absolute inset-0 size-full bg-linear-to-b from-transparent via-transparent to-background z-10"></div>
+			<img
+				src={src}
+				alt={`${title}'s backdrop`}
+				className="absolute inset-0 object-cover size-full"
+			/>
 		</div>
 	);
 }

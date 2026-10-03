@@ -3,19 +3,19 @@ import { Button } from "#/components/ui/button";
 import { cn } from "#/lib/utils";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
 
-type WatchlistStatusButtonViewProps = {
+type WatchlistStatusButtonProps = {
 	status: WatchlistStatusInsert | null | undefined;
 	isPending: boolean;
 	onSelect: (status: WatchlistStatusInsert) => void;
 	className?: string;
 };
 
-export function WatchlistStatusButtonView({
+export function WatchlistStatusButton({
 	status,
 	isPending,
 	onSelect,
 	className,
-}: WatchlistStatusButtonViewProps) {
+}: WatchlistStatusButtonProps) {
 	const isWatched = status === "watched";
 	const isWantToWatch = status === "want_to_watch";
 

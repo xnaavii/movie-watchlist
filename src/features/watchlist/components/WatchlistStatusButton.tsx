@@ -5,17 +5,17 @@ import { useUpdateWatchlistStatus } from "../hooks/useUpdateWatchlistStatus";
 import { watchlistQueries } from "../queries";
 import { AddToWatchlistButton } from "./AddToWatchlistButton";
 import { RemoveFromWatchlistButton } from "./RemoveFromWatchlistButton";
-import { WatchlistStatusButtonView } from "./WatchlistStatusButtonView";
+import { WatchlistStatusButton } from "./WatchlistStatusButtonView";
 
-type WatchlistStatusButtonProps = {
+type WatchlistStatusButtonViewProps = {
 	movieId: number;
 	className?: string;
 };
 
-export function WatchlistStatusButton({
+export function WatchlistStatusButtonView({
 	movieId,
 	className,
-}: WatchlistStatusButtonProps) {
+}: WatchlistStatusButtonViewProps) {
 	const { data: session } = authClient.useSession();
 	const { data: status } = useQuery({
 		...watchlistQueries.status(movieId),
@@ -31,7 +31,7 @@ export function WatchlistStatusButton({
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
-			<WatchlistStatusButtonView
+			<WatchlistStatusButton
 				status={status}
 				isPending={isUpdating}
 				onSelect={updateStatus}

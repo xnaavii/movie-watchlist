@@ -1,24 +1,19 @@
-import type { MovieDetails } from "@lorenzopant/tmdb";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ImageOff } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
-import { Genres } from "#/features/movies/components/Genres";
-import { MovieBackdropImage } from "#/features/movies/components/MovieBackdropImage";
-import { MovieLogo } from "#/features/movies/components/MovieLogo";
-import { MovieOverview } from "#/features/movies/components/MovieOverview";
-import { MovieRow } from "#/features/movies/components/MovieRow";
-import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
-import { MovieTrailer } from "#/features/movies/components/MovieTrailer";
-import { MovieTrailerEmpty } from "#/features/movies/components/MovieTrailerEmpty";
-import { MovieTrailerSkeleton } from "#/features/movies/components/MovieTrailerSkeleton";
+import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
+import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
+import { MovieDetailsView } from "#/features/movies/components/MovieDetailsView";
+import { MovieLogoView } from "#/features/movies/components/MovieLogoView";
+import { MovieTrailerView } from "#/features/movies/components/MovieTrailerView";
+import { RecommendedMoviesView } from "#/features/movies/components/RecommendedMoviesView";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
-import { normalizeMovie } from "#/features/movies/utils";
-import { WatchlistStatusButton } from "#/features/watchlist/components/WatchlistStatusButton";
+import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
@@ -33,7 +28,7 @@ export const Route = createFileRoute("/_app/movies/$id")({
 	loader: async ({ params, context: { queryClient } }) => {
 		const movieId = params.id;
 
-		let movie: MovieDetails;
+		let movie: MovieDetailsData;
 		try {
 			movie = await queryClient.ensureQueryData(
 				movieQueries.details({ movie_id: movieId }),
@@ -45,7 +40,6 @@ export const Route = createFileRoute("/_app/movies/$id")({
 		await Promise.all([
 			queryClient.prefetchQuery(movieQueries.credits({ movie_id: movieId })),
 			queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId })),
-			queryClient.prefetchQuery(movieQueries.videos({ movie_id: movieId })),
 			queryClient.prefetchQuery(
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
@@ -91,151 +85,26 @@ function MovieDetailsPage() {
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: id }),
 	);
-	const {
-		data: imdbRating,
-		isLoading: isImdbRatingLoading,
-		isError: isImdbRatingError,
-		error: imdbRatingError,
-	} = useQuery({
-		...imdbRatingQueryOptions(movie.imdb_id ?? ""),
-		enabled: Boolean(movie.imdb_id),
-	});
-
-	const {
-		data: credits,
-		isLoading: isCreditsLoading,
-		isError: isCreditsError,
-		error: creditsError,
-	} = useQuery(movieQueries.credits({ movie_id: movie.id }));
-
-	const {
-		data: recommendedMovies,
-		isLoading: isRecommendedMoviesLoading,
-		isError: isRecommendedMoviesError,
-		error: recommendedMoviesError,
-	} = useQuery(movieQueries.recommendations({ movie_id: movie.id }));
-
-	const { data: images } = useQuery(
-		movieQueries.images({ movie_id: movie.id }),
-	);
-
-	const {
-		data: videos,
-		isLoading: isVideosLoading,
-		isError: isVideosError,
-	} = useQuery(movieQueries.videos({ movie_id: movie.id }));
-
-	const logoSrc = images?.logos[0]
-		? `https://image.tmdb.org/t/p/original${images.logos[0].file_path}`
-		: undefined;
-	const trailer = videos?.results.find((v) => v.type === "Trailer");
-	const director = credits?.crew.find((m) => m.job === "Director");
-	const topCast = credits?.cast.slice(0, 5);
 
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
-			<MovieBackdropImage
-				src={movie.backdrop_path}
-				alt={`${movie.title}'s backdrop image`}
-			>
-				<div className="flex flex-col justify-between size-full">
-					<MovieLogo
-						logoSrc={logoSrc}
-						title={movie.title}
-						className="mt-12 md:mt-0"
-					/>
-
-					<div className="grid grid-cols-1 gap-8">
-						<div className="flex flex-col gap-8 z-20">
-							<div className="flex flex-col gap-2 text-sm md:text-base max-w-[65ch]">
-								<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
-									{movie.title}
-								</h1>
-								<p className="text-muted-foreground">
-									{new Date(movie.release_date).getFullYear()}
-								</p>
-								<Genres genres={movie.genres} />
-								{movie.overview && <MovieOverview overview={movie.overview} />}
-
-								{isCreditsLoading ? (
-									<span className="bg-muted animate-pulse w-32 h-5 rounded" />
-								) : isCreditsError ? (
-									<p>
-										There was an error loading credits: {creditsError.message}
-									</p>
-								) : (
-									<>
-										<div className="flex gap-1 items-center">
-											<p className="text-muted-foreground">Director</p>
-											<p>{director?.name}</p>
-										</div>
-										<div className="flex gap-1 items-center flex-wrap">
-											<p className="text-muted-foreground">Starring</p>
-											{topCast?.map((cast, i) => (
-												<p key={cast.id}>
-													{cast?.name}
-													{topCast.length > i + 1 ? "," : null}
-												</p>
-											))}
-										</div>
-									</>
-								)}
-
-								{isImdbRatingLoading ? (
-									<span className="bg-muted animate-pulse w-24 h-5 rounded"></span>
-								) : isImdbRatingError ? (
-									<p>{imdbRatingError.message}</p>
-								) : (
-									<div className="flex gap-1 items-center">
-										<p className="text-muted-foreground">IMDB</p>
-										<p>{imdbRating?.imdbRating ?? "—"}</p>
-									</div>
-								)}
-							</div>
-
-							<div className="flex flex-wrap gap-2">
-								<WatchlistStatusButton movieId={movie.id} />
-								<Button asChild variant="outline" size={"lg"}>
-									<a
-										href={`https://www.justwatch.com/ie/search?q=${encodeURIComponent(movie.title)}`}
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										Search on JustWatch
-									</a>
-								</Button>
-							</div>
+			<div className="relative h-full">
+				<MovieBackdropImageView movieId={movie.id} title={movie.title} />
+				<div className="absolute inset-0 mt-12 md:mt-0 flex flex-col justify-between p-4 md:p-6 lg:p-8 z-20">
+					<MovieLogoView movieId={movie.id} title={movie.title} />
+					<div className="flex flex-col gap-8">
+						<MovieDetailsView movie={movie} />
+						<div className="flex flex-wrap gap-2">
+							<WatchlistStatusButtonView movieId={movie.id} />
+							<JustWatchButton title={movie.title} />
 						</div>
 					</div>
 				</div>
-			</MovieBackdropImage>
+			</div>
 
 			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
-				<section className="flex flex-col gap-4">
-					<h2 className="text-2xl tracking-tighter">Watch the Trailer</h2>
-					{isVideosLoading ? (
-						<MovieTrailerSkeleton />
-					) : isVideosError || !trailer ? (
-						<MovieTrailerEmpty />
-					) : (
-						<MovieTrailer trailerId={trailer.key} title={movie.title} />
-					)}
-				</section>
-
-				<section className="flex flex-col gap-4">
-					<h2 className="text-2xl tracking-tighter">Similar movies</h2>
-					{isRecommendedMoviesLoading ? (
-						<MovieRowSkeleton />
-					) : isRecommendedMoviesError ? (
-						<p>{recommendedMoviesError.message}</p>
-					) : recommendedMovies ? (
-						<MovieRow
-							movies={recommendedMovies.results.map((movie) =>
-								normalizeMovie(movie),
-							)}
-						/>
-					) : null}
-				</section>
+				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
+				<RecommendedMoviesView movieId={movie.id} />
 			</div>
 		</div>
 	);
@@ -263,5 +132,3 @@ function MovieDetailsPageNotFound() {
 		</div>
 	);
 }
-
-// Separate sections into components etc.
