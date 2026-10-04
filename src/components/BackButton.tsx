@@ -1,19 +1,17 @@
-import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface BackButtonProps {
 	className?: string;
+	onBack?: () => void;
 }
 
-export function BackButton({ className }: BackButtonProps) {
-	const router = useRouter();
-
+export function BackButton({ className, onBack }: BackButtonProps) {
 	return (
 		<Button
 			size="icon"
 			variant="secondary"
-			onClick={() => router.history.back()}
+			onClick={onBack}
 			className={className}
 		>
 			<ChevronLeft />

@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { BackButton } from "#/components/BackButton";
+import { BackButtonView } from "#/components/BackButtonView";
 import { Button } from "#/components/ui/button";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieGrid } from "#/features/movies/components/MovieGrid";
@@ -106,7 +106,7 @@ function DiscoverGenrePage() {
 	return (
 		<>
 			<div className="relative isolate flex items-center justify-center">
-				<BackButton className="self-start z-20" />
+				<BackButtonView to="/" className="self-start z-20" />
 				<div className="absolute flex flex-col items-center gap-2 z-20">
 					<div className="relative w-fit isolate">
 						<h1 className="text-2xl lg:text-3xl tracking-tight font-medium">
