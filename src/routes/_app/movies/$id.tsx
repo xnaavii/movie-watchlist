@@ -1,6 +1,7 @@
 import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { BackButton } from "#/components/BackButton";
 import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
@@ -92,6 +93,7 @@ function MovieDetailsPage() {
 			<div className="relative h-full">
 				<MovieBackdropImageView movieId={movie.id} title={movie.title} />
 				<div className="absolute inset-0 mt-12 md:mt-0 flex flex-col justify-between p-4 md:p-6 lg:p-8 z-20">
+					<BackButton />
 					<MovieLogoView movieId={movie.id} title={movie.title} />
 					<div className="flex flex-col gap-8">
 						<MovieDetailsView movie={movie} />

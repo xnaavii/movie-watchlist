@@ -12,7 +12,7 @@ export function BackButton({ className }: BackButtonProps) {
 	return (
 		<Button
 			size="icon"
-			variant="outline"
+			variant="secondary"
 			onClick={() => router.history.back()}
 			className={className}
 		>
