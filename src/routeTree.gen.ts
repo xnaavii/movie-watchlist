@@ -20,8 +20,8 @@ import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/ind
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppMoviesIdRouteImport } from './routes/_app/movies/$id'
 import { Route as AppDiscoverGenreIdRouteImport } from './routes/_app/discover/$genreId'
-import { Route as AppProtectedWatchlistRouteImport } from './routes/_app/_protected/watchlist'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
+import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
@@ -76,16 +76,17 @@ const AppDiscoverGenreIdRoute = AppDiscoverGenreIdRouteImport.update({
   path: '/$genreId',
   getParentRoute: () => AppDiscoverRouteRoute,
 } as any)
-const AppProtectedWatchlistRoute = AppProtectedWatchlistRouteImport.update({
-  id: '/watchlist',
-  path: '/watchlist',
-  getParentRoute: () => AppProtectedRoute,
-} as any)
 const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AppProtectedRoute,
 } as any)
+const AppProtectedWatchlistIndexRoute =
+  AppProtectedWatchlistIndexRouteImport.update({
+    id: '/watchlist/',
+    path: '/watchlist/',
+    getParentRoute: () => AppProtectedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -94,11 +95,11 @@ export interface FileRoutesByFullPath {
   '/search': typeof AppSearchRoute
   '/signup': typeof AppSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/watchlist': typeof AppProtectedWatchlistRoute
   '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
+  '/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
@@ -106,11 +107,11 @@ export interface FileRoutesByTo {
   '/search': typeof AppSearchRoute
   '/signup': typeof AppSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/watchlist': typeof AppProtectedWatchlistRoute
   '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
+  '/watchlist': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -122,11 +123,11 @@ export interface FileRoutesById {
   '/_app/signup': typeof AppSignupRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
-  '/_app/_protected/watchlist': typeof AppProtectedWatchlistRoute
   '/_app/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/_app/movies/$id': typeof AppMoviesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
+  '/_app/_protected/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,11 +138,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/signup'
     | '/profile'
-    | '/watchlist'
     | '/discover/$genreId'
     | '/movies/$id'
     | '/api/auth/$'
     | '/discover/'
+    | '/watchlist/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -149,11 +150,11 @@ export interface FileRouteTypes {
     | '/search'
     | '/signup'
     | '/profile'
-    | '/watchlist'
     | '/discover/$genreId'
     | '/movies/$id'
     | '/api/auth/$'
     | '/discover'
+    | '/watchlist'
   id:
     | '__root__'
     | '/_app'
@@ -164,11 +165,11 @@ export interface FileRouteTypes {
     | '/_app/signup'
     | '/_app/'
     | '/_app/_protected/profile'
-    | '/_app/_protected/watchlist'
     | '/_app/discover/$genreId'
     | '/_app/movies/$id'
     | '/api/auth/$'
     | '/_app/discover/'
+    | '/_app/_protected/watchlist/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -255,18 +256,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverGenreIdRouteImport
       parentRoute: typeof AppDiscoverRouteRoute
     }
-    '/_app/_protected/watchlist': {
-      id: '/_app/_protected/watchlist'
-      path: '/watchlist'
-      fullPath: '/watchlist'
-      preLoaderRoute: typeof AppProtectedWatchlistRouteImport
-      parentRoute: typeof AppProtectedRoute
-    }
     '/_app/_protected/profile': {
       id: '/_app/_protected/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AppProtectedProfileRouteImport
+      parentRoute: typeof AppProtectedRoute
+    }
+    '/_app/_protected/watchlist/': {
+      id: '/_app/_protected/watchlist/'
+      path: '/watchlist'
+      fullPath: '/watchlist/'
+      preLoaderRoute: typeof AppProtectedWatchlistIndexRouteImport
       parentRoute: typeof AppProtectedRoute
     }
   }
@@ -287,12 +288,12 @@ const AppDiscoverRouteRouteWithChildren =
 
 interface AppProtectedRouteChildren {
   AppProtectedProfileRoute: typeof AppProtectedProfileRoute
-  AppProtectedWatchlistRoute: typeof AppProtectedWatchlistRoute
+  AppProtectedWatchlistIndexRoute: typeof AppProtectedWatchlistIndexRoute
 }
 
 const AppProtectedRouteChildren: AppProtectedRouteChildren = {
   AppProtectedProfileRoute: AppProtectedProfileRoute,
-  AppProtectedWatchlistRoute: AppProtectedWatchlistRoute,
+  AppProtectedWatchlistIndexRoute: AppProtectedWatchlistIndexRoute,
 }
 
 const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(

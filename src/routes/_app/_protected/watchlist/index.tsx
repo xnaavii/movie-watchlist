@@ -3,11 +3,13 @@ import {
 	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { BrandedTitle } from "#/components/BrandedTitle";
+import { Container } from "#/components/Container";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
-export const Route = createFileRoute("/_app/_protected/watchlist")({
+export const Route = createFileRoute("/_app/_protected/watchlist/")({
 	component: WatchlistPage,
 	pendingComponent: WatchlistPending,
 	errorComponent: ({ error }) => (
@@ -46,11 +48,9 @@ function WatchlistPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-12 md:mt-0">
-			<h1 className="text-2xl md:text-3xl tracking-tighter font-medium">
-				My Watchlist
-			</h1>
-			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
+		<Container>
+			<BrandedTitle>My Watchlist</BrandedTitle>
+			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
 				{items.map(({ movie }) => (
 					<MovieCard
 						key={movie.id}
@@ -60,7 +60,7 @@ function WatchlistPage() {
 				))}
 				<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
 			</div>
-		</div>
+		</Container>
 	);
 }
 
