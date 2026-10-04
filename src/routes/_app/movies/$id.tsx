@@ -1,6 +1,7 @@
 import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
@@ -102,10 +103,10 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8">
+			<Container>
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
 				<RecommendedMoviesView movieId={movie.id} />
-			</div>
+			</Container>
 		</div>
 	);
 }

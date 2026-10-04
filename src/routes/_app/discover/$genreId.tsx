@@ -108,10 +108,12 @@ function DiscoverGenrePage() {
 			<div className="relative isolate flex items-center justify-center">
 				<BackButton className="self-start z-20" />
 				<div className="absolute flex flex-col items-center gap-2 z-20">
-					<h1 className="relative isolate text-2xl lg:text-4xl tracking-tight font-medium">
-						{selectedGenre?.name}
+					<div className="relative w-fit isolate">
+						<h1 className="text-2xl lg:text-3xl tracking-tight font-medium">
+							{selectedGenre?.name}
+						</h1>
 						<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
-					</h1>
+					</div>
 					<p className="text-sm lg:text-base text-muted-foreground">
 						Handpicked {selectedGenre?.name} films to add to your list
 					</p>
