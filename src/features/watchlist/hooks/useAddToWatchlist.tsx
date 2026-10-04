@@ -33,7 +33,7 @@ export function useAddToWatchlist({ movieId }: { movieId: number }) {
 	function addToList() {
 		if (!session) {
 			navigate({
-				to: "/login",
+				to: "/auth/login",
 				search: { redirect: window.location.pathname },
 			});
 			return;

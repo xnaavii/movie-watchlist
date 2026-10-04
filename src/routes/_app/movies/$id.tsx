@@ -90,12 +90,12 @@ function MovieDetailsPage() {
 
 	return (
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
-			<div className="relative h-full">
+			<div className="relative">
 				<MovieBackdropImageView movieId={movie.id} title={movie.title} />
 				<div className="absolute inset-0 mt-12 md:mt-0 flex flex-col justify-between p-4 md:p-6 lg:p-8 z-20">
 					<BackButtonView to="/discover" />
-					<MovieLogoView movieId={movie.id} title={movie.title} />
 					<div className="flex flex-col gap-8">
+						<MovieLogoView movieId={movie.id} title={movie.title} />
 						<MovieDetailsView movie={movie} />
 						<div className="flex flex-wrap gap-2">
 							<WatchlistStatusButtonView movieId={movie.id} />
