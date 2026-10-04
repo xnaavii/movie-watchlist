@@ -9,6 +9,7 @@ import { MovieRow } from "#/features/movies/components/MovieRow";
 import { useMovieLogos } from "#/features/movies/hooks/useMovieLogos";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
+import { WatchlistMoviesView } from "#/features/watchlist/components/WatchlistMoviesView";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo } from "#/utils/seo";
 
@@ -50,11 +51,8 @@ function DiscoverPage() {
 	const { data: popularMovies } = useSuspenseQuery(
 		movieQueries.list("popular"),
 	);
-	const { data: userWatchlist } = useSuspenseQuery(watchlistQueries.list());
-	const watchlistMovies = userWatchlist.results.map(({ movie }) => movie);
 
 	const popularMoviesLogos = useMovieLogos(popularMovies.results);
-	const watchlistMoviesLogos = useMovieLogos(watchlistMovies);
 
 	return (
 		<>
@@ -83,23 +81,7 @@ function DiscoverPage() {
 					showRanks
 				/>
 			</section>
-			{watchlistMovies && watchlistMovies.length > 0 && (
-				<section className="flex flex-col gap-4">
-					<div className="flex justify-between">
-						<h2 className="text-xl lg:text-2xl tracking-tighter">
-							In Your Watchlist
-						</h2>
-						<Button variant="link" asChild>
-							<Link to="/watchlist">See all</Link>
-						</Button>
-					</div>
-					<MovieRow
-						movies={watchlistMovies}
-						movieLogos={watchlistMoviesLogos}
-						watchlistStatuses={watchlistStatuses}
-					/>
-				</section>
-			)}
+			<WatchlistMoviesView />
 		</>
 	);
 }
