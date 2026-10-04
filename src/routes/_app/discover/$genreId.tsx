@@ -6,6 +6,7 @@ import {
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
+import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieGrid } from "#/features/movies/components/MovieGrid";
@@ -108,12 +109,7 @@ function DiscoverGenrePage() {
 			<div className="relative isolate flex items-center justify-center">
 				<BackButtonView to="/" className="self-start z-20" />
 				<div className="absolute flex flex-col items-center gap-2 z-20">
-					<div className="relative w-fit isolate">
-						<h1 className="text-2xl lg:text-3xl tracking-tight font-medium">
-							{selectedGenre?.name}
-						</h1>
-						<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
-					</div>
+					<BrandedTitle>{selectedGenre?.name}</BrandedTitle>
 					<p className="text-sm lg:text-base text-muted-foreground">
 						Handpicked {selectedGenre?.name} films to add to your list
 					</p>

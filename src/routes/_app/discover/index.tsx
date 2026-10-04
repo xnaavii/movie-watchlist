@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
@@ -58,12 +59,7 @@ function DiscoverPage() {
 	return (
 		<>
 			<section className="flex flex-col gap-6">
-				<div className="relative w-fit isolate">
-					<h1 className="text-2xl lg:text-3xl tracking-tight font-medium">
-						Your Next Watch
-					</h1>
-					<div className="absolute bottom-0 translate-y-1/5 right-0 w-full scale-x-110 scale-y-120 h-3 -rotate-4 skew-3 bg-primary -z-10"></div>
-				</div>
+				<BrandedTitle>Your Next Watch</BrandedTitle>
 				<FeaturedMoviesCarousel
 					movies={popularMovies.results}
 					genres={genres.genres}
