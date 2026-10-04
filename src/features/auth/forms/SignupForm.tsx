@@ -215,7 +215,7 @@ export function SignupForm() {
 					<Field>
 						<FieldDescription className="text-center">
 							Already have an account?{" "}
-							<Link to="/login" search={{ redirect }}>
+							<Link to="/auth/login" search={{ redirect }}>
 								Log in
 							</Link>
 						</FieldDescription>
