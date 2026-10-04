@@ -1,4 +1,4 @@
-import { Bookmark, Check, Eye } from "lucide-react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { cn } from "#/lib/utils";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
@@ -25,22 +25,21 @@ export function WatchlistStatusButton({
 				variant={isWantToWatch ? "default" : "secondary"}
 				disabled={isPending}
 				onClick={() => onSelect("want_to_watch")}
-				className="flex-1"
-				size="lg"
+				size={isWantToWatch ? "default" : "icon"}
+				title={isWantToWatch ? "Want to watch" : "Watched"}
 			>
-				{isWantToWatch ? <Check /> : <Bookmark />}
-				Want to Watch
+				<Bookmark />
+				{isWantToWatch && "In Your Watchlist"}
 			</Button>
 
 			<Button
 				variant={isWatched ? "default" : "secondary"}
 				disabled={isPending}
 				onClick={() => onSelect("watched")}
-				className="flex-1"
-				size="lg"
+				size={isWatched ? "default" : "icon"}
 			>
-				{isWatched ? <Check /> : <Eye />}
-				Watched
+				<BookmarkCheck />
+				{isWatched && "Watched"}
 			</Button>
 		</div>
 	);

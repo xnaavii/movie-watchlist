@@ -1,4 +1,4 @@
-import { Bookmark } from "lucide-react";
+import { BookmarkPlus } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { cn } from "#/lib/utils";
 import { useAddToWatchlist } from "../hooks/useAddToWatchlist";
@@ -19,10 +19,9 @@ export function AddToWatchlistButton({
 			disabled={isPending}
 			onClick={addToList}
 			className={cn(className)}
-			size="lg"
+			size="icon"
 		>
-			<Bookmark />
-			Add to Watchlist
+			<BookmarkPlus />
 		</Button>
 	);
 }

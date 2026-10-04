@@ -6,7 +6,7 @@ interface JustWatchButtonProps {
 
 export function JustWatchButton({ title }: JustWatchButtonProps) {
 	return (
-		<Button asChild variant="outline" size={"lg"}>
+		<Button asChild variant="outline">
 			<a
 				href={`https://www.justwatch.com/ie/search?q=${encodeURIComponent(title)}`}
 				target="_blank"
