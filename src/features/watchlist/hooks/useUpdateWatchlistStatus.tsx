@@ -42,7 +42,7 @@ export function useUpdateWatchlistStatus({
 	function updateStatus(status: WatchlistStatusInsert) {
 		if (!session) {
 			navigate({
-				to: "/login",
+				to: "/auth/login",
 				search: { redirect: window.location.pathname },
 			});
 			return;

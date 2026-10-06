@@ -14,7 +14,7 @@ export function UserMenu() {
 
 	if (!session) {
 		return (
-			<Link to="/login" aria-label="Log in">
+			<Link to="/auth/login" aria-label="Log in">
 				<Avatar>
 					<AvatarFallback>
 						<LogIn className="size-4" />
