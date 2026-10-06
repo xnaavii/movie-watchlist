@@ -169,6 +169,9 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+// React's types omit `autocomplete` on <button>, but browsers honor it
+const firefoxNoRestoreProps = { autoComplete: "off" } as React.ComponentProps<"button">
+
 function CarouselPrevious({
   className,
   variant = "outline",
@@ -190,6 +193,8 @@ function CarouselPrevious({
         className
       )}
       disabled={!canScrollPrev}
+      // Stops Firefox restoring a stale disabled state on reload (hydration mismatch)
+      {...firefoxNoRestoreProps}
       onClick={scrollPrev}
       {...props}
     >
@@ -220,6 +225,8 @@ function CarouselNext({
         className
       )}
       disabled={!canScrollNext}
+      // Stops Firefox restoring a stale disabled state on reload (hydration mismatch)
+      {...firefoxNoRestoreProps}
       onClick={scrollNext}
       {...props}
     >
