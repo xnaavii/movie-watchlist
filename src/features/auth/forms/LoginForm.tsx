@@ -130,7 +130,7 @@ export function LoginForm({
 				<Field>
 					<FieldDescription className="text-center">
 						Don&apos;t have an account?{" "}
-						<Link to="/signup" search={{ redirect }}>
+						<Link to="/auth/signup" search={{ redirect }}>
 							Sign up
 						</Link>
 					</FieldDescription>

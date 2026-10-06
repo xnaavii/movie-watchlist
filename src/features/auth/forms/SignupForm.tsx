@@ -4,22 +4,16 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "#/components/ui/card";
-import {
 	Field,
 	FieldDescription,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
+	FieldSeparator,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
 import { authClient } from "#/lib/auth-client";
+import { cn } from "#/lib/utils";
 
 const formSchema = z
 	.object({
@@ -40,9 +34,12 @@ const formSchema = z
 		path: ["confirmPassword"],
 	});
 
-const routeApi = getRouteApi("/_app/signup");
+const routeApi = getRouteApi("/auth/signup");
 
-export function SignupForm() {
+export function SignupForm({
+	className,
+	...props
+}: React.ComponentProps<"form">) {
 	const router = useRouter();
 	const { redirect } = routeApi.useSearch();
 
@@ -73,155 +70,137 @@ export function SignupForm() {
 	});
 
 	return (
-		<Card className="w-full sm:max-w-md">
-			<CardHeader>
-				<CardTitle>Create a new account</CardTitle>
-				<CardDescription>
-					Become a member and sync your watchlist across all your devices.
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
+		<form
+			className={cn("flex flex-col gap-6", className)}
+			{...props}
+			onSubmit={(e) => {
+				e.preventDefault();
+				form.handleSubmit();
+			}}
+			id="signup-form"
+		>
+			<FieldGroup>
+				<div className="flex flex-col items-center gap-1 text-center">
+					<h1 className="text-2xl font-bold">Create a new account</h1>
+					<p className="text-sm text-balance text-muted-foreground">
+						Become a member and sync your watchlist across all your devices
+					</p>
+				</div>
+				<form.Field name="name">
+					{(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
+
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Name</FieldLabel>
+								<Input
+									id={field.name}
+									name={field.name}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+									aria-invalid={isInvalid}
+									placeholder="Enter your name"
+								/>
+
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
 					}}
-					id="signup-form"
-				>
-					<FieldGroup>
-						<form.Field name="name">
-							{(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
+				</form.Field>
+				<form.Field name="email">
+					{(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
 
-								return (
-									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>Name</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="Enter your name"
-										/>
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+								<Input
+									id={field.name}
+									name={field.name}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+									aria-invalid={isInvalid}
+									placeholder="Enter your email address"
+									type="email"
+								/>
 
-										{isInvalid && (
-											<FieldError errors={field.state.meta.errors} />
-										)}
-									</Field>
-								);
-							}}
-						</form.Field>
-						<form.Field name="email">
-							{(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
 
-								return (
-									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>Email</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="Enter your email address"
-											type="email"
-										/>
+				<form.Field name="password">
+					{(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
 
-										{isInvalid && (
-											<FieldError errors={field.state.meta.errors} />
-										)}
-									</Field>
-								);
-							}}
-						</form.Field>
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+								<Input
+									id={field.name}
+									name={field.name}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+									aria-invalid={isInvalid}
+									placeholder="Enter password"
+									type="password"
+								/>
 
-						<form.Field name="password">
-							{(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
+				<form.Field name="confirmPassword">
+					{(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
 
-								return (
-									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>Password</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="Enter password"
-											type="password"
-										/>
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
+								<Input
+									id={field.name}
+									name={field.name}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+									aria-invalid={isInvalid}
+									placeholder="Enter your password again"
+									type="password"
+								/>
 
-										{isInvalid && (
-											<FieldError errors={field.state.meta.errors} />
-										)}
-									</Field>
-								);
-							}}
-						</form.Field>
-						<form.Field name="confirmPassword">
-							{(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
-
-								return (
-									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>
-											Confirm Password
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="Enter your password again"
-											type="password"
-										/>
-
-										{isInvalid && (
-											<FieldError errors={field.state.meta.errors} />
-										)}
-									</Field>
-								);
-							}}
-						</form.Field>
-					</FieldGroup>
-				</form>
-			</CardContent>
-			<CardFooter>
-				<FieldGroup>
-					<Field>
-						<Button variant="outline" onClick={() => form.reset()}>
-							Reset
-						</Button>
-						<form.Subscribe>
-							{({ canSubmit, isSubmitting }) => (
-								<Button type="submit" form="signup-form" disabled={!canSubmit}>
-									{isSubmitting ? "Creating your account..." : "Submit"}
-								</Button>
-							)}
-						</form.Subscribe>
-					</Field>
-					<Field>
-						<FieldDescription className="text-center">
-							Already have an account?{" "}
-							<Link to="/auth/login" search={{ redirect }}>
-								Log in
-							</Link>
-						</FieldDescription>
-					</Field>
-				</FieldGroup>
-			</CardFooter>
-		</Card>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
+				<Field>
+					<form.Subscribe>
+						{({ canSubmit, isSubmitting }) => (
+							<Button type="submit" form="signup-form" disabled={!canSubmit}>
+								{isSubmitting ? "Creating your account..." : "Submit"}
+							</Button>
+						)}
+					</form.Subscribe>
+				</Field>
+				<FieldSeparator></FieldSeparator>
+				<Field>
+					<FieldDescription className="text-center">
+						Already have an account?{" "}
+						<Link to="/auth/login" search={{ redirect }}>
+							Log in
+						</Link>
+					</FieldDescription>
+				</Field>
+			</FieldGroup>
+		</form>
 	);
 }

@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AppSignupRouteImport } from './routes/_app/signup'
 import { Route as AppSearchRouteImport } from './routes/_app/search'
 import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
 import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
@@ -32,15 +32,15 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AppSignupRoute = AppSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSearchRoute = AppSearchRouteImport.update({
   id: '/search',
@@ -92,8 +92,8 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/discover': typeof AppDiscoverRouteRouteWithChildren
   '/search': typeof AppSearchRoute
-  '/signup': typeof AppSignupRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
@@ -104,8 +104,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/search': typeof AppSearchRoute
-  '/signup': typeof AppSignupRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/discover/$genreId': typeof AppDiscoverGenreIdRoute
   '/movies/$id': typeof AppMoviesIdRoute
@@ -119,8 +119,8 @@ export interface FileRoutesById {
   '/_app/discover': typeof AppDiscoverRouteRouteWithChildren
   '/_app/_protected': typeof AppProtectedRouteWithChildren
   '/_app/search': typeof AppSearchRoute
-  '/_app/signup': typeof AppSignupRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
   '/_app/discover/$genreId': typeof AppDiscoverGenreIdRoute
@@ -135,8 +135,8 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/search'
-    | '/signup'
     | '/auth/login'
+    | '/auth/signup'
     | '/profile'
     | '/discover/$genreId'
     | '/movies/$id'
@@ -147,8 +147,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/search'
-    | '/signup'
     | '/auth/login'
+    | '/auth/signup'
     | '/profile'
     | '/discover/$genreId'
     | '/movies/$id'
@@ -161,8 +161,8 @@ export interface FileRouteTypes {
     | '/_app/discover'
     | '/_app/_protected'
     | '/_app/search'
-    | '/_app/signup'
     | '/auth/login'
+    | '/auth/signup'
     | '/_app/'
     | '/_app/_protected/profile'
     | '/_app/discover/$genreId'
@@ -175,6 +175,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -194,19 +195,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login': {
       id: '/auth/login'
       path: '/auth/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_app/signup': {
-      id: '/_app/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof AppSignupRouteImport
-      parentRoute: typeof AppRouteRoute
     }
     '/_app/search': {
       id: '/_app/search'
@@ -305,7 +306,6 @@ interface AppRouteRouteChildren {
   AppDiscoverRouteRoute: typeof AppDiscoverRouteRouteWithChildren
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
   AppSearchRoute: typeof AppSearchRoute
-  AppSignupRoute: typeof AppSignupRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMoviesIdRoute: typeof AppMoviesIdRoute
 }
@@ -314,7 +314,6 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppDiscoverRouteRoute: AppDiscoverRouteRouteWithChildren,
   AppProtectedRoute: AppProtectedRouteWithChildren,
   AppSearchRoute: AppSearchRoute,
-  AppSignupRoute: AppSignupRoute,
   AppIndexRoute: AppIndexRoute,
   AppMoviesIdRoute: AppMoviesIdRoute,
 }
@@ -326,6 +325,7 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
