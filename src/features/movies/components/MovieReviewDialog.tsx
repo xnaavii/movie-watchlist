@@ -16,7 +16,10 @@ interface MovieReviewDialogProps {
 	children: ReactNode;
 }
 
-export function MovieReviewDialog({ review, children }: MovieReviewDialogProps) {
+export function MovieReviewDialog({
+	review,
+	children,
+}: MovieReviewDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{children}</DialogTrigger>
