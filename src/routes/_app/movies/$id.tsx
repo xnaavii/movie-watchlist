@@ -96,8 +96,8 @@ function MovieDetailsPage() {
 			<div className="relative">
 				<MovieBackdropImageView movieId={movie.id} title={movie.title} />
 				<BackButtonView
-					to="/discover"
-					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-20"
+					fallbackTo="/discover"
+					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-30"
 				/>
 				<div className="relative -mt-12 md:mt-0 md:absolute md:inset-0 flex flex-col md:justify-end px-4 md:p-6 lg:p-8 z-20">
 					<div className="flex flex-col items-center md:items-start gap-8 text-center md:text-left">

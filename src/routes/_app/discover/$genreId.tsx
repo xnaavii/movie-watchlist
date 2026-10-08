@@ -107,7 +107,7 @@ function DiscoverGenrePage() {
 	return (
 		<>
 			<div className="relative isolate flex items-center justify-center">
-				<BackButtonView to="/" className="self-start z-20" />
+				<BackButtonView fallbackTo="/discover" className="self-start z-20" />
 				<div className="absolute flex flex-col items-center gap-2 z-20">
 					<BrandedTitle>{selectedGenre?.name}</BrandedTitle>
 					<p className="text-sm lg:text-base text-muted-foreground">
