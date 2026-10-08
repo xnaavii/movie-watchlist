@@ -111,7 +111,7 @@ function MovieDetailsPage() {
 				</div>
 			</div>
 
-			<Container>
+			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
 				<MovieReviewsView movieId={movie.id} />
 				<Suspense fallback={<MovieRowSkeleton />}>

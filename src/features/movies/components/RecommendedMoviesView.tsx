@@ -36,7 +36,7 @@ export function RecommendedMoviesView({ movieId }: RecommendedMoviesProps) {
 	if (movies.length === 0) return null;
 
 	return (
-		<section className="flex flex-col gap-4">
+		<section className="flex flex-col gap-6">
 			<h2 className="text-2xl tracking-tighter">
 				Similar movie recommendations
 			</h2>

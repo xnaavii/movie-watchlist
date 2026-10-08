@@ -39,7 +39,7 @@ export function MovieTrailerView({
 	}
 
 	return (
-		<section className="flex flex-col gap-4">
+		<section className="flex flex-col gap-6">
 			<h2 className="text-2xl tracking-tighter">Watch the Trailer</h2>
 			<MovieTrailer trailerId={trailer.key} title={movieTitle} />
 		</section>
