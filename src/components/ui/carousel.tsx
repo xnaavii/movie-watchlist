@@ -131,13 +131,38 @@ function Carousel({
 }
 
 function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
-  const { carouselRef, orientation } = useCarousel()
+  const { carouselRef, api, orientation } = useCarousel()
+
+  // Embla moves slides with transforms; focusing an off-screen slide makes the
+  // browser scroll the viewport natively, which desyncs the two and clips slides.
+  const handleScroll = React.useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      event.currentTarget.scrollLeft = 0
+      event.currentTarget.scrollTop = 0
+    },
+    []
+  )
+
+  const handleFocus = React.useCallback(
+    (event: React.FocusEvent<HTMLDivElement>) => {
+      if (!api) return
+      const index = api
+        .slideNodes()
+        .findIndex((slide) => slide.contains(event.target))
+      if (index !== -1 && !api.slidesInView().includes(index)) {
+        api.scrollTo(index)
+      }
+    },
+    [api]
+  )
 
   return (
     <div
       ref={carouselRef}
       className="overflow-hidden"
       data-slot="carousel-content"
+      onScroll={handleScroll}
+      onFocus={handleFocus}
     >
       <div
         className={cn(
