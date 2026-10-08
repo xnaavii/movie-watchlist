@@ -92,12 +92,16 @@ function MovieDetailsPage() {
 		<div className="flex flex-col gap-6 relative" key={movie.id}>
 			<div className="relative">
 				<MovieBackdropImageView movieId={movie.id} title={movie.title} />
-				<div className="absolute inset-0 mt-12 md:mt-0 flex flex-col justify-between p-4 md:p-6 lg:p-8 z-20">
-					<BackButtonView to="/discover" />
-					<div className="flex flex-col gap-8">
+				<BackButtonView
+					to="/discover"
+					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-20"
+				/>
+				{/* Mobile: content stacks under the backdrop. md+: overlaid on it */}
+				<div className="relative -mt-12 md:mt-0 md:absolute md:inset-0 flex flex-col md:justify-end px-4 md:p-6 lg:p-8 z-20">
+					<div className="flex flex-col items-center md:items-start gap-8 text-center md:text-left">
 						<MovieLogoView movieId={movie.id} title={movie.title} />
 						<MovieDetailsView movie={movie} />
-						<div className="flex flex-wrap gap-2">
+						<div className="flex flex-wrap justify-center md:justify-start gap-2">
 							<WatchlistStatusButtonView movieId={movie.id} />
 							<JustWatchButton title={movie.title} />
 						</div>

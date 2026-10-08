@@ -10,11 +10,11 @@ export function MovieCredits({ credits }: { credits?: MovieCreditsData }) {
 
 	return (
 		<>
-			<div className="flex gap-1 items-center">
+			<div className="flex gap-1 items-center justify-center md:justify-start">
 				<p className="text-muted-foreground">Director</p>
 				<p>{director?.name}</p>
 			</div>
-			<div className="flex gap-1 items-center flex-wrap">
+			<div className="flex gap-1 items-center justify-center md:justify-start flex-wrap">
 				<p className="text-muted-foreground">Starring</p>
 				{topCast?.map((cast, i) => (
 					<p key={cast.id}>

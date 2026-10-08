@@ -18,7 +18,9 @@ export function MovieBackdropImageView({
 	);
 
 	if (isLoading) {
-		return <Skeleton className="size-full" />;
+		return (
+			<Skeleton className="aspect-video w-full md:aspect-auto md:size-full" />
+		);
 	}
 
 	const backdropSrc =
@@ -27,7 +29,7 @@ export function MovieBackdropImageView({
 
 	if (!backdropSrc) {
 		return (
-			<div className="inset-0 size-full min-h-svh bg-muted flex flex-col items-center justify-center">
+			<div className="inset-0 w-full aspect-video md:aspect-auto md:size-full md:min-h-svh bg-muted flex flex-col items-center justify-center">
 				<ImageOff />
 				<p className="text-xl text-muted-foreground">No Image</p>
 			</div>
