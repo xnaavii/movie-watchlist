@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { ResetPasswordForm } from "#/features/auth/forms/ResetPasswordForm";
 
-// Better Auth redirects here with either ?token=... or ?error=INVALID_TOKEN
 const resetPasswordSearchSchema = z.object({
 	token: z.string().optional(),
 	error: z.string().optional(),
