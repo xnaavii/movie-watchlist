@@ -1,6 +1,7 @@
 import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
@@ -9,6 +10,7 @@ import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
 import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
 import { MovieDetailsView } from "#/features/movies/components/MovieDetailsView";
 import { MovieLogoView } from "#/features/movies/components/MovieLogoView";
+import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { MovieTrailerView } from "#/features/movies/components/MovieTrailerView";
 import { RecommendedMoviesView } from "#/features/movies/components/RecommendedMoviesView";
 import {
@@ -39,16 +41,16 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			throw notFound();
 		}
 
-		await Promise.all([
-			queryClient.prefetchQuery(movieQueries.credits({ movie_id: movieId })),
-			queryClient.prefetchQuery(movieQueries.images({ movie_id: movieId })),
-			queryClient.prefetchQuery(
+		await Promise.allSettled([
+			queryClient.ensureQueryData(movieQueries.credits({ movie_id: movieId })),
+			queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
+			queryClient.ensureQueryData(
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
 			...(movie.imdb_id
-				? [queryClient.prefetchQuery(imdbRatingQueryOptions(movie.imdb_id))]
+				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
-			queryClient.prefetchQuery(watchlistQueries.status(movieId)),
+			queryClient.ensureQueryData(watchlistQueries.status(movieId)),
 		]);
 
 		return { movie };
@@ -76,7 +78,6 @@ export const Route = createFileRoute("/_app/movies/$id")({
 		};
 	},
 	component: MovieDetailsPage,
-	pendingMinMs: 3000,
 	pendingComponent: MovieDetailsPagePending,
 	notFoundComponent: MovieDetailsPageNotFound,
 });
@@ -96,7 +97,6 @@ function MovieDetailsPage() {
 					to="/discover"
 					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-20"
 				/>
-				{/* Mobile: content stacks under the backdrop. md+: overlaid on it */}
 				<div className="relative -mt-12 md:mt-0 md:absolute md:inset-0 flex flex-col md:justify-end px-4 md:p-6 lg:p-8 z-20">
 					<div className="flex flex-col items-center md:items-start gap-8 text-center md:text-left">
 						<MovieLogoView movieId={movie.id} title={movie.title} />
@@ -111,7 +111,9 @@ function MovieDetailsPage() {
 
 			<Container>
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
-				<RecommendedMoviesView movieId={movie.id} />
+				<Suspense fallback={<MovieRowSkeleton />}>
+					<RecommendedMoviesView movieId={movie.id} />
+				</Suspense>
 			</Container>
 		</div>
 	);
