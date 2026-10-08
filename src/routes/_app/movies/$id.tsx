@@ -10,6 +10,7 @@ import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
 import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
 import { MovieDetailsView } from "#/features/movies/components/MovieDetailsView";
 import { MovieLogoView } from "#/features/movies/components/MovieLogoView";
+import { MovieReviewsView } from "#/features/movies/components/MovieReviewsView";
 import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { MovieTrailerView } from "#/features/movies/components/MovieTrailerView";
 import { RecommendedMoviesView } from "#/features/movies/components/RecommendedMoviesView";
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			queryClient.ensureQueryData(
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
+			queryClient.ensureQueryData(movieQueries.reviews({ movie_id: movieId })),
 			...(movie.imdb_id
 				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
@@ -111,6 +113,7 @@ function MovieDetailsPage() {
 
 			<Container>
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
+				<MovieReviewsView movieId={movie.id} />
 				<Suspense fallback={<MovieRowSkeleton />}>
 					<RecommendedMoviesView movieId={movie.id} />
 				</Suspense>

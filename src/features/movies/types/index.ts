@@ -29,3 +29,12 @@ export type OmdbResponse =
 			[key: string]: unknown;
 	  }
 	| { Response: "False"; Error: string };
+
+export type MovieReview = {
+	id: string;
+	authorName: string;
+	avatarSrc?: string;
+	createdAt: string;
+	content: string;
+	url: string;
+};

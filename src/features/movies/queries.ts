@@ -5,6 +5,7 @@ import type {
 	MovieImagesParams,
 	MovieListParams,
 	MovieRecommendationsParams,
+	MovieReviewsParams,
 	MovieVideosParams,
 	SearchMoviesParams,
 	WithLanguage,
@@ -20,6 +21,7 @@ import {
 	getMovieImages,
 	getMovieList,
 	getMovieRecommendations,
+	getMovieReviews,
 	getMovieVideos,
 	getStreamingSources,
 	searchMovies,
@@ -84,6 +86,11 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "recommendations", { ...params }],
 			queryFn: () => getMovieRecommendations({ data: { ...params } }),
+		}),
+	reviews: (params: MovieReviewsParams) =>
+		queryOptions({
+			queryKey: ["movies", "reviews", { ...params }],
+			queryFn: () => getMovieReviews({ data: { ...params } }),
 		}),
 	genres: (params: WithLanguage) =>
 		queryOptions({

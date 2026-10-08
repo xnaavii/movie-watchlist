@@ -3,9 +3,12 @@ import type {
 	LanguageISO6391,
 	MovieImages,
 	MovieResultItem,
+	Review,
 } from "@lorenzopant/tmdb";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { Movie } from "../watchlist/server/watchlist.server";
+import type { MovieReview } from "./types";
+import { resizeTmdbImage } from "./utils/tmdb";
 
 type DiscoverFilters = {
 	genreId?: number;
@@ -50,6 +53,17 @@ export function normalizeMovie(movie: MovieResultItem): Movie {
 		posterPath: movie.poster_path,
 		backdropPath: movie.backdrop_path,
 		releaseDate: movie.release_date,
+	};
+}
+
+export function normalizeReview(review: Review): MovieReview {
+	return {
+		id: review.id,
+		authorName: review.author_details.name || review.author,
+		avatarSrc: resizeTmdbImage(review.author_details.avatar_path, "w185"),
+		createdAt: review.created_at,
+		content: review.content,
+		url: review.url,
 	};
 }
 

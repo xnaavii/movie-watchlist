@@ -17,3 +17,11 @@ export const getMovieImage = (
 	if (!tmdbImagePath) return null;
 	return `${IMAGE_BASE_URL}/${size}${tmdbImagePath}`;
 };
+
+export const resizeTmdbImage = (
+	imageUrl: string | undefined,
+	size: TmdbImageSize,
+): string | undefined => imageUrl?.replace("/t/p/original/", `/t/p/${size}/`);
+
+export const getTmdbMovieReviewsUrl = (movieId: number): string =>
+	`https://www.themoviedb.org/movie/${movieId}/reviews`;
