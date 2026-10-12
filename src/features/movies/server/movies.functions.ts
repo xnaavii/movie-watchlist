@@ -11,6 +11,7 @@ import type {
 	MovieReviewsParams,
 	MovieVideosParams,
 	PaginatedResponse,
+	TrendingParams,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
@@ -289,6 +290,20 @@ async function findPerson(query: string): Promise<SearchPerson | null> {
 		return null;
 	}
 }
+
+export const getTrendingMovies = createServerFn({ method: "GET" })
+	.validator((data: TrendingParams) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.trending.movies({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get trending movies",
+			);
+		}
+	});
 
 export const discoverMovies = createServerFn({ method: "GET" })
 	.validator((data: DiscoverMovieParams) => data)
