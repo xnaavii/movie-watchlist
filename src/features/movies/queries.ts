@@ -7,6 +7,7 @@ import type {
 	MovieRecommendationsParams,
 	MovieReviewsParams,
 	MovieVideosParams,
+	TrendingParams,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ import {
 	getMovieReviews,
 	getMovieVideos,
 	getStreamingSources,
+	getTrendingMovies,
 	searchMovies,
 } from "./server/movies.functions";
 import type { SmartSearchParams, TMDBMovieList } from "./types";
@@ -87,6 +89,11 @@ export const movieQueries = {
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) =>
 				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
+		}),
+	trending: (params: TrendingParams) =>
+		queryOptions({
+			queryKey: ["movies", "trending", { ...params }],
+			queryFn: () => getTrendingMovies({ data: { ...params } }),
 		}),
 	recommendations: (params: MovieRecommendationsParams) =>
 		queryOptions({

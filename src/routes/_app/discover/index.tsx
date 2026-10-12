@@ -3,12 +3,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { DiscoverMovieSection } from "#/features/movies/components/DiscoverMovieSection";
 import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
 import { GenreRow } from "#/features/movies/components/GenreRow";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { useMovieLogos } from "#/features/movies/hooks/useMovieLogos";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
+import {
+	buildComingSoonParams,
+	CLASSICS_PARAMS,
+	HIDDEN_GEMS_PARAMS,
+	QUICK_WATCHES_PARAMS,
+} from "#/features/movies/utils/discoverSections";
 import { WatchlistMoviesView } from "#/features/watchlist/components/WatchlistMoviesView";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo } from "#/utils/seo";
@@ -35,7 +42,8 @@ export const Route = createFileRoute("/_app/discover/")({
 		return {
 			meta: seo({
 				title: `Discover Movies | ${SITE_CONFIG.name}`,
-				description: "Discover popular, top rated and movies by genre.",
+				description:
+					"Discover trending, new, top rated and hidden gem movies, or browse by genre.",
 				image: posterImage,
 				url: `${SITE_CONFIG.url}/discover`,
 			}),
@@ -81,7 +89,49 @@ function DiscoverPage() {
 					showRanks
 				/>
 			</section>
+			<DiscoverMovieSection
+				title="Trending This Week"
+				description="What everyone is watching right now"
+				query={movieQueries.trending({ time_window: "week" })}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMovieSection
+				title="Now in Theaters"
+				description="Catch these on the big screen"
+				query={movieQueries.list("now_playing")}
+				watchlistStatuses={watchlistStatuses}
+			/>
 			<WatchlistMoviesView />
+			<DiscoverMovieSection
+				title="Coming Soon"
+				description="Upcoming releases to keep an eye on"
+				query={movieQueries.discover(buildComingSoonParams(new Date()))}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMovieSection
+				title="Top Rated of All Time"
+				description="The highest rated movies on TMDB"
+				query={movieQueries.list("top_rated")}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMovieSection
+				title="Hidden Gems"
+				description="Great reviews, far fewer viewers"
+				query={movieQueries.discover(HIDDEN_GEMS_PARAMS)}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMovieSection
+				title="Quick Watches"
+				description="Well loved movies under 95 minutes"
+				query={movieQueries.discover(QUICK_WATCHES_PARAMS)}
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMovieSection
+				title="Timeless Classics"
+				description="Acclaimed films from before 1980"
+				query={movieQueries.discover(CLASSICS_PARAMS)}
+				watchlistStatuses={watchlistStatuses}
+			/>
 		</>
 	);
 }
