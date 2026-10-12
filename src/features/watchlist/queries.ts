@@ -1,4 +1,5 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import type { WatchlistFilters } from "#/features/movies/utils/filters";
 import {
 	getUserWatchlistPageFn,
 	getUserWatchlistStatusesFn,
@@ -23,11 +24,11 @@ export const watchlistQueries = {
 			queryKey: ["watchlist", "list"],
 			queryFn: () => getUserWatchlistPageFn({ data: { page: 1 } }),
 		}),
-	infiniteList: () =>
+	infiniteList: (filters: WatchlistFilters = {}) =>
 		infiniteQueryOptions({
-			queryKey: ["watchlist", "list", "infinite"],
+			queryKey: ["watchlist", "list", "infinite", filters],
 			queryFn: ({ pageParam }) =>
-				getUserWatchlistPageFn({ data: { page: pageParam } }),
+				getUserWatchlistPageFn({ data: { page: pageParam, filters } }),
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) =>
 				lastPage.hasMore ? lastPage.page + 1 : undefined,
