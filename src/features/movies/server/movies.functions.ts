@@ -7,9 +7,10 @@ import type {
 	MovieImagesParams,
 	MovieListParams,
 	MovieRecommendationsParams,
+	MovieResultItem,
 	MovieReviewsParams,
 	MovieVideosParams,
-	SearchMoviesParams,
+	PaginatedResponse,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
@@ -19,11 +20,26 @@ import { db } from "#/db";
 import { imdbRating, streamingSource } from "#/db/schema";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
-import type { OmdbResponse, TMDBMovieList } from "../types";
+import type {
+	OmdbResponse,
+	ResolvedSearch,
+	SearchPerson,
+	SmartSearchParams,
+	SmartSearchResponse,
+	TMDBMovieList,
+} from "../types";
+import {
+	buildFallbackQueries,
+	isPersonMatch,
+	parseSearchQuery,
+	rankFuzzyResults,
+	rankSearchResults,
+} from "../utils/search";
 
 const OMDB_API_KEY = env.OMDB_API_KEY;
 const IMDB_RATING_TTL_MS = 24 * 60 * 60 * 1000;
 const STREAMING_SOURCE_TTL_MS = 24 * 60 * 60 * 1000;
+const PERSON_MOVIE_LIMIT = 20;
 
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: MovieDetailsParams) => data)
@@ -157,10 +173,30 @@ export const getLanguages = createServerFn({ method: "GET" }).handler(
 );
 
 export const searchMovies = createServerFn({ method: "GET" })
-	.validator((data: SearchMoviesParams) => data)
-	.handler(async ({ data }) => {
+	.validator((data: SmartSearchParams) => data)
+	.handler(async ({ data }): Promise<SmartSearchResponse> => {
 		try {
-			return await tmdb.search.movies({ ...data });
+			const page = data.page ?? 1;
+
+			if (data.resolved && page > 1) {
+				const response = await tmdb.search.movies({
+					query: data.resolved.query,
+					year: data.resolved.year,
+					page,
+				});
+				return {
+					...response,
+					results: rankResults(data.query, response.results, data.resolved),
+					resolved: data.resolved,
+					person: null,
+				};
+			}
+
+			const [movies, person] = await Promise.all([
+				findMovies(data.query),
+				findPerson(data.query),
+			]);
+			return { ...movies, person };
 		} catch (error) {
 			throw new Error(
 				error instanceof TMDBError
@@ -169,6 +205,90 @@ export const searchMovies = createServerFn({ method: "GET" })
 			);
 		}
 	});
+
+function rankResults(
+	query: string,
+	results: MovieResultItem[],
+	resolved: ResolvedSearch,
+) {
+	return resolved.fuzzy
+		? rankFuzzyResults(query, results)
+		: rankSearchResults(parseSearchQuery(query).title, results);
+}
+
+/**
+ * Tries the query as typed (with any trailing year used as a filter), then
+ * without the year filter, then looser spellings, and returns the first that
+ * finds something.
+ */
+async function findMovies(query: string) {
+	const { title, year } = parseSearchQuery(query);
+	const attempts: ResolvedSearch[] = [
+		{ query: title, year, fuzzy: false },
+		...(year ? [{ query, fuzzy: false }] : []),
+		...buildFallbackQueries(title).map((fallback) => ({
+			query: fallback,
+			fuzzy: true,
+		})),
+	];
+
+	let response: PaginatedResponse<MovieResultItem> | undefined;
+	for (const resolved of attempts) {
+		response = await tmdb.search.movies({
+			query: resolved.query,
+			year: resolved.year,
+		});
+		if (response.results.length > 0) {
+			return {
+				...response,
+				results: rankResults(query, response.results, resolved),
+				resolved,
+			};
+		}
+	}
+
+	return {
+		page: 1,
+		total_pages: 0,
+		total_results: 0,
+		...response,
+		results: [],
+		resolved: attempts[0],
+	};
+}
+
+/** When the query names an actor or director, returns their best-known movies. */
+async function findPerson(query: string): Promise<SearchPerson | null> {
+	try {
+		const { results } = await tmdb.search.person({ query });
+		const person = results[0];
+		if (!person || !isPersonMatch(query, person)) return null;
+
+		const credits = await tmdb.people.movie_credits({ person_id: person.id });
+		const movies =
+			person.known_for_department === "Acting"
+				? credits.cast
+				: credits.crew.filter(
+						(credit) => credit.department === person.known_for_department,
+					);
+
+		const unique = new Map<number, MovieResultItem>();
+		for (const movie of movies) {
+			if (movie.poster_path && !unique.has(movie.id)) {
+				unique.set(movie.id, movie);
+			}
+		}
+
+		const knownFor = [...unique.values()]
+			.sort((a, b) => b.vote_count - a.vote_count)
+			.slice(0, PERSON_MOVIE_LIMIT);
+		if (knownFor.length === 0) return null;
+
+		return { id: person.id, name: person.name, movies: knownFor };
+	} catch {
+		return null;
+	}
+}
 
 export const discoverMovies = createServerFn({ method: "GET" })
 	.validator((data: DiscoverMovieParams) => data)
