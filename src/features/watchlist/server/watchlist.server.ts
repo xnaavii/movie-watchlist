@@ -1,7 +1,22 @@
-import { and, count, desc, eq } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	exists,
+	gte,
+	lte,
+	type SQL,
+	sql,
+} from "drizzle-orm";
 import { db } from "#/db";
 import { genre, movie, movieToGenre, watchlist } from "#/db/schema";
 import { getMovieDetails } from "#/features/movies/server/movies.functions";
+import {
+	normalizeYearRange,
+	type WatchlistFilters,
+} from "#/features/movies/utils/filters";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
 export type WatchlistStatus = typeof watchlist.$inferSelect.status;
@@ -146,16 +161,62 @@ export async function selectUserWatchlist(userId: string) {
 		.orderBy(desc(watchlist.addedAt));
 }
 
+function watchlistFilterConditions(
+	userId: string,
+	filters: WatchlistFilters,
+): SQL[] {
+	const conditions = [eq(watchlist.userId, userId)];
+	if (filters.status) conditions.push(eq(watchlist.status, filters.status));
+	if (filters.genre) {
+		conditions.push(
+			exists(
+				db
+					.select()
+					.from(movieToGenre)
+					.where(
+						and(
+							eq(movieToGenre.movieId, movie.id),
+							eq(movieToGenre.genreId, filters.genre),
+						),
+					),
+			),
+		);
+	}
+	// Release dates are stored as YYYY-MM-DD text, so string bounds compare correctly.
+	const { from, to } = normalizeYearRange(filters.from, filters.to);
+	if (from) conditions.push(gte(movie.releaseDate, `${from}-01-01`));
+	if (to) conditions.push(lte(movie.releaseDate, `${to}-12-31`));
+	return conditions;
+}
+
+function watchlistOrder(sort: WatchlistFilters["sort"]): SQL[] {
+	switch (sort) {
+		case "title":
+			return [asc(movie.title)];
+		case "newest":
+			return [sql`${movie.releaseDate} desc nulls last`];
+		case "oldest":
+			return [sql`${movie.releaseDate} asc nulls last`];
+		default:
+			return [desc(watchlist.addedAt)];
+	}
+}
+
 export async function selectUserWatchlistPage(
 	userId: string,
-	{ limit, offset }: { limit: number; offset: number },
+	{
+		limit,
+		offset,
+		filters = {},
+	}: { limit: number; offset: number; filters?: WatchlistFilters },
 ) {
 	return await db
 		.select()
 		.from(watchlist)
 		.innerJoin(movie, eq(watchlist.movieId, movie.id))
-		.where(eq(watchlist.userId, userId))
-		.orderBy(desc(watchlist.addedAt))
+		.where(and(...watchlistFilterConditions(userId, filters)))
+		// The id tiebreak keeps pages stable when sort values repeat.
+		.orderBy(...watchlistOrder(filters.sort), asc(watchlist.id))
 		.limit(limit)
 		.offset(offset);
 }

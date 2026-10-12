@@ -26,6 +26,8 @@ export function useUpdateWatchlistStatus({
 			queryClient.invalidateQueries({
 				queryKey: watchlistQueries.status(movieId).queryKey,
 			});
+			// A status filter on the watchlist page can hide or reveal this movie.
+			queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
 			toast.success(
 				status === "watched" ? "Marked as watched" : "Marked as want to watch",
 			);

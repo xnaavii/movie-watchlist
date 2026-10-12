@@ -3,13 +3,24 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SearchBar } from "#/components/SearchBar";
+import { Button } from "#/components/ui/button";
 import { MovieCard } from "#/features/movies/components/MovieCard";
+import {
+	MovieFilterBar,
+	type MovieFilterValues,
+} from "#/features/movies/components/MovieFilterBar";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
+import {
+	filterAndSortMovies,
+	SEARCH_SORTS,
+	type SearchFilters,
+	searchFilterSearchSchema,
+} from "#/features/movies/utils/filters";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
-const searchParamsSchema = z.object({
+const searchParamsSchema = searchFilterSearchSchema.extend({
 	q: z.string().catch(""),
 });
 
@@ -36,14 +47,14 @@ export const Route = createFileRoute("/_app/search")({
 });
 
 function SearchPage() {
-	const { q } = Route.useSearch();
+	const { q, ...filters } = Route.useSearch();
 	const navigate = Route.useNavigate();
 	const [draft, setDraft] = useState(q);
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {
 			if (draft !== q) {
-				navigate({ search: { q: draft }, replace: true });
+				navigate({ search: (prev) => ({ ...prev, q: draft }), replace: true });
 			}
 		}, 300);
 		return () => clearTimeout(timerId);
@@ -70,13 +81,22 @@ function SearchPage() {
 		return <p>There was an error: {error?.message}</p>;
 	}
 
-	const movies = Array.from(
+	const loadedMovies = Array.from(
 		new Map(
 			data?.pages
 				.flatMap((page) => page.results)
 				.map((movie) => [movie.id, movie]),
 		).values(),
 	);
+	const movies = filterAndSortMovies(loadedMovies, filters);
+
+	function updateFilters(patch: MovieFilterValues) {
+		navigate({
+			search: (prev) => ({ ...prev, ...(patch as Partial<SearchFilters>) }),
+			replace: true,
+		});
+	}
+
 	const firstSearchPage = q ? search.data?.pages[0] : undefined;
 	const person = firstSearchPage?.person;
 	const isFuzzy = firstSearchPage?.resolved.fuzzy ?? false;
@@ -86,7 +106,7 @@ function SearchPage() {
 			<SearchBar value={draft} onChange={setDraft} />
 			{q && search.isLoading ? (
 				<p className="text-muted-foreground">Searching...</p>
-			) : q && movies.length === 0 && !person ? (
+			) : q && loadedMovies.length === 0 && !person ? (
 				<p className="text-muted-foreground">No results for &quot;{q}&quot;</p>
 			) : (
 				<>
@@ -96,7 +116,7 @@ function SearchPage() {
 							<MovieRow movies={person.movies.map(normalizeMovie)} />
 						</section>
 					)}
-					{movies.length > 0 && (
+					{loadedMovies.length > 0 && (
 						<section className="flex flex-col gap-6">
 							<div className="flex flex-col gap-1">
 								<h2 className="text-xl">
@@ -113,6 +133,30 @@ function SearchPage() {
 									</p>
 								)}
 							</div>
+							<MovieFilterBar
+								values={filters}
+								sortOptions={SEARCH_SORTS}
+								showRating
+								onChange={updateFilters}
+								onClear={() => navigate({ search: { q }, replace: true })}
+							/>
+							{movies.length === 0 && (
+								<div className="flex flex-col items-start gap-3">
+									<p className="text-muted-foreground">
+										None of the {loadedMovies.length} movies loaded so far match
+										these filters.
+									</p>
+									{hasNextPage && (
+										<Button
+											variant="outline"
+											onClick={() => fetchNextPage()}
+											disabled={isFetchingNextPage}
+										>
+											{isFetchingNextPage ? "Loading..." : "Look further"}
+										</Button>
+									)}
+								</div>
+							)}
 							<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
 								{movies.map((movie) => (
 									<MovieCard key={movie.id} movie={normalizeMovie(movie)} />
