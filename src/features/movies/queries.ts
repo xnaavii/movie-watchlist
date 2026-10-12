@@ -7,7 +7,6 @@ import type {
 	MovieRecommendationsParams,
 	MovieReviewsParams,
 	MovieVideosParams,
-	SearchMoviesParams,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
@@ -26,7 +25,7 @@ import {
 	getStreamingSources,
 	searchMovies,
 } from "./server/movies.functions";
-import type { TMDBMovieList } from "./types";
+import type { SmartSearchParams, TMDBMovieList } from "./types";
 
 export const movieQueries = {
 	list: (list: TMDBMovieList, params?: MovieListParams) =>
@@ -54,19 +53,26 @@ export const movieQueries = {
 			queryKey: ["movies", "credits", { ...params }],
 			queryFn: () => getMovieCredits({ data: { ...params } }),
 		}),
-	search: (params: SearchMoviesParams) =>
-		queryOptions({
-			queryKey: ["movies", "search", { ...params }],
-			queryFn: () => searchMovies({ data: { ...params } }),
-		}),
-	infiniteSearch: (params: SearchMoviesParams) =>
+	infiniteList: (list: TMDBMovieList) =>
 		infiniteQueryOptions({
-			queryKey: ["movies", "search", { ...params }],
+			queryKey: ["movies", "list", "infinite", { list }],
 			queryFn: ({ pageParam }) =>
-				searchMovies({ data: { ...params, page: pageParam } }),
+				getMovieList({ data: { list, page: pageParam } }),
 			initialPageParam: 1,
 			getNextPageParam: (lastPage) =>
 				lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1,
+		}),
+	infiniteSearch: (query: string) =>
+		infiniteQueryOptions({
+			queryKey: ["movies", "search", { query }],
+			queryFn: ({ pageParam }) =>
+				searchMovies({ data: { query, ...pageParam } }),
+			initialPageParam: {} as Omit<SmartSearchParams, "query">,
+			getNextPageParam: (lastPage) =>
+				lastPage.page >= lastPage.total_pages
+					? undefined
+					: { page: lastPage.page + 1, resolved: lastPage.resolved },
+			enabled: query.trim().length > 0,
 		}),
 	discover: (params: DiscoverMovieParams) =>
 		queryOptions({
