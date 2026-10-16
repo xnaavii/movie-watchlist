@@ -25,3 +25,17 @@ export const resizeTmdbImage = (
 
 export const getTmdbMovieReviewsUrl = (movieId: number): string =>
 	`https://www.themoviedb.org/movie/${movieId}/reviews`;
+
+/**
+ * Builds an image URL from a TMDB path. Paths the TMDB client already
+ * expanded into full URLs are resized instead.
+ */
+export const toTmdbImageUrl = (
+	path: string | null | undefined,
+	size: TmdbImageSize,
+): string | undefined => {
+	if (!path) return undefined;
+	if (path.startsWith("http"))
+		return path.replace(/\/t\/p\/[^/]+\//, `/t/p/${size}/`);
+	return `${IMAGE_BASE_URL}/${size}${path}`;
+};

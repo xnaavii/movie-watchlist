@@ -331,6 +331,20 @@ export const getMovieImages = createServerFn({ method: "GET" })
 		}
 	});
 
+export const getMovieWatchProviders = createServerFn({ method: "GET" })
+	.validator((data: { movie_id: number }) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.movies.watch_providers({ movie_id: data.movie_id });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get where to watch the movie",
+			);
+		}
+	});
+
 export const getStreamingSources = createServerFn({ method: "GET" })
 	.validator((data: { imdbId: string }) => data)
 	.handler(async ({ data }) => {
