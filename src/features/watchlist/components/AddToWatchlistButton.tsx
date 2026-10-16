@@ -20,6 +20,7 @@ export function AddToWatchlistButton({
 		<Button
 			disabled={isPending}
 			onClick={addToList}
+			variant="contrast"
 			className={cn(className)}
 			size={showLabel ? "lg" : "icon"}
 			aria-label={showLabel ? undefined : "Add to watchlist"}

@@ -35,7 +35,7 @@ export function GenreRow({ genres }: GenreRowProps) {
 							>
 								<Link to="/discover/$genreId" params={{ genreId: genre.id }}>
 									<ItemContent className="flex-col items-center justify-center gap-2">
-										<Icon className="size-5 md:size-6 text-sidebar-primary" />
+										<Icon className="size-5 md:size-6 text-muted-foreground transition-colors group-hover/item:text-foreground" />
 										<ItemTitle className="text-center">{genre.name}</ItemTitle>
 									</ItemContent>
 								</Link>
