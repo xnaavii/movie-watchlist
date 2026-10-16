@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { SearchBar } from "#/components/SearchBar";
 import { Button } from "#/components/ui/button";
 import { MovieCard } from "#/features/movies/components/MovieCard";
@@ -70,16 +71,10 @@ function SearchPage() {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isFetchNextPageError,
 		isError,
 		error,
 	} = q ? search : popular;
-	const sentinelRef = useInfiniteScrollTrigger(() => {
-		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-	}, hasNextPage);
-
-	if (isError) {
-		return <p>There was an error: {error?.message}</p>;
-	}
 
 	const loadedMovies = Array.from(
 		new Map(
@@ -89,6 +84,20 @@ function SearchPage() {
 		).values(),
 	);
 	const movies = filterAndSortMovies(loadedMovies, filters);
+
+	// When filters hide everything loaded so far, "Look further" takes over so
+	// the page does not page through the whole catalogue on its own.
+	const sentinelRef = useInfiniteScrollTrigger({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+		itemCount: movies.length,
+		disabled: isFetchNextPageError || movies.length === 0,
+	});
+
+	if (isError && !data) {
+		return <p>There was an error: {error?.message}</p>;
+	}
 
 	function updateFilters(patch: MovieFilterValues) {
 		navigate({
@@ -161,11 +170,15 @@ function SearchPage() {
 								{movies.map((movie) => (
 									<MovieCard key={movie.id} movie={normalizeMovie(movie)} />
 								))}
-								<div
-									ref={sentinelRef}
-									className="h-10 -mt-10 pointer-events-none"
-								/>
 							</div>
+							{movies.length > 0 && (
+								<InfiniteScrollFooter
+									ref={sentinelRef}
+									isFetchingNextPage={isFetchingNextPage}
+									isError={isFetchNextPageError}
+									onRetry={() => fetchNextPage()}
+								/>
+							)}
 						</section>
 					)}
 				</>

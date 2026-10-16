@@ -7,6 +7,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
+import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieGrid } from "#/features/movies/components/MovieGrid";
@@ -86,6 +87,7 @@ function DiscoverGenrePage() {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isFetchNextPageError,
 	} = useSuspenseInfiniteQuery(
 		movieQueries.infiniteDiscover({ with_genres: genreId }),
 	);
@@ -100,9 +102,13 @@ function DiscoverGenrePage() {
 		return [...map.values()];
 	}, [moviesPages]);
 
-	const sentinelRef = useInfiniteScrollTrigger(() => {
-		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-	}, hasNextPage);
+	const sentinelRef = useInfiniteScrollTrigger({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+		itemCount: movies.length,
+		disabled: isFetchNextPageError,
+	});
 
 	return (
 		<>
@@ -150,7 +156,12 @@ function DiscoverGenrePage() {
 					movies={movies.map((movie) => normalizeMovie(movie))}
 					watchlistStatuses={watchlistStatuses}
 				/>
-				<div ref={sentinelRef} className="h-1" aria-hidden="true" />
+				<InfiniteScrollFooter
+					ref={sentinelRef}
+					isFetchingNextPage={isFetchingNextPage}
+					isError={isFetchNextPageError}
+					onRetry={() => fetchNextPage()}
+				/>
 			</section>
 		</>
 	);

@@ -5,6 +5,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Container } from "#/components/Container";
+import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { MovieCard } from "#/features/movies/components/MovieCard";
 import {
 	MovieFilterBar,
@@ -41,17 +42,34 @@ export const Route = createFileRoute("/_app/_protected/watchlist/")({
 function WatchlistPage() {
 	const filters = Route.useSearch();
 	const navigate = Route.useNavigate();
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-		useSuspenseInfiniteQuery(watchlistQueries.infiniteList(filters));
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isFetchNextPageError,
+	} = useSuspenseInfiniteQuery(watchlistQueries.infiniteList(filters));
 
-	const items = data.pages.flatMap((page) => page.results);
+	// Pages are offset based, so a movie can show up twice if the list changes
+	// while paging. Keep the first copy of each.
+	const items = Array.from(
+		new Map(
+			data.pages
+				.flatMap((page) => page.results)
+				.map((item) => [item.movie.id, item]),
+		).values(),
+	);
 	const { data: statuses } = useSuspenseQuery(
 		watchlistQueries.watchlistStatuses(),
 	);
 
-	const sentinelRef = useInfiniteScrollTrigger(() => {
-		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-	}, hasNextPage);
+	const sentinelRef = useInfiniteScrollTrigger({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+		itemCount: items.length,
+		disabled: isFetchNextPageError,
+	});
 
 	function updateFilters(patch: MovieFilterValues) {
 		navigate({
@@ -93,8 +111,13 @@ function WatchlistPage() {
 						watchlistStatus={statuses[movie.id] ?? null}
 					/>
 				))}
-				<div ref={sentinelRef} className="h-10 -mt-10 pointer-events-none" />
 			</div>
+			<InfiniteScrollFooter
+				ref={sentinelRef}
+				isFetchingNextPage={isFetchingNextPage}
+				isError={isFetchNextPageError}
+				onRetry={() => fetchNextPage()}
+			/>
 		</Container>
 	);
 }
