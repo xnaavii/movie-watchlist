@@ -8,11 +8,15 @@ import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
 import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
+import { MovieCastView } from "#/features/movies/components/MovieCastView";
 import { MovieDetailsView } from "#/features/movies/components/MovieDetailsView";
+import { MovieFacts } from "#/features/movies/components/MovieFacts";
+import { MovieGalleryView } from "#/features/movies/components/MovieGalleryView";
 import { MovieLogoView } from "#/features/movies/components/MovieLogoView";
 import { MovieReviewsView } from "#/features/movies/components/MovieReviewsView";
 import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { MovieTrailerView } from "#/features/movies/components/MovieTrailerView";
+import { MovieWhereToWatchView } from "#/features/movies/components/MovieWhereToWatchView";
 import { RecommendedMoviesView } from "#/features/movies/components/RecommendedMoviesView";
 import {
 	imdbRatingQueryOptions,
@@ -49,6 +53,9 @@ export const Route = createFileRoute("/_app/movies/$id")({
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
 			queryClient.ensureQueryData(movieQueries.reviews({ movie_id: movieId })),
+			queryClient.ensureQueryData(
+				movieQueries.watchProviders({ movie_id: movieId }),
+			),
 			...(movie.imdb_id
 				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
@@ -112,7 +119,11 @@ function MovieDetailsPage() {
 			</div>
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
+				<MovieWhereToWatchView movieId={movie.id} />
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
+				<MovieGalleryView movieId={movie.id} movieTitle={movie.title} />
+				<MovieCastView movieId={movie.id} />
+				<MovieFacts movie={movie} />
 				<MovieReviewsView movieId={movie.id} />
 				<Suspense fallback={<MovieRowSkeleton />}>
 					<RecommendedMoviesView movieId={movie.id} />

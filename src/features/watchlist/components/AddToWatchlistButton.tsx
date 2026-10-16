@@ -6,11 +6,13 @@ import { useAddToWatchlist } from "../hooks/useAddToWatchlist";
 type AddToWatchlistButtonProps = {
 	movieId: number;
 	className?: string;
+	showLabel?: boolean;
 };
 
 export function AddToWatchlistButton({
 	movieId,
 	className,
+	showLabel = false,
 }: AddToWatchlistButtonProps) {
 	const { addToList, isPending } = useAddToWatchlist({ movieId });
 
@@ -19,8 +21,10 @@ export function AddToWatchlistButton({
 			disabled={isPending}
 			onClick={addToList}
 			className={cn(className)}
-			size="icon"
+			size={showLabel ? "lg" : "icon"}
+			aria-label={showLabel ? undefined : "Add to watchlist"}
 		>
+			{showLabel && "Add to watchlist"}
 			<BookmarkPlus />
 		</Button>
 	);

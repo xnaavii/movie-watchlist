@@ -23,6 +23,7 @@ import {
 	getMovieRecommendations,
 	getMovieReviews,
 	getMovieVideos,
+	getMovieWatchProviders,
 	getStreamingSources,
 	getTrendingMovies,
 	searchMovies,
@@ -44,6 +45,20 @@ export const movieQueries = {
 		queryOptions({
 			queryKey: ["movies", "images", { ...params }],
 			queryFn: () => getMovieImages({ data: { ...params, language: "en" } }),
+		}),
+	gallery: (params: { movie_id: number }) =>
+		queryOptions({
+			queryKey: ["movies", "images", "gallery", { ...params }],
+			queryFn: () =>
+				getMovieImages({
+					data: { ...params, include_image_language: ["null"] },
+				}),
+		}),
+	watchProviders: (params: { movie_id: number }) =>
+		queryOptions({
+			queryKey: ["movies", "watchProviders", { ...params }],
+			queryFn: () => getMovieWatchProviders({ data: { ...params } }),
+			staleTime: 1000 * 60 * 60 * 6,
 		}),
 	videos: (params: MovieVideosParams) =>
 		queryOptions({

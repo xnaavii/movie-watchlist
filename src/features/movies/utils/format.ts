@@ -23,3 +23,26 @@ export const stripMarkdown = (markdown: string): string =>
 		.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
 		.replace(/^\s{0,3}(#{1,6}|>)\s?/gm, "")
 		.replace(/(\*{1,3}|_{1,3}|~~|`)(\S(?:.*?\S)?)\1/g, "$2");
+
+const usdFormat = new Intl.NumberFormat("en-US", {
+	style: "currency",
+	currency: "USD",
+	notation: "compact",
+	maximumFractionDigits: 1,
+});
+
+export const formatUsd = (amount: number | undefined): string | null => {
+	if (!amount || amount <= 0) return null;
+	return usdFormat.format(amount);
+};
+
+const languageNames = new Intl.DisplayNames(["en"], { type: "language" });
+
+export const formatLanguage = (code: string | undefined): string | null => {
+	if (!code) return null;
+	try {
+		return languageNames.of(code) ?? code;
+	} catch {
+		return code;
+	}
+};
