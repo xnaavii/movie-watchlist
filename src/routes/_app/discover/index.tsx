@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
-import { SITE_CONFIG } from "#/config/site";
+import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { DiscoverMovieSection } from "#/features/movies/components/DiscoverMovieSection";
 import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
 import { GenreRow } from "#/features/movies/components/GenreRow";
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_app/discover/")({
 				description:
 					"Discover trending, new, top rated and hidden gem movies, or browse by genre.",
 				image: posterImage,
-				url: `${SITE_CONFIG.url}/discover`,
+				url: `${getSiteUrl()}/discover`,
 			}),
 		};
 	},

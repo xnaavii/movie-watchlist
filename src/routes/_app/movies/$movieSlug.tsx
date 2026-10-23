@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
-import { SITE_CONFIG } from "#/config/site";
+import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
 import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
 import { MovieCastView } from "#/features/movies/components/MovieCastView";
@@ -27,10 +27,10 @@ import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
+import { buildMovieHead } from "#/features/movies/utils/meta";
 import { parseMovieSlug, toMovieSlug } from "#/features/movies/utils/slug";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
-import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/movies/$movieSlug")({
 	params: {
@@ -81,27 +81,15 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 
 		return { movie };
 	},
-	head: ({ loaderData, params }) => {
+	head: ({ loaderData }) => {
 		if (!loaderData) {
-			return { meta: [{ title: "Movie not found" }] };
+			return { meta: [{ title: `Movie not found | ${SITE_CONFIG.name}` }] };
 		}
 		const movie = loaderData.movie;
-		const pageUrl = `${SITE_CONFIG.url}/movies/${params.movieSlug}`;
-		const imageUrl = movie.backdrop_path || undefined;
-		const pageTitle = `${truncateTitle(movie.title)} | ${SITE_CONFIG.name}`;
-
-		return {
-			meta: [
-				...seo({
-					title: pageTitle,
-					description: truncateForMeta(movie.overview),
-					image: imageUrl,
-				}),
-				{ property: "og:type", content: "video.movie" },
-				{ property: "og:url", content: pageUrl },
-				{ name: "twitter:url", content: pageUrl },
-			],
-		};
+		return buildMovieHead(
+			movie,
+			`${getSiteUrl()}/movies/${toMovieSlug(movie)}`,
+		);
 	},
 	component: MovieDetailsPage,
 	pendingComponent: MovieDetailsPagePending,
