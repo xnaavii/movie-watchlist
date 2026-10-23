@@ -5,8 +5,8 @@ import {
 	type LucideIcon,
 	Search,
 	User,
-	VenetianMask,
 } from "lucide-react";
+import { BrandMark } from "./BrandMark";
 import { Button } from "./ui/button";
 
 type NavItem = {
@@ -50,7 +50,7 @@ export function Navbar() {
 					variant={matchRoute({ to: "/" }) ? "link" : "ghost"}
 				>
 					<Link to="/">
-						<VenetianMask className="size-4 text-sidebar-primary" />
+						<BrandMark />
 					</Link>
 				</Button>
 

@@ -1,7 +1,8 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import { Compass, ListVideo, Search, User, VenetianMask } from "lucide-react";
+import { Compass, ListVideo, Search, User } from "lucide-react";
 import { cn } from "#/lib/utils";
+import { BrandMark } from "./BrandMark";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 
@@ -48,7 +49,7 @@ export function Sidebar({ className }: SidebarProps) {
 		>
 			<Button size="icon-lg" asChild variant="ghost">
 				<Link to="/">
-					<VenetianMask className="size-5 text-sidebar-primary" />
+					<BrandMark className="size-5" />
 				</Link>
 			</Button>
 			<nav>
