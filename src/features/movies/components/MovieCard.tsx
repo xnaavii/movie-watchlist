@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
+import { toMovieSlug } from "#/features/movies/utils/slug";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import type {
 	Movie,
@@ -43,8 +44,8 @@ export function MovieCard({
 					</div>
 				)}
 				<Link
-					to="/movies/$id"
-					params={{ id: movie.id }}
+					to="/movies/$movieSlug"
+					params={{ movieSlug: toMovieSlug(movie) }}
 					className="block size-full focus:outline-none"
 				>
 					<AspectRatio ratio={aspectRatio} className="relative">

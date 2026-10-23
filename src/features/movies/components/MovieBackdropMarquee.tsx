@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Marquee } from "#/components/shadcn-space/animations/marquee";
+import { toMovieSlug } from "#/features/movies/utils/slug";
 import type { Movie } from "#/features/watchlist/server/watchlist.server";
 import { cn } from "#/lib/utils";
 
@@ -27,8 +28,8 @@ export function MovieBackdropMarquee({
 			<Marquee pauseOnHover className="[--duration:100s]">
 				{firstRow.map((movie) => (
 					<Link
-						to={"/movies/$id"}
-						params={{ id: `${movie.id}` }}
+						to="/movies/$movieSlug"
+						params={{ movieSlug: toMovieSlug(movie) }}
 						key={movie.id}
 						title={movie.title}
 						className="group/card"
@@ -61,8 +62,8 @@ export function MovieBackdropMarquee({
 			<Marquee reverse pauseOnHover className="[--duration:100s]">
 				{secondRow.map((movie) => (
 					<Link
-						to={"/movies/$id"}
-						params={{ id: `${movie.id}` }}
+						to="/movies/$movieSlug"
+						params={{ movieSlug: toMovieSlug(movie) }}
 						key={movie.id}
 						title={movie.title}
 						className="group/card"
