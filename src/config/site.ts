@@ -6,10 +6,10 @@ import { getRequestUrl } from "@tanstack/react-start/server";
  * (public/manifest.json) is static, so keep it in sync by hand.
  */
 export const SITE_CONFIG = {
-	name: "Movie Watchlist",
-	shortName: "MW",
+	name: "Watchlist",
+	shortName: "Watchlist",
 	description:
-		"Discover movies, build your watchlist, and track what you've watched.",
+		"Find what to watch next, build your watchlist, and track what you've watched.",
 	url: import.meta.env.VITE_SITE_URL ?? "http://localhost:3000",
 } as const;
 
