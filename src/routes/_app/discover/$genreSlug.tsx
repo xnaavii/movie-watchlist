@@ -14,6 +14,7 @@ import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
+import { GenreDiscoverSections } from "#/features/movies/components/GenreDiscoverSections";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieGrid } from "#/features/movies/components/MovieGrid";
 import { MovieRow } from "#/features/movies/components/MovieRow";
@@ -166,6 +167,12 @@ function DiscoverGenrePage() {
 					) : null}
 				</section>
 			)}
+
+			<GenreDiscoverSections
+				genreId={genreId}
+				genreName={selectedGenre?.name}
+				watchlistStatuses={watchlistStatuses}
+			/>
 
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
