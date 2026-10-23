@@ -13,6 +13,7 @@ import type {
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
 	discoverMovies,
+	getAuthShowcase,
 	getImdbRating,
 	getLanguages,
 	getMovieCredits,
@@ -134,6 +135,12 @@ export const movieQueries = {
 				[...languages].sort((a, b) =>
 					a.english_name.localeCompare(b.english_name),
 				),
+		}),
+	authShowcase: () =>
+		queryOptions({
+			queryKey: ["movies", "authShowcase"],
+			queryFn: () => getAuthShowcase(),
+			staleTime: 1000 * 60 * 60,
 		}),
 	streamingSources: (imdbId: string) =>
 		queryOptions({

@@ -36,6 +36,12 @@ import {
 	rankFuzzyResults,
 	rankSearchResults,
 } from "../utils/search";
+import {
+	pickLogo,
+	type ShowcaseMovie,
+	selectShowcaseCandidates,
+	toShowcaseMovie,
+} from "../utils/showcase";
 
 const OMDB_API_KEY = env.OMDB_API_KEY;
 const IMDB_RATING_TTL_MS = 24 * 60 * 60 * 1000;
@@ -330,6 +336,38 @@ export const getMovieImages = createServerFn({ method: "GET" })
 			);
 		}
 	});
+
+/**
+ * Trending movies with their logos for the auth page showcase. Never throws:
+ * an empty list tells the page to keep its stock background.
+ */
+export const getAuthShowcase = createServerFn({ method: "GET" }).handler(
+	async (): Promise<ShowcaseMovie[]> => {
+		try {
+			const [trending, genres] = await Promise.all([
+				tmdb.trending.movies({ time_window: "week" }),
+				tmdb.genres.movie_list({}),
+			]);
+			const candidates = selectShowcaseCandidates(trending.results);
+			const logos = await Promise.all(
+				candidates.map((movie) =>
+					tmdb.movies
+						.images({
+							movie_id: movie.id,
+							include_image_language: ["en", "null"],
+						})
+						.then((images) => pickLogo(images.logos))
+						.catch(() => null),
+				),
+			);
+			return candidates
+				.map((movie, i) => toShowcaseMovie(movie, genres.genres, logos[i]))
+				.filter((movie): movie is ShowcaseMovie => movie !== null);
+		} catch {
+			return [];
+		}
+	},
+);
 
 export const getMovieWatchProviders = createServerFn({ method: "GET" })
 	.validator((data: { movie_id: number }) => data)
