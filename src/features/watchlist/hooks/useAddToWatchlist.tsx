@@ -25,6 +25,7 @@ export function useAddToWatchlist({ movieId }: { movieId: number }) {
 			queryClient.invalidateQueries({
 				queryKey: watchlistQueries.list().queryKey,
 			});
+			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
 			toast.success("Added to watchlist");
 		},
 		onError: (error) => {
