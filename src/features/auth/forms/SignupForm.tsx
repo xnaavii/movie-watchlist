@@ -12,6 +12,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { SocialSignInButtons } from "#/features/auth/components/SocialSignInButtons";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
 
@@ -35,6 +36,7 @@ const formSchema = z
 	});
 
 const routeApi = getRouteApi("/auth/signup");
+const authRouteApi = getRouteApi("/auth");
 
 export function SignupForm({
 	className,
@@ -42,6 +44,7 @@ export function SignupForm({
 }: React.ComponentProps<"form">) {
 	const router = useRouter();
 	const { redirect } = routeApi.useSearch();
+	const { socialProviders } = authRouteApi.useLoaderData();
 
 	const form = useForm({
 		defaultValues: {
@@ -86,6 +89,7 @@ export function SignupForm({
 						Become a member and sync your watchlist across all your devices
 					</p>
 				</div>
+				<SocialSignInButtons providers={socialProviders} redirect={redirect} />
 				<form.Field name="name">
 					{(field) => {
 						const isInvalid =
