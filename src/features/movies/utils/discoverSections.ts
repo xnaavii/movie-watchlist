@@ -42,3 +42,30 @@ export function buildComingSoonParams(today: Date): DiscoverMovieParams {
 		with_release_type: "2|3",
 	};
 }
+
+/** Well liked movies released in the last three months. */
+export function buildNewReleasesParams(today: Date): DiscoverMovieParams {
+	const threeMonthsAgo = new Date(today);
+	threeMonthsAgo.setUTCMonth(threeMonthsAgo.getUTCMonth() - 3);
+
+	return {
+		sort_by: "popularity.desc",
+		"primary_release_date.gte": toIsoDate(threeMonthsAgo),
+		"primary_release_date.lte": toIsoDate(today),
+		"vote_count.gte": 50,
+	};
+}
+
+/** The highest rated movies with enough votes to be trustworthy. */
+export const TOP_RATED_PARAMS: DiscoverMovieParams = {
+	sort_by: "vote_average.desc",
+	"vote_count.gte": 1000,
+};
+
+/** Narrows any discover section down to a single genre. */
+export function withGenre(
+	params: DiscoverMovieParams,
+	genreId: number,
+): DiscoverMovieParams {
+	return { ...params, with_genres: genreId };
+}
