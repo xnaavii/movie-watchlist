@@ -13,6 +13,7 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "#/components/ui/carousel";
+import { toMovieSlug } from "#/features/movies/utils/slug";
 import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
@@ -82,8 +83,8 @@ export function FeaturedMoviesCarousel({
 						<CarouselItem key={movie.id} title={movie.title}>
 							<div className="group relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl">
 								<Link
-									to="/movies/$id"
-									params={{ id: movie.id }}
+									to="/movies/$movieSlug"
+									params={{ movieSlug: toMovieSlug(movie) }}
 									className="absolute inset-0"
 								>
 									<span className="sr-only">View {movie.title}</span>
@@ -139,7 +140,10 @@ export function FeaturedMoviesCarousel({
 													<AddToWatchlistButton movieId={movie.id} showLabel />
 												)}
 												<Button asChild size="lg" variant="secondary">
-													<Link to="/movies/$id" params={{ id: movie.id }}>
+													<Link
+														to="/movies/$movieSlug"
+														params={{ movieSlug: toMovieSlug(movie) }}
+													>
 														Details
 														<Info />
 													</Link>

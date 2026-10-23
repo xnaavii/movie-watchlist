@@ -1,6 +1,11 @@
 import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	redirect,
+} from "@tanstack/react-router";
 import { Suspense } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
@@ -22,20 +27,21 @@ import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
+import { parseMovieSlug, toMovieSlug } from "#/features/movies/utils/slug";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
-export const Route = createFileRoute("/_app/movies/$id")({
+export const Route = createFileRoute("/_app/movies/$movieSlug")({
 	params: {
 		priority: 10,
-		parse: ({ id }) => {
-			if (!/^\d+$/.test(id)) throw notFound();
-			return { id: Number(id) };
+		parse: ({ movieSlug }) => {
+			if (parseMovieSlug(movieSlug) === null) throw notFound();
+			return { movieSlug };
 		},
 	},
 	loader: async ({ params, context: { queryClient } }) => {
-		const movieId = params.id;
+		const movieId = Number(parseMovieSlug(params.movieSlug));
 
 		let movie: MovieDetailsData;
 		try {
@@ -44,6 +50,17 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			);
 		} catch {
 			throw notFound();
+		}
+
+		// Send id-only or outdated slugs to the canonical readable URL.
+		const canonicalSlug = toMovieSlug(movie);
+		if (params.movieSlug !== canonicalSlug) {
+			throw redirect({
+				to: "/movies/$movieSlug",
+				params: { movieSlug: canonicalSlug },
+				statusCode: 301,
+				replace: true,
+			});
 		}
 
 		await Promise.allSettled([
@@ -69,7 +86,7 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			return { meta: [{ title: "Movie not found" }] };
 		}
 		const movie = loaderData.movie;
-		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
+		const pageUrl = `${SITE_CONFIG.url}/movies/${params.movieSlug}`;
 		const imageUrl = movie.backdrop_path || undefined;
 		const pageTitle = `${truncateTitle(movie.title)} | ${SITE_CONFIG.name}`;
 
@@ -92,7 +109,8 @@ export const Route = createFileRoute("/_app/movies/$id")({
 });
 
 function MovieDetailsPage() {
-	const { id } = Route.useParams();
+	const { movieSlug } = Route.useParams();
+	const id = Number(parseMovieSlug(movieSlug));
 
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: id }),

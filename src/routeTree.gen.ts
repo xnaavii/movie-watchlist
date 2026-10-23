@@ -21,8 +21,8 @@ import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
 import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
 import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppMoviesIdRouteImport } from './routes/_app/movies/$id'
-import { Route as AppDiscoverGenreIdRouteImport } from './routes/_app/discover/$genreId'
+import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
+import { Route as AppDiscoverGenreSlugRouteImport } from './routes/_app/discover/$genreSlug'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
 import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
 
@@ -84,14 +84,14 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppMoviesIdRoute = AppMoviesIdRouteImport.update({
-  id: '/movies/$id',
-  path: '/movies/$id',
+const AppMoviesMovieSlugRoute = AppMoviesMovieSlugRouteImport.update({
+  id: '/movies/$movieSlug',
+  path: '/movies/$movieSlug',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppDiscoverGenreIdRoute = AppDiscoverGenreIdRouteImport.update({
-  id: '/$genreId',
-  path: '/$genreId',
+const AppDiscoverGenreSlugRoute = AppDiscoverGenreSlugRouteImport.update({
+  id: '/$genreSlug',
+  path: '/$genreSlug',
   getParentRoute: () => AppDiscoverRouteRoute,
 } as any)
 const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
@@ -116,8 +116,8 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/movies/$id': typeof AppMoviesIdRoute
+  '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
   '/watchlist/': typeof AppProtectedWatchlistIndexRoute
@@ -131,8 +131,8 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/movies/$id': typeof AppMoviesIdRoute
+  '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
   '/watchlist': typeof AppProtectedWatchlistIndexRoute
@@ -150,8 +150,8 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
-  '/_app/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/_app/movies/$id': typeof AppMoviesIdRoute
+  '/_app/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/_app/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
   '/_app/_protected/watchlist/': typeof AppProtectedWatchlistIndexRoute
@@ -168,8 +168,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/profile'
-    | '/discover/$genreId'
-    | '/movies/$id'
+    | '/discover/$genreSlug'
+    | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover/'
     | '/watchlist/'
@@ -183,8 +183,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/profile'
-    | '/discover/$genreId'
-    | '/movies/$id'
+    | '/discover/$genreSlug'
+    | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover'
     | '/watchlist'
@@ -201,8 +201,8 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/_app/'
     | '/_app/_protected/profile'
-    | '/_app/discover/$genreId'
-    | '/_app/movies/$id'
+    | '/_app/discover/$genreSlug'
+    | '/_app/movies/$movieSlug'
     | '/api/auth/$'
     | '/_app/discover/'
     | '/_app/_protected/watchlist/'
@@ -300,18 +300,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/movies/$id': {
-      id: '/_app/movies/$id'
-      path: '/movies/$id'
-      fullPath: '/movies/$id'
-      preLoaderRoute: typeof AppMoviesIdRouteImport
+    '/_app/movies/$movieSlug': {
+      id: '/_app/movies/$movieSlug'
+      path: '/movies/$movieSlug'
+      fullPath: '/movies/$movieSlug'
+      preLoaderRoute: typeof AppMoviesMovieSlugRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/discover/$genreId': {
-      id: '/_app/discover/$genreId'
-      path: '/$genreId'
-      fullPath: '/discover/$genreId'
-      preLoaderRoute: typeof AppDiscoverGenreIdRouteImport
+    '/_app/discover/$genreSlug': {
+      id: '/_app/discover/$genreSlug'
+      path: '/$genreSlug'
+      fullPath: '/discover/$genreSlug'
+      preLoaderRoute: typeof AppDiscoverGenreSlugRouteImport
       parentRoute: typeof AppDiscoverRouteRoute
     }
     '/_app/_protected/profile': {
@@ -332,12 +332,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppDiscoverRouteRouteChildren {
-  AppDiscoverGenreIdRoute: typeof AppDiscoverGenreIdRoute
+  AppDiscoverGenreSlugRoute: typeof AppDiscoverGenreSlugRoute
   AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
 }
 
 const AppDiscoverRouteRouteChildren: AppDiscoverRouteRouteChildren = {
-  AppDiscoverGenreIdRoute: AppDiscoverGenreIdRoute,
+  AppDiscoverGenreSlugRoute: AppDiscoverGenreSlugRoute,
   AppDiscoverIndexRoute: AppDiscoverIndexRoute,
 }
 
@@ -363,7 +363,7 @@ interface AppRouteRouteChildren {
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
   AppSearchRoute: typeof AppSearchRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppMoviesIdRoute: typeof AppMoviesIdRoute
+  AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -371,7 +371,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppProtectedRoute: AppProtectedRouteWithChildren,
   AppSearchRoute: AppSearchRoute,
   AppIndexRoute: AppIndexRoute,
-  AppMoviesIdRoute: AppMoviesIdRoute,
+  AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -404,12 +404,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

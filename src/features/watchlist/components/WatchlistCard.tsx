@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { Card } from "#/components/ui/card";
+import { toMovieSlug } from "#/features/movies/utils/slug";
 import { cn } from "#/lib/utils";
 
 type WatchlistCardProps = {
@@ -24,8 +25,8 @@ export function WatchlistCard({
 		>
 			<AspectRatio ratio={2 / 3}>
 				<Link
-					to="/movies/$id"
-					params={{ id: `${id}` }}
+					to="/movies/$movieSlug"
+					params={{ movieSlug: toMovieSlug({ id: Number(id), title }) }}
 					className="block size-full"
 				>
 					{posterPath ? (

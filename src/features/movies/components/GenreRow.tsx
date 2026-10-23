@@ -10,6 +10,7 @@ import {
 } from "#/components/ui/carousel";
 import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
 import { getGenreIcon } from "../utils/genreIcons";
+import { toGenreSlug } from "../utils/slug";
 
 interface GenreRowProps {
 	genres: Genre[];
@@ -33,7 +34,10 @@ export function GenreRow({ genres }: GenreRowProps) {
 								className="w-30 h-20 md:w-40 md:h-30"
 								variant="muted"
 							>
-								<Link to="/discover/$genreId" params={{ genreId: genre.id }}>
+								<Link
+									to="/discover/$genreSlug"
+									params={{ genreSlug: toGenreSlug(genre) }}
+								>
 									<ItemContent className="flex-col items-center justify-center gap-2">
 										<Icon className="size-5 md:size-6 text-muted-foreground transition-colors group-hover/item:text-foreground" />
 										<ItemTitle className="text-center">{genre.name}</ItemTitle>
