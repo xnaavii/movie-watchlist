@@ -5,6 +5,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { getErrorMessage } from "#/lib/utils";
 import { Button } from "./ui/button";
 
 export function ErrorPage({ error }: ErrorComponentProps) {
@@ -25,7 +26,7 @@ export function ErrorPage({ error }: ErrorComponentProps) {
 			</p>
 			{import.meta.env.DEV && (
 				<pre className="max-w-full overflow-x-auto rounded-md bg-muted p-3 text-left text-xs text-destructive">
-					{error.message}
+					{getErrorMessage(error)}
 				</pre>
 			)}
 			<div className="flex gap-2">

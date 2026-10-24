@@ -19,6 +19,7 @@ import {
 } from "#/features/movies/utils/filters";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
+import { getErrorMessage } from "#/lib/utils";
 
 export const Route = createFileRoute("/_app/_protected/watchlist/")({
 	component: WatchlistPage,
@@ -28,14 +29,15 @@ export const Route = createFileRoute("/_app/_protected/watchlist/")({
 	errorComponent: ({ error }) => (
 		<div className="p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
 			<p className="text-destructive">
-				Failed to load your watchlist: {error.message}
+				Failed to load your watchlist: {getErrorMessage(error)}
 			</p>
 		</div>
 	),
 	loader: async ({ context, deps }) => {
-		await context.queryClient.ensureInfiniteQueryData(
-			watchlistQueries.infiniteList(deps),
-		);
+		await context.queryClient.infiniteQuery({
+			...watchlistQueries.infiniteList(deps),
+			staleTime: "static",
+		});
 	},
 });
 

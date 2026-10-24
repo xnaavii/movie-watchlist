@@ -20,7 +20,10 @@ const FILTERS: { value: MediaType | "all"; label: string }[] = [
 
 export const Route = createFileRoute("/_app/discover/atmos")({
 	loader: ({ context }) =>
-		context.queryClient.ensureQueryData(soundQueries.showcase()),
+		context.queryClient.query({
+			...soundQueries.showcase(),
+			staleTime: "static",
+		}),
 	head: () => ({
 		meta: seo({
 			title: `Dolby Atmos showcase | ${SITE_CONFIG.name}`,

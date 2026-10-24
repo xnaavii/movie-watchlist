@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { type FormEvent, type ReactNode, useState } from "react";
+import { type ReactNode, type SubmitEvent, useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Textarea } from "#/components/ui/textarea";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
@@ -50,7 +50,7 @@ function PickPage() {
 		});
 	}
 
-	function handleSubmit(event: FormEvent) {
+	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setSubmitted({ ...form, prompt: form.prompt.trim() });
 		setAttempt(0);

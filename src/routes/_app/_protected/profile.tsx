@@ -10,7 +10,10 @@ export const Route = createFileRoute("/_app/_protected/profile")({
 	component: ProfilePage,
 	pendingComponent: ProfilePending,
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(watchlistQueries.stats());
+		await context.queryClient.query({
+			...watchlistQueries.stats(),
+			staleTime: "static",
+		});
 	},
 });
 
