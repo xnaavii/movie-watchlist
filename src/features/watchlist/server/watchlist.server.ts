@@ -6,8 +6,10 @@ import {
 	eq,
 	exists,
 	gte,
+	inArray,
 	isNull,
 	lte,
+	or,
 	type SQL,
 	sql,
 } from "drizzle-orm";
@@ -333,19 +335,34 @@ export async function selectUserWatchlistStatuses(
 	return Object.fromEntries(rows.map((row) => [mediaKey(row), row.status]));
 }
 
-export async function selectWatchlistMediaByGenreId(
+/** Saved titles in a discover genre, whose ids differ for movies and TV. */
+export async function selectWatchlistMediaByGenre(
 	userId: string,
-	genreId: number,
+	genreIds: Record<MediaType, number[]>,
 ) {
+	const matchesGenre = (Object.keys(genreIds) as MediaType[])
+		.filter((mediaType) => genreIds[mediaType].length > 0)
+		.map((mediaType) =>
+			and(
+				eq(mediaToGenre.mediaType, mediaType),
+				inArray(mediaToGenre.genreId, genreIds[mediaType]),
+			),
+		);
+	if (matchesGenre.length === 0) return [];
+
 	const rows = await db
 		.select({ media })
 		.from(watchlist)
 		.innerJoin(media, joinMedia)
 		.innerJoin(mediaToGenre, joinMediaGenres)
-		.where(and(eq(watchlist.userId, userId), eq(mediaToGenre.genreId, genreId)))
+		.where(and(eq(watchlist.userId, userId), or(...matchesGenre)))
 		.orderBy(desc(watchlist.addedAt));
 
-	return rows.map((row) => toMediaItem(row.media));
+	// A title can sit in two of the genre's ids, e.g. Action and Adventure.
+	const byKey = new Map(
+		rows.map((row) => [mediaKey(toMediaItem(row.media)), row.media]),
+	);
+	return [...byKey.values()].map(toMediaItem);
 }
 
 export async function selectUserWatchlist(

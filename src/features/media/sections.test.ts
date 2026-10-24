@@ -15,13 +15,23 @@ vi.mock("./server/media.functions", () => ({
 	getTrendingMedia,
 }));
 
+import type { DiscoverGenre } from "./genres";
 import {
 	getDiscoverSection,
 	listDiscoverSections,
 	sectionQuery,
 } from "./sections";
 
-const horror = { id: 27, name: "Horror" };
+const horror: DiscoverGenre = {
+	slug: "horror",
+	name: "Horror",
+	ids: { movie: [27], tv: [] },
+};
+const crime: DiscoverGenre = {
+	slug: "crime",
+	name: "Crime",
+	ids: { movie: [80], tv: [80] },
+};
 
 async function fetchPage(
 	query: ReturnType<typeof sectionQuery>,
@@ -41,14 +51,14 @@ describe("getDiscoverSection", () => {
 		expect(getDiscoverSection("top-rated")).toEqual({
 			slug: "top-rated",
 			mediaType: "movie",
-			title: "Top Rated of All Time",
+			title: "Top Rated Movies",
 			description: "The highest rated movies on TMDB",
 		});
 	});
 
 	it("returns genre copy for a genre", () => {
 		expect(getDiscoverSection("top-rated", horror)).toMatchObject({
-			title: "Top Rated",
+			title: "Top Rated Movies",
 			description: "The highest rated Horror movies on TMDB",
 			genre: horror,
 		});
@@ -57,6 +67,13 @@ describe("getDiscoverSection", () => {
 	it("rejects sections that only exist unfiltered", () => {
 		expect(getDiscoverSection("trending", horror)).toBeUndefined();
 		expect(getDiscoverSection("popular", horror)).toBeUndefined();
+	});
+
+	it("rejects sections of a type the genre doesn't have", () => {
+		expect(getDiscoverSection("top-rated-tv-shows", horror)).toBeUndefined();
+		expect(getDiscoverSection("top-rated-tv-shows", crime)).toMatchObject({
+			description: "The highest rated Crime shows on TMDB",
+		});
 	});
 
 	it("rejects unknown slugs", () => {
@@ -69,36 +86,54 @@ describe("listDiscoverSections", () => {
 	it("lists only genre sections for a genre", () => {
 		expect(listDiscoverSections(horror).map((s) => s.slug)).toEqual([
 			"new-releases",
-			"coming-soon",
 			"top-rated",
+			"coming-soon",
 			"hidden-gems",
 			"quick-watches",
 			"timeless-classics",
 		]);
 	});
 
+	it("alternates movies and shows for a genre with both", () => {
+		expect(listDiscoverSections(crime).map((s) => s.slug)).toEqual([
+			"new-releases",
+			"new-series",
+			"top-rated",
+			"top-rated-tv-shows",
+			"on-the-air",
+			"coming-soon",
+			"hidden-gems",
+			"hidden-gem-series",
+			"quick-watches",
+			"popular-tv-shows",
+			"timeless-classics",
+		]);
+	});
+
 	it("lists every section unfiltered", () => {
-		expect(listDiscoverSections()).toHaveLength(13);
+		expect(listDiscoverSections()).toHaveLength(15);
 	});
 
 	it("lists only one media type when asked", () => {
 		expect(listDiscoverSections(undefined, "tv").map((s) => s.slug)).toEqual([
-			"popular-tv-shows",
 			"trending-tv-shows",
-			"on-the-air",
+			"new-series",
 			"top-rated-tv-shows",
+			"on-the-air",
+			"hidden-gem-series",
+			"popular-tv-shows",
 		]);
 	});
 });
 
 describe("sectionQuery", () => {
 	it("narrows discover sections to the genre and requests the page", async () => {
-		await fetchPage(sectionQuery("hidden-gems", horror.id), 2);
+		await fetchPage(sectionQuery("hidden-gems", horror), 2);
 
 		expect(discoverMedia).toHaveBeenCalledWith({
 			data: {
 				mediaType: "movie",
-				params: expect.objectContaining({ with_genres: 27, page: 2 }),
+				params: expect.objectContaining({ with_genres: "27", page: 2 }),
 			},
 		});
 	});
@@ -126,6 +161,18 @@ describe("sectionQuery", () => {
 		expect(getMediaList).toHaveBeenCalledWith({
 			data: { mediaType: "tv", list: "on_the_air", page: 1 },
 		});
+	});
+
+	it("narrows TV sections with the genre's TV ids", async () => {
+		await fetchPage(sectionQuery("top-rated-tv-shows", crime), 1);
+
+		expect(discoverMedia).toHaveBeenCalledWith({
+			data: {
+				mediaType: "tv",
+				params: expect.objectContaining({ with_genres: "80", page: 1 }),
+			},
+		});
+		expect(getMediaList).not.toHaveBeenCalled();
 	});
 
 	it("stops after the last page", () => {

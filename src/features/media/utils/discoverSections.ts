@@ -1,4 +1,4 @@
-import type { DiscoverMovieParams } from "@lorenzopant/tmdb";
+import type { DiscoverMovieParams, DiscoverTVParams } from "@lorenzopant/tmdb";
 
 function toIsoDate(date: Date): string {
 	return date.toISOString().slice(0, 10);
@@ -62,10 +62,58 @@ export const TOP_RATED_PARAMS: DiscoverMovieParams = {
 	"vote_count.gte": 1000,
 };
 
-/** Narrows any discover section down to a single genre. */
-export function withGenre(
-	params: DiscoverMovieParams,
-	genreId: number,
-): DiscoverMovieParams {
-	return { ...params, with_genres: genreId };
+/** Popular shows, for genre rows where TMDB's popular list can't filter. */
+export const TV_POPULAR_PARAMS: DiscoverTVParams = {
+	sort_by: "popularity.desc",
+	"vote_count.gte": 50,
+};
+
+/** The highest rated shows with enough votes to be trustworthy. */
+export const TV_TOP_RATED_PARAMS: DiscoverTVParams = {
+	sort_by: "vote_average.desc",
+	"vote_count.gte": 500,
+};
+
+/** Well reviewed shows that never got blockbuster attention. */
+export const TV_HIDDEN_GEMS_PARAMS: DiscoverTVParams = {
+	sort_by: "vote_average.desc",
+	"vote_average.gte": 8,
+	"vote_count.gte": 200,
+	"vote_count.lte": 2000,
+};
+
+/** Shows that premiered in the last three months. */
+export function buildNewSeriesParams(today: Date): DiscoverTVParams {
+	const threeMonthsAgo = new Date(today);
+	threeMonthsAgo.setUTCMonth(threeMonthsAgo.getUTCMonth() - 3);
+
+	return {
+		sort_by: "popularity.desc",
+		"first_air_date.gte": toIsoDate(threeMonthsAgo),
+		"first_air_date.lte": toIsoDate(today),
+		"vote_count.gte": 10,
+	};
+}
+
+/** Shows with an episode airing in the next seven days. */
+export function buildAiringThisWeekParams(today: Date): DiscoverTVParams {
+	const nextWeek = new Date(today);
+	nextWeek.setUTCDate(nextWeek.getUTCDate() + 7);
+
+	return {
+		sort_by: "popularity.desc",
+		"air_date.gte": toIsoDate(today),
+		"air_date.lte": toIsoDate(nextWeek),
+	};
+}
+
+/**
+ * Narrows any discover section down to a genre. Pass a "|" separated list
+ * to match any of several ids.
+ */
+export function withGenre<T extends DiscoverMovieParams | DiscoverTVParams>(
+	params: T,
+	genres: number | string,
+): T {
+	return { ...params, with_genres: genres };
 }

@@ -72,6 +72,16 @@ export function isReleased(
 export const mediaKey = ({ mediaType, id }: MediaRef): string =>
 	`${mediaType}:${id}`;
 
+/** Alternates two lists, so movies and TV shows share a row evenly. */
+export function interleave<T>(a: T[], b: T[]): T[] {
+	const merged: T[] = [];
+	for (let i = 0; i < Math.max(a.length, b.length); i++) {
+		if (i < a.length) merged.push(a[i]);
+		if (i < b.length) merged.push(b[i]);
+	}
+	return merged;
+}
+
 export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
 	movie: "Movie",
 	tv: "TV show",
