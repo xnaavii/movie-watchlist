@@ -31,7 +31,7 @@ export function MediaOverview({ overview, className }: MediaOverviewProps) {
 				</DialogTrigger>
 				<DialogContent onClick={(e) => e.stopPropagation()}>
 					<DialogHeader>
-						<DialogDescription>Movie Overview</DialogDescription>
+						<DialogDescription>Overview</DialogDescription>
 					</DialogHeader>
 					<p className="text-base">{overview}</p>
 				</DialogContent>

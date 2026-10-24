@@ -8,22 +8,34 @@ interface MediaLogoViewProps {
 	media: MediaRef;
 	title: string;
 	className?: string;
+	imageClassName?: string;
 }
 
-export function MediaLogoView({ media, title, className }: MediaLogoViewProps) {
+export function MediaLogoView({
+	media,
+	title,
+	className,
+	imageClassName,
+}: MediaLogoViewProps) {
 	const { data: images, isLoading } = useQuery(mediaQueries.images(media));
 
 	if (isLoading) {
-		return <Skeleton className="h-24 w-80 rounded-xl" />;
+		return <Skeleton className="h-20 w-64 rounded-xl" />;
 	}
 
 	const logoSrc =
 		images?.logos[0] &&
 		`https://image.tmdb.org/t/p/original${images.logos[0].file_path}`;
 
-	if (!logoSrc) {
-		return <div>{title}</div>;
-	}
+	// Without a logo the page heading carries the title on its own.
+	if (!logoSrc) return null;
 
-	return <MediaLogo logoSrc={logoSrc} title={title} className={className} />;
+	return (
+		<MediaLogo
+			logoSrc={logoSrc}
+			title={title}
+			className={className}
+			imageClassName={imageClassName}
+		/>
+	);
 }
