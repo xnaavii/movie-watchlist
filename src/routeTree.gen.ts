@@ -27,6 +27,7 @@ import { Route as AppDiscoverAtmosRouteImport } from './routes/_app/discover/atm
 import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
+import { Route as AppDiscoverGenreSlugSectionRouteImport } from './routes/_app/discover/$genreSlug_.$section'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
@@ -117,6 +118,12 @@ const AppProtectedWatchlistIndexRoute =
     path: '/watchlist/',
     getParentRoute: () => AppProtectedRoute,
   } as any)
+const AppDiscoverGenreSlugSectionRoute =
+  AppDiscoverGenreSlugSectionRouteImport.update({
+    id: '/$genreSlug_/$section',
+    path: '/$genreSlug/$section',
+    getParentRoute: () => AppDiscoverRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
+  '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
   '/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesByTo {
@@ -151,6 +159,7 @@ export interface FileRoutesByTo {
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
+  '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
   '/watchlist': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesById {
@@ -172,6 +181,7 @@ export interface FileRoutesById {
   '/_app/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
+  '/_app/discover/$genreSlug_/$section': typeof AppDiscoverGenreSlugSectionRoute
   '/_app/_protected/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRouteTypes {
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover/'
+    | '/discover/$genreSlug/$section'
     | '/watchlist/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover'
+    | '/discover/$genreSlug/$section'
     | '/watchlist'
   id:
     | '__root__'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/_app/movies/$movieSlug'
     | '/api/auth/$'
     | '/_app/discover/'
+    | '/_app/discover/$genreSlug_/$section'
     | '/_app/_protected/watchlist/'
   fileRoutesById: FileRoutesById
 }
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtectedWatchlistIndexRouteImport
       parentRoute: typeof AppProtectedRoute
     }
+    '/_app/discover/$genreSlug_/$section': {
+      id: '/_app/discover/$genreSlug_/$section'
+      path: '/$genreSlug/$section'
+      fullPath: '/discover/$genreSlug/$section'
+      preLoaderRoute: typeof AppDiscoverGenreSlugSectionRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
+    }
   }
 }
 
@@ -373,12 +393,14 @@ interface AppDiscoverRouteRouteChildren {
   AppDiscoverGenreSlugRoute: typeof AppDiscoverGenreSlugRoute
   AppDiscoverAtmosRoute: typeof AppDiscoverAtmosRoute
   AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
+  AppDiscoverGenreSlugSectionRoute: typeof AppDiscoverGenreSlugSectionRoute
 }
 
 const AppDiscoverRouteRouteChildren: AppDiscoverRouteRouteChildren = {
   AppDiscoverGenreSlugRoute: AppDiscoverGenreSlugRoute,
   AppDiscoverAtmosRoute: AppDiscoverAtmosRoute,
   AppDiscoverIndexRoute: AppDiscoverIndexRoute,
+  AppDiscoverGenreSlugSectionRoute: AppDiscoverGenreSlugSectionRoute,
 }
 
 const AppDiscoverRouteRouteWithChildren =
