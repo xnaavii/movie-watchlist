@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AudioLines } from "lucide-react";
-import { type FormEvent, type ReactNode, useState } from "react";
+import { type ReactNode, type SubmitEvent, useState } from "react";
 import { Button } from "#/components/ui/button";
 import {
 	Dialog,
@@ -183,7 +183,7 @@ function SoundRatingForm({
 }) {
 	const [draft, setDraft] = useState<RatingDraft>(initial);
 
-	function handleSubmit(event: FormEvent) {
+	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (draft.overall == null) return;
 		onSave({ ...draft, overall: draft.overall });

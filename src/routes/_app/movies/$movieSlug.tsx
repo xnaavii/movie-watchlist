@@ -47,9 +47,10 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 
 		let movie: MovieDetailsData;
 		try {
-			movie = await queryClient.ensureQueryData(
-				movieQueries.details({ movie_id: movieId }),
-			);
+			movie = await queryClient.query({
+				...movieQueries.details({ movie_id: movieId }),
+				staleTime: "static",
+			});
 		} catch {
 			throw notFound();
 		}
@@ -66,19 +67,38 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 		}
 
 		await Promise.allSettled([
-			queryClient.ensureQueryData(movieQueries.credits({ movie_id: movieId })),
-			queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
-			queryClient.ensureQueryData(
-				movieQueries.recommendations({ movie_id: movieId }),
-			),
-			queryClient.ensureQueryData(movieQueries.reviews({ movie_id: movieId })),
-			queryClient.ensureQueryData(
-				movieQueries.watchProviders({ movie_id: movieId }),
-			),
+			queryClient.query({
+				...movieQueries.credits({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.images({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.recommendations({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.reviews({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.watchProviders({ movie_id: movieId }),
+				staleTime: "static",
+			}),
 			...(movie.imdb_id
-				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
+				? [
+						queryClient.query({
+							...imdbRatingQueryOptions(movie.imdb_id),
+							staleTime: "static",
+						}),
+					]
 				: []),
-			queryClient.ensureQueryData(watchlistQueries.status(movieId)),
+			queryClient.query({
+				...watchlistQueries.status(movieId),
+				staleTime: "static",
+			}),
 		]);
 
 		return { movie };

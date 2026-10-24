@@ -36,13 +36,15 @@ export const Route = createFileRoute("/_app/search")({
 	loaderDeps: ({ search }) => ({ q: search.q }),
 	loader: ({ context, deps }) => {
 		if (deps.q) {
-			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteSearch(deps.q),
-			);
+			context.queryClient.infiniteQuery({
+				...movieQueries.infiniteSearch(deps.q),
+				staleTime: "static",
+			});
 		} else {
-			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteList("popular"),
-			);
+			context.queryClient.infiniteQuery({
+				...movieQueries.infiniteList("popular"),
+				staleTime: "static",
+			});
 		}
 	},
 	pendingComponent: () => (

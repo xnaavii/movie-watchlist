@@ -19,6 +19,7 @@ import {
 } from "#/features/movies/utils/discoverSections";
 import { WatchlistMoviesView } from "#/features/watchlist/components/WatchlistMoviesView";
 import { watchlistQueries } from "#/features/watchlist/queries";
+import { getErrorMessage } from "#/lib/utils";
 import { seo } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/discover/")({
@@ -27,10 +28,22 @@ export const Route = createFileRoute("/_app/discover/")({
 	errorComponent: ({ error }) => <DiscoverPageError error={error} />,
 	loader: async ({ context }) => {
 		const [genres, , movies] = await Promise.all([
-			context.queryClient.ensureQueryData(movieQueries.genres({})),
-			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
-			context.queryClient.ensureQueryData(movieQueries.list("popular")),
-			context.queryClient.ensureQueryData(watchlistQueries.list()),
+			context.queryClient.query({
+				...movieQueries.genres({}),
+				staleTime: "static",
+			}),
+			context.queryClient.query({
+				...watchlistQueries.watchlistStatuses(),
+				staleTime: "static",
+			}),
+			context.queryClient.query({
+				...movieQueries.list("popular"),
+				staleTime: "static",
+			}),
+			context.queryClient.query({
+				...watchlistQueries.list(),
+				staleTime: "static",
+			}),
 		]);
 		return { genres, movies };
 	},
@@ -182,13 +195,13 @@ function DiscoverPagePending() {
 	);
 }
 
-function DiscoverPageError({ error }: { error: Error }) {
+function DiscoverPageError({ error }: { error: unknown }) {
 	return (
 		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">
 			<h1 className="text-2xl font-medium tracking-tighter">
 				Something went wrong
 			</h1>
-			<p className="text-muted-foreground">{error.message}</p>
+			<p className="text-muted-foreground">{getErrorMessage(error)}</p>
 			<Button asChild>
 				<Link to="/discover">Try again</Link>
 			</Button>
