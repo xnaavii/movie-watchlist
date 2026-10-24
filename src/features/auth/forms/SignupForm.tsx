@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
-import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
+import { getRouteApi, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -12,6 +13,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { CheckYourEmail } from "#/features/auth/components/CheckYourEmail";
 import { SocialSignInButtons } from "#/features/auth/components/SocialSignInButtons";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
@@ -42,8 +44,8 @@ export function SignupForm({
 	className,
 	...props
 }: React.ComponentProps<"form">) {
-	const router = useRouter();
 	const { redirect } = routeApi.useSearch();
+	const [verificationSentTo, setVerificationSentTo] = useState<string>();
 	const { socialProviders } = authRouteApi.useLoaderData();
 
 	const form = useForm({
@@ -61,16 +63,20 @@ export function SignupForm({
 				name: value.name,
 				email: value.email,
 				password: value.password,
+				callbackURL: redirect ?? "/",
 			});
 
 			if (error) {
 				toast.error(`${error.message}, ${error.status}`);
 			} else {
-				router.history.push(redirect ?? "/");
-				toast.success("Account created!");
+				setVerificationSentTo(value.email);
 			}
 		},
 	});
+
+	if (verificationSentTo) {
+		return <CheckYourEmail email={verificationSentTo} redirect={redirect} />;
+	}
 
 	return (
 		<form
