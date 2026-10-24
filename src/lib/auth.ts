@@ -19,17 +19,8 @@ const google =
 			}
 		: undefined;
 
-const apple =
-	env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET
-		? {
-				clientId: env.APPLE_CLIENT_ID,
-				clientSecret: env.APPLE_CLIENT_SECRET,
-			}
-		: undefined;
-
 export const enabledSocialProviders = {
 	google: !!google,
-	apple: !!apple,
 };
 
 export type SocialProvider = keyof typeof enabledSocialProviders;
@@ -42,20 +33,16 @@ export const auth = betterAuth({
 			await sendResetPasswordEmail({ to: user.email, name: user.name, url });
 		},
 	},
-	socialProviders: { google, apple },
-	trustedOrigins: [
-		// Apple posts the sign-in result back to our callback
-		"https://appleid.apple.com",
-		// Preview deployments, which sign in through the production callback
-		"https://*.petrovic-valpovo.workers.dev",
-	],
+	socialProviders: { google },
+	// Preview deployments, which sign in through the production callback
+	trustedOrigins: ["https://*.petrovic-valpovo.workers.dev"],
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
 	plugins: [
-		// Google and Apple only accept exact redirect URLs, so previews route
+		// Google only accepts exact redirect URLs, so previews route
 		// the OAuth callback through production and get the session handed back.
-		// Local dev talks to the providers directly.
+		// Local dev talks to Google directly.
 		...(import.meta.env.DEV
 			? []
 			: [oAuthProxy({ productionURL: PRODUCTION_URL })]),

@@ -19,37 +19,34 @@ describe("SocialSignInButtons", () => {
 
 	it("renders nothing when no provider is configured", () => {
 		const { container } = render(
-			<SocialSignInButtons providers={{ google: false, apple: false }} />,
+			<SocialSignInButtons providers={{ google: false }} />,
 		);
 
 		expect(container).toBeEmptyDOMElement();
 	});
 
-	it("only shows configured providers", () => {
-		render(<SocialSignInButtons providers={{ google: true, apple: false }} />);
+	it("shows Google when it is configured", () => {
+		render(<SocialSignInButtons providers={{ google: true }} />);
 
 		expect(
 			screen.getByRole("button", { name: /continue with google/i }),
 		).toBeInTheDocument();
-		expect(
-			screen.queryByRole("button", { name: /continue with apple/i }),
-		).not.toBeInTheDocument();
 	});
 
 	it("starts the provider sign in and returns to the redirect path", async () => {
 		render(
 			<SocialSignInButtons
-				providers={{ google: true, apple: true }}
+				providers={{ google: true }}
 				redirect="/watchlist"
 			/>,
 		);
 
 		await userEvent.click(
-			screen.getByRole("button", { name: /continue with apple/i }),
+			screen.getByRole("button", { name: /continue with google/i }),
 		);
 
 		expect(signInSocial).toHaveBeenCalledWith({
-			provider: "apple",
+			provider: "google",
 			callbackURL: `${window.location.origin}/watchlist`,
 			errorCallbackURL: `${window.location.origin}/auth/login`,
 		});
@@ -58,7 +55,7 @@ describe("SocialSignInButtons", () => {
 	it("ignores redirects to other sites", async () => {
 		render(
 			<SocialSignInButtons
-				providers={{ google: true, apple: false }}
+				providers={{ google: true }}
 				redirect="//evil.example"
 			/>,
 		);
