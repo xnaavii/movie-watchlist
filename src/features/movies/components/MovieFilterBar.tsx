@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Star, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#/components/ui/select";
+	NativeSelect,
+	NativeSelectOption,
+} from "#/components/ui/native-select";
 import { movieQueries } from "../queries";
 import {
 	hasActiveFilters,
@@ -66,117 +63,99 @@ export function MovieFilterBar({
 
 	return (
 		<div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-			<Select
+			<NativeSelect
+				className="w-full sm:w-auto"
+				aria-label="Sort by"
 				value={values.sort ?? sortOptions[0]}
-				onValueChange={(value) =>
-					onChange({
-						sort: value === sortOptions[0] ? undefined : (value as Sort),
-					})
-				}
+				onChange={(event) => {
+					const value = event.target.value as Sort;
+					onChange({ sort: value === sortOptions[0] ? undefined : value });
+				}}
 			>
-				<SelectTrigger className="w-full sm:w-auto" aria-label="Sort by">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					{sortOptions.map((sort) => (
-						<SelectItem key={sort} value={sort}>
-							{SORT_LABELS[sort]}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				{sortOptions.map((sort) => (
+					<NativeSelectOption key={sort} value={sort}>
+						{SORT_LABELS[sort]}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
 			{showStatus && (
-				<Select
+				<NativeSelect
+					className="w-full sm:w-auto"
+					aria-label="Status"
 					value={values.status ?? ANY}
-					onValueChange={(value) =>
-						onChange({ status: value === ANY ? undefined : (value as Status) })
-					}
+					onChange={(event) => {
+						const value = event.target.value;
+						onChange({ status: value === ANY ? undefined : (value as Status) });
+					}}
 				>
-					<SelectTrigger className="w-full sm:w-auto" aria-label="Status">
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value={ANY}>Any status</SelectItem>
-						{Object.entries(STATUS_LABELS).map(([status, label]) => (
-							<SelectItem key={status} value={status}>
-								{label}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					<NativeSelectOption value={ANY}>Any status</NativeSelectOption>
+					{Object.entries(STATUS_LABELS).map(([status, label]) => (
+						<NativeSelectOption key={status} value={status}>
+							{label}
+						</NativeSelectOption>
+					))}
+				</NativeSelect>
 			)}
 
-			<Select
+			<NativeSelect
+				className="w-full sm:w-auto"
+				aria-label="Genre"
 				value={values.genre ? String(values.genre) : ANY}
-				onValueChange={(value) => onChange({ genre: toNumber(value) })}
+				onChange={(event) => onChange({ genre: toNumber(event.target.value) })}
 			>
-				<SelectTrigger className="w-full sm:w-auto" aria-label="Genre">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ANY}>All genres</SelectItem>
-					{genres?.genres.map((genre) => (
-						<SelectItem key={genre.id} value={String(genre.id)}>
-							{genre.name}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				<NativeSelectOption value={ANY}>All genres</NativeSelectOption>
+				{genres?.genres.map((genre) => (
+					<NativeSelectOption key={genre.id} value={String(genre.id)}>
+						{genre.name}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
-			<Select
+			<NativeSelect
+				className="w-full sm:w-auto"
+				aria-label="Released from"
 				value={values.from ? String(values.from) : ANY}
-				onValueChange={(value) => onChange({ from: toNumber(value) })}
+				onChange={(event) => onChange({ from: toNumber(event.target.value) })}
 			>
-				<SelectTrigger className="w-full sm:w-auto" aria-label="Released from">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ANY}>From any year</SelectItem>
-					{YEARS.map((year) => (
-						<SelectItem key={year} value={String(year)}>
-							From {year}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				<NativeSelectOption value={ANY}>From any year</NativeSelectOption>
+				{YEARS.map((year) => (
+					<NativeSelectOption key={year} value={String(year)}>
+						From {year}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
-			<Select
+			<NativeSelect
+				className="w-full sm:w-auto"
+				aria-label="Released until"
 				value={values.to ? String(values.to) : ANY}
-				onValueChange={(value) => onChange({ to: toNumber(value) })}
+				onChange={(event) => onChange({ to: toNumber(event.target.value) })}
 			>
-				<SelectTrigger className="w-full sm:w-auto" aria-label="Released until">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ANY}>To any year</SelectItem>
-					{YEARS.map((year) => (
-						<SelectItem key={year} value={String(year)}>
-							To {year}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				<NativeSelectOption value={ANY}>To any year</NativeSelectOption>
+				{YEARS.map((year) => (
+					<NativeSelectOption key={year} value={String(year)}>
+						To {year}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
 			{showRating && (
-				<Select
+				<NativeSelect
+					className="w-full sm:w-auto"
+					aria-label="Minimum rating"
 					value={values.rating ? String(values.rating) : ANY}
-					onValueChange={(value) => onChange({ rating: toNumber(value) })}
+					onChange={(event) =>
+						onChange({ rating: toNumber(event.target.value) })
+					}
 				>
-					<SelectTrigger className="w-full sm:w-auto" aria-label="Minimum rating">
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value={ANY}>Any rating</SelectItem>
-						{RATINGS.map((rating) => (
-							<SelectItem key={rating} value={String(rating)}>
-								<span className="flex items-center gap-1.5">
-									{rating}+ <Star className="size-3.5 fill-current" />
-								</span>
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+					<NativeSelectOption value={ANY}>Any rating</NativeSelectOption>
+					{RATINGS.map((rating) => (
+						<NativeSelectOption key={rating} value={String(rating)}>
+							{rating}+ ★
+						</NativeSelectOption>
+					))}
+				</NativeSelect>
 			)}
 
 			{hasFilters && (
