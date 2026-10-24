@@ -54,6 +54,20 @@ export function formatReleaseYear(
 	return releaseDate.slice(0, 4);
 }
 
+/**
+ * Whether a title is out yet: a movie that has premiered or a show whose first
+ * episode has aired. Without a date, only a movie TMDB marks as released counts.
+ */
+export function isReleased(
+	media: Pick<MediaDetails, "mediaType" | "releaseDate" | "status">,
+	today: Date = new Date(),
+): boolean {
+	if (media.releaseDate) {
+		return media.releaseDate <= today.toISOString().slice(0, 10);
+	}
+	return media.mediaType === "movie" && media.status === "Released";
+}
+
 /** "movie:550", a key that stays unique across movies and TV shows. */
 export const mediaKey = ({ mediaType, id }: MediaRef): string =>
 	`${mediaType}:${id}`;
