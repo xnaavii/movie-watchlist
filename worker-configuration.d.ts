@@ -3,6 +3,7 @@
 // Runtime types generated with workerd@1.20261001.1 2026-07-15 nodejs_compat
 interface __BaseEnv_Env {
 	AI: Ai;
+	PICKS_RATE_LIMITER: RateLimit;
 	VITE_SITE_URL: "https://movie-watchlist-app.petrovic-valpovo.workers.dev/";
 	DATABASE_URL: string;
 	BETTER_AUTH_URL: string;

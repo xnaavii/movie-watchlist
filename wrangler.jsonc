@@ -10,6 +10,14 @@
   "ai": {
     "binding": "AI"
   },
+  // Keeps one visitor from using up the free daily Workers AI allowance.
+  "ratelimits": [
+    {
+      "name": "PICKS_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 4, "period": 60 }
+    }
+  ],
   "vars": {
    "VITE_SITE_URL":"https://movie-watchlist-app.petrovic-valpovo.workers.dev/"
   }

@@ -1,9 +1,11 @@
+import { env } from "cloudflare:workers";
 import type {
 	MovieDetails,
 	MovieResultItem,
 	PaginatedResponse,
 } from "@lorenzopant/tmdb";
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import type { z } from "zod";
 import type { TmdbGenre } from "#/features/movies/types";
 import { selectUserWatchlist } from "#/features/watchlist/server/watchlist.server";
@@ -158,10 +160,18 @@ type ViewerHistory = {
 	watchedTitles: string[];
 };
 
+const NO_HISTORY: ViewerHistory = {
+	wantToWatch: [],
+	wantToWatchIds: new Set(),
+	watchedIds: new Set(),
+	watchedTitles: [],
+};
+
 async function getViewerHistory(
-	userId: string,
+	userId: string | undefined,
 	useWatchlist: boolean,
 ): Promise<ViewerHistory> {
+	if (!userId) return NO_HISTORY;
 	const rows = await selectUserWatchlist(userId);
 	const watched = rows.filter((row) => row.watchlist.status === "watched");
 	const wantToWatch = rows.filter(
@@ -194,6 +204,18 @@ async function getViewerHistory(
 	};
 }
 
+/**
+ * Picks are open to everyone, so each visitor (by account, or by IP when
+ * signed out) gets a few per minute to keep the free AI allowance shared.
+ */
+async function checkRateLimit(userId: string | undefined) {
+	const limiter = env.PICKS_RATE_LIMITER;
+	if (!limiter) return;
+	const key = userId ?? getRequestHeader("cf-connecting-ip") ?? "anonymous";
+	const { success } = await limiter.limit({ key });
+	if (!success) throw new Error(PICK_ERRORS.rateLimited);
+}
+
 function resultsOf(promise: Promise<PaginatedResponse<MovieResultItem>>) {
 	return promise.then((response) => response.results).catch(() => []);
 }
@@ -207,11 +229,12 @@ export const getPicks = createServerFn({ method: "POST" })
 	.validator((data: PickRequest) => pickRequestSchema.parse(data))
 	.handler(async ({ data }): Promise<PickResponse> => {
 		const session = await getSession();
-		if (!session) throw new Error(PICK_ERRORS.signedOut);
+		const userId = session?.user.id;
+		await checkRateLimit(userId);
 
 		const [genres, history] = await Promise.all([
 			getGenres(),
-			getViewerHistory(session.user.id, data.useWatchlist),
+			getViewerHistory(userId, data.useWatchlist),
 		]);
 		const intent = await interpretRequest(data, genres);
 		const keywordIds = await findKeywordIds(intent.keywords);
@@ -246,7 +269,7 @@ export const getPicks = createServerFn({ method: "POST" })
 			content: [
 				"<viewer_request>",
 				describeRequest(data),
-				data.useWatchlist ? "Use my watchlist: yes" : "",
+				data.useWatchlist && userId ? "Use my watchlist: yes" : "",
 				"</viewer_request>",
 				history.watchedTitles.length
 					? `Already watched and logged (taste signal, do not pick): ${history.watchedTitles.join("; ")}`

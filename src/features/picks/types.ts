@@ -31,7 +31,7 @@ export const MAX_PROMPT_LENGTH = 300;
 /** Error messages the UI recognises and explains. */
 export const PICK_ERRORS = {
 	notConfigured: "AI_NOT_CONFIGURED",
-	signedOut: "SIGN_IN_REQUIRED",
+	rateLimited: "RATE_LIMITED",
 } as const;
 
 /** What the user asks for, from the picker form or a descriptive search. */

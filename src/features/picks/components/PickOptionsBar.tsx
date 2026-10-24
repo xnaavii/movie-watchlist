@@ -5,6 +5,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#/components/ui/select";
+import { authClient } from "#/lib/auth-client";
 import {
 	PICK_COMPANY,
 	PICK_MOODS,
@@ -33,6 +34,9 @@ type PickOptionsBarProps = {
 
 /** The AI picks options, laid out like the search filter bar. */
 export function PickOptionsBar({ values, onChange }: PickOptionsBarProps) {
+	// Picks work signed out; only the watchlist option needs an account.
+	const { data: session } = authClient.useSession();
+
 	return (
 		<div className="flex flex-wrap items-center gap-2">
 			<Select
@@ -96,12 +100,14 @@ export function PickOptionsBar({ values, onChange }: PickOptionsBarProps) {
 				</SelectContent>
 			</Select>
 
-			<PickPill
-				selected={values.useWatchlist}
-				onClick={() => onChange({ useWatchlist: !values.useWatchlist })}
-			>
-				From my watchlist
-			</PickPill>
+			{session && (
+				<PickPill
+					selected={values.useWatchlist}
+					onClick={() => onChange({ useWatchlist: !values.useWatchlist })}
+				>
+					From my watchlist
+				</PickPill>
+			)}
 		</div>
 	);
 }
