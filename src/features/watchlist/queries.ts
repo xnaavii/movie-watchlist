@@ -10,6 +10,8 @@ import {
 } from "./server/watchlist.functions";
 
 export const watchlistQueries = {
+	/** Prefix shared by every watchlist query, for invalidating them all. */
+	allKey: ["watchlist"] as const,
 	status: ({ mediaType, id }: MediaRef) =>
 		queryOptions({
 			queryKey: ["watchlist", "status", mediaType, id],

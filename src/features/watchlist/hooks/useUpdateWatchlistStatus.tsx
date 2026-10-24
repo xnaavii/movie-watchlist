@@ -1,12 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import type { MediaRef } from "#/features/media/types";
 import { authClient } from "#/lib/auth-client";
-import { watchlistQueries } from "../queries";
 import { updateWatchlistStatusFn } from "../server/watchlist.functions";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
+import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
 interface UseUpdateWatchlistStatus {
 	media: MediaRef;
@@ -14,7 +14,7 @@ interface UseUpdateWatchlistStatus {
 
 export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	const updateWatchlistStatus = useServerFn(updateWatchlistStatusFn);
-	const queryClient = useQueryClient();
+	const revalidateWatchlist = useRevalidateWatchlist();
 	const { data: session } = authClient.useSession();
 	const navigate = useNavigate();
 
@@ -24,12 +24,7 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 				data: { mediaType: media.mediaType, id: media.id, status },
 			}),
 		onSuccess: (_data, status) => {
-			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(media).queryKey,
-			});
-			// A status filter on the watchlist page can hide or reveal this title.
-			queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
-			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
+			revalidateWatchlist();
 			toast.success(
 				status === "watched" ? "Marked as watched" : "Marked as want to watch",
 			);

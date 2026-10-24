@@ -1,17 +1,17 @@
 // features/watchlist/hooks/useAddToWatchlist.ts
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import type { MediaRef } from "#/features/media/types";
 import { authClient } from "#/lib/auth-client";
-import { watchlistQueries } from "../queries";
 import { addToWatchlistFn } from "../server/watchlist.functions";
+import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
 export function useAddToWatchlist({ media }: { media: MediaRef }) {
 	const addToWatchlist = useServerFn(addToWatchlistFn);
-	const queryClient = useQueryClient();
+	const revalidateWatchlist = useRevalidateWatchlist();
 	const { data: session } = authClient.useSession();
 	const navigate = useNavigate();
 
@@ -19,16 +19,7 @@ export function useAddToWatchlist({ media }: { media: MediaRef }) {
 		mutationFn: () =>
 			addToWatchlist({ data: { mediaType: media.mediaType, id: media.id } }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(media).queryKey,
-			});
-			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.watchlistStatuses().queryKey,
-			});
-			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.list().queryKey,
-			});
-			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
+			revalidateWatchlist();
 			toast.success("Added to watchlist");
 		},
 		onError: (error) => {

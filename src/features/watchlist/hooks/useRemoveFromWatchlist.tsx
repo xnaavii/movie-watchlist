@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import type { MediaRef } from "#/features/media/types";
-import { watchlistQueries } from "../queries";
 import { removeFromWatchlist } from "../server/watchlist.functions";
+import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
 export function useRemoveFromWatchlist({ media }: { media: MediaRef }) {
 	const removeFromWatchlistFn = useServerFn(removeFromWatchlist);
-	const queryClient = useQueryClient();
+	const revalidateWatchlist = useRevalidateWatchlist();
 
 	const mutation = useMutation({
 		mutationFn: () =>
@@ -15,10 +15,7 @@ export function useRemoveFromWatchlist({ media }: { media: MediaRef }) {
 				data: { mediaType: media.mediaType, id: media.id },
 			}),
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(media).queryKey,
-			});
-			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
+			revalidateWatchlist();
 			toast.success("Removed from watchlist");
 		},
 		onError: (error) => {
