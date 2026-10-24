@@ -13,6 +13,7 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 - **Movie data:** [TMDB API](https://www.themoviedb.org/documentation/api) via `@lorenzopant/tmdb`
 - **Ratings:** OMDb API (IMDb ratings)
 - **Streaming availability:** Watchmode API
+- **AI picks:** Cloudflare Workers AI (Llama 3.3 70B) through the `AI` binding, no API key needed
 - **Deployment:** Cloudflare Workers
 
 ## Features
@@ -57,7 +58,6 @@ cp .env.example .env
 | `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. Enables "Continue with Google", see [social login setup](docs/social-login-setup.md) |
 | `APPLE_CLIENT_ID` / `APPLE_CLIENT_SECRET`   | Optional. Enables "Continue with Apple", see [social login setup](docs/social-login-setup.md)  |
-| `ANTHROPIC_API_KEY`  | [Claude Console](https://console.anthropic.com/settings/keys) — powers AI picks. Optional: the rest of the app works without it |
 
 ### 4. Push the database schema
 

@@ -1,5 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type {
 	MovieDetails,
 	MovieResultItem,
@@ -9,7 +7,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { z } from "zod";
 import type { TmdbGenre } from "#/features/movies/types";
 import { selectUserWatchlist } from "#/features/watchlist/server/watchlist.server";
-import { AI_MODEL, getAnthropic } from "#/lib/anthropic";
+import { AiBadOutputError, AiNotConfiguredError, generateJson } from "#/lib/ai";
 import { getSession } from "#/lib/auth.functions";
 import { tmdb } from "#/lib/tmdb";
 import {
@@ -31,6 +29,9 @@ import {
 
 const MAX_PICKS = 5;
 const CANDIDATE_LIMIT = 60;
+// The ranking prompt is the bulk of each request's cost on the free Workers
+// AI allowance, so only the strongest candidates go to the model.
+const RANKED_CANDIDATE_LIMIT = 40;
 const WATCHLIST_CANDIDATE_LIMIT = 15;
 const WATCHED_TASTE_LIMIT = 25;
 
@@ -54,49 +55,39 @@ async function getGenres(): Promise<TmdbGenre[]> {
 	return cachedGenres;
 }
 
-/** One structured-output call; throws a readable error on refusal or bad output. */
-async function askClaude<Schema extends z.ZodType>(
-	client: Anthropic,
-	options: {
-		system: string;
-		content: string;
-		schema: Schema;
-		maxTokens: number;
-	},
-): Promise<z.infer<Schema>> {
-	const response = await client.beta.messages.parse({
-		model: AI_MODEL,
-		max_tokens: options.maxTokens,
-		betas: ["server-side-fallback-2026-07-01"],
-		fallbacks: "default",
-		output_config: {
-			effort: "low",
-			format: betaZodOutputFormat(options.schema),
-		},
-		system: options.system,
-		messages: [{ role: "user", content: options.content }],
-	});
-
-	if (response.stop_reason === "refusal") {
+/** One JSON call to the model, with errors the picks UI can show as is. */
+async function ask<Schema extends z.ZodType>(options: {
+	system: string;
+	content: string;
+	schema: Schema;
+	maxTokens: number;
+}): Promise<z.infer<Schema>> {
+	try {
+		return await generateJson(options);
+	} catch (error) {
+		if (error instanceof AiNotConfiguredError) {
+			throw new Error(PICK_ERRORS.notConfigured);
+		}
+		if (error instanceof AiBadOutputError) {
+			throw new Error(
+				"The AI returned an unexpected answer. Please try again.",
+			);
+		}
+		// Workers AI fails the call once the free daily allowance is used up.
 		throw new Error(
-			"The AI could not help with that request. Try rewording it.",
+			"The AI couldn't answer right now. If this keeps happening, today's free allowance may be used up (it resets at midnight UTC).",
 		);
 	}
-	if (!response.parsed_output) {
-		throw new Error("The AI returned an unexpected answer. Please try again.");
-	}
-	return response.parsed_output;
 }
 
 async function interpretRequest(
-	client: Anthropic,
 	request: PickRequest,
 	genres: TmdbGenre[],
 ): Promise<PickIntent> {
-	return await askClaude(client, {
+	return await ask({
 		system: INTENT_SYSTEM,
 		schema: pickIntentSchema,
-		maxTokens: 4000,
+		maxTokens: 600,
 		content: [
 			`Genres: ${genres.map((genre) => genre.name).join(", ")}`,
 			`Current year: ${new Date().getFullYear()}`,
@@ -218,84 +209,73 @@ export const getPicks = createServerFn({ method: "POST" })
 		const session = await getSession();
 		if (!session) throw new Error(PICK_ERRORS.signedOut);
 
-		const client = getAnthropic();
-		if (!client) throw new Error(PICK_ERRORS.notConfigured);
+		const [genres, history] = await Promise.all([
+			getGenres(),
+			getViewerHistory(session.user.id, data.useWatchlist),
+		]);
+		const intent = await interpretRequest(data, genres);
+		const keywordIds = await findKeywordIds(intent.keywords);
 
-		try {
-			const [genres, history] = await Promise.all([
-				getGenres(),
-				getViewerHistory(session.user.id, data.useWatchlist),
-			]);
-			const intent = await interpretRequest(client, data, genres);
-			const keywordIds = await findKeywordIds(intent.keywords);
+		const loose = intentToDiscoverParams(intent, data, genres);
+		const [focused, broad, broadNext, similar] = await Promise.all([
+			keywordIds.length
+				? resultsOf(
+						tmdb.discover.movie(
+							intentToDiscoverParams(intent, data, genres, keywordIds),
+						),
+					)
+				: Promise.resolve([]),
+			resultsOf(tmdb.discover.movie(loose)),
+			resultsOf(tmdb.discover.movie({ ...loose, page: 2 })),
+			findSimilar(intent.similarTo),
+		]);
 
-			const loose = intentToDiscoverParams(intent, data, genres);
-			const [focused, broad, broadNext, similar] = await Promise.all([
-				keywordIds.length
-					? resultsOf(
-							tmdb.discover.movie(
-								intentToDiscoverParams(intent, data, genres, keywordIds),
-							),
-						)
-					: Promise.resolve([]),
-				resultsOf(tmdb.discover.movie(loose)),
-				resultsOf(tmdb.discover.movie({ ...loose, page: 2 })),
-				findSimilar(intent.similarTo),
-			]);
+		const candidates = mergeCandidates(
+			[history.wantToWatch, focused, similar, broad, broadNext],
+			history.watchedIds,
+			CANDIDATE_LIMIT,
+		);
+		if (candidates.length === 0) {
+			return { summary: intent.summary, picks: [], more: [] };
+		}
 
-			const candidates = mergeCandidates(
-				[history.wantToWatch, focused, similar, broad, broadNext],
-				history.watchedIds,
-				CANDIDATE_LIMIT,
-			);
-			if (candidates.length === 0) {
-				return { summary: intent.summary, picks: [], more: [] };
-			}
-
-			const ranking = await askClaude(client, {
-				system: RANKING_SYSTEM,
-				schema: pickRankingSchema,
-				maxTokens: 6000,
-				content: [
-					"<viewer_request>",
-					describeRequest(data),
-					data.useWatchlist ? "Use my watchlist: yes" : "",
-					"</viewer_request>",
-					history.watchedTitles.length
-						? `Already watched and logged (taste signal, do not pick): ${history.watchedTitles.join("; ")}`
-						: "",
-					`Choose up to ${MAX_PICKS}.`,
-					"",
-					"Candidates (JSON):",
-					JSON.stringify(
-						candidates.map((movie) =>
+		const ranking = await ask({
+			system: RANKING_SYSTEM,
+			schema: pickRankingSchema,
+			maxTokens: 800,
+			content: [
+				"<viewer_request>",
+				describeRequest(data),
+				data.useWatchlist ? "Use my watchlist: yes" : "",
+				"</viewer_request>",
+				history.watchedTitles.length
+					? `Already watched and logged (taste signal, do not pick): ${history.watchedTitles.join("; ")}`
+					: "",
+				`Choose up to ${MAX_PICKS}.`,
+				"",
+				"Candidates (JSON):",
+				JSON.stringify(
+					candidates
+						.slice(0, RANKED_CANDIDATE_LIMIT)
+						.map((movie) =>
 							toCandidate(movie, genres, history.wantToWatchIds.has(movie.id)),
 						),
-					),
-				]
-					.filter(Boolean)
-					.join("\n"),
-			});
+				),
+			]
+				.filter(Boolean)
+				.join("\n"),
+		});
 
-			const picks = resolvePicks(
-				ranking,
-				candidates,
-				history.wantToWatchIds,
-				MAX_PICKS,
-			);
-			const pickedIds = new Set(picks.map((pick) => pick.movie.id));
-			return {
-				summary: intent.summary,
-				picks,
-				more: candidates.filter((movie) => !pickedIds.has(movie.id)),
-			};
-		} catch (error) {
-			if (error instanceof Anthropic.RateLimitError) {
-				throw new Error("The AI is busy right now. Try again in a minute.");
-			}
-			if (error instanceof Anthropic.APIError) {
-				throw new Error("The AI service had a problem. Please try again.");
-			}
-			throw error;
-		}
+		const picks = resolvePicks(
+			ranking,
+			candidates,
+			history.wantToWatchIds,
+			MAX_PICKS,
+		);
+		const pickedIds = new Set(picks.map((pick) => pick.movie.id));
+		return {
+			summary: intent.summary,
+			picks,
+			more: candidates.filter((movie) => !pickedIds.has(movie.id)),
+		};
 	});
