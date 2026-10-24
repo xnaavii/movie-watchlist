@@ -78,7 +78,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function NotFoundPage() {
 	return (
-		<div className="flex flex-col items-center justify-center gap-4 h-screen text-center px-4">
+		<div className="flex flex-col items-center justify-center gap-4 h-svh text-center px-4">
 			<h1 className="text-6xl font-semibold tracking-tighter">404</h1>
 			<p className="text-muted-foreground">This page doesn't exist.</p>
 			<Button asChild>
