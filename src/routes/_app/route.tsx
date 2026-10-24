@@ -11,7 +11,10 @@ function AppLayout() {
 		<div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] h-svh overflow-hidden">
 			<Navbar />
 			<Sidebar />
-			<main className="relative overflow-y-auto min-h-0" id="main-scrollable-area">
+			<main
+				className="relative overflow-y-auto min-h-0"
+				id="main-scrollable-area"
+			>
 				<Outlet />
 			</main>
 		</div>
