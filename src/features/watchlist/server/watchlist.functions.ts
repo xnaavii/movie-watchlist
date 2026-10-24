@@ -4,15 +4,19 @@ import {
 	watchlistFilterSearchSchema,
 } from "#/features/movies/utils/filters";
 import { ensureSession, getSession } from "#/lib/auth.functions";
+import { buildProfileStats } from "../utils/stats";
 import {
 	addToWatchlist,
+	backfillMovieDetails,
 	deleteFromWatchlist,
 	findMovieById,
 	findOrCreateMovie,
 	getWatchlistStatus,
+	selectStatsEntries,
 	selectUserWatchlist,
 	selectUserWatchlistPage,
 	selectUserWatchlistStatuses,
+	selectWatchlistGenreLinks,
 	selectWatchlistMoviesByGenreId,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
@@ -128,3 +132,18 @@ export const getWatchlistMoviesByGenreFn = createServerFn({ method: "GET" })
 		const session = await ensureSession();
 		return await selectWatchlistMoviesByGenreId(session.user.id, data.genreId);
 	});
+
+export const getProfileStatsFn = createServerFn({ method: "GET" }).handler(
+	async () => {
+		const session = await ensureSession();
+		const userId = session.user.id;
+
+		await backfillMovieDetails(userId);
+		const [entries, genreLinks] = await Promise.all([
+			selectStatsEntries(userId),
+			selectWatchlistGenreLinks(userId),
+		]);
+
+		return buildProfileStats(entries, genreLinks);
+	},
+);

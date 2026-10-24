@@ -6,6 +6,7 @@ import {
 	eq,
 	exists,
 	gte,
+	isNull,
 	lte,
 	type SQL,
 	sql,
@@ -55,12 +56,13 @@ export async function updateWatchlistStatus({
 	movieId: number;
 	status: WatchlistStatusInsert;
 }) {
+	const watchedAt = status === "watched" ? new Date() : null;
 	const [upserted] = await db
 		.insert(watchlist)
-		.values({ userId, movieId, status })
+		.values({ userId, movieId, status, watchedAt })
 		.onConflictDoUpdate({
 			target: [watchlist.userId, watchlist.movieId],
-			set: { status },
+			set: { status, watchedAt, updatedAt: new Date() },
 		})
 		.returning();
 
@@ -84,6 +86,8 @@ export async function addMovieWithGenres({
 				posterPath: newMovie.posterPath,
 				backdropPath: newMovie.backdropPath,
 				releaseDate: newMovie.releaseDate,
+				runtime: newMovie.runtime,
+				voteAverage: newMovie.voteAverage,
 			},
 		})
 		.returning();
@@ -128,9 +132,71 @@ export async function findOrCreateMovie(movieId: number) {
 			posterPath: details.poster_path,
 			backdropPath: details.backdrop_path,
 			releaseDate: details.release_date,
+			...detailsStats(details),
 		},
 		genres: details.genres ?? [],
 	});
+}
+
+// Null means "not fetched yet"; TMDB's zeros are stored so they aren't refetched.
+function detailsStats(details: { runtime?: number; vote_average?: number }) {
+	return {
+		runtime: details.runtime ?? 0,
+		voteAverage: details.vote_average ?? 0,
+	};
+}
+
+/**
+ * Movies saved before runtime and score were stored. Filled a few at a time so
+ * one profile visit stays well under the Workers subrequest limit.
+ */
+export async function backfillMovieDetails(userId: string, limit = 10) {
+	const missing = await db
+		.select({ id: movie.id })
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.where(and(eq(watchlist.userId, userId), isNull(movie.runtime)))
+		// Watched movies first, they feed the watch time total.
+		.orderBy(desc(watchlist.status), desc(watchlist.updatedAt))
+		.limit(limit);
+
+	await Promise.allSettled(
+		missing.map(async ({ id }) => {
+			const details = await getMovieDetails({ data: { movie_id: id } });
+			await db.update(movie).set(detailsStats(details)).where(eq(movie.id, id));
+		}),
+	);
+}
+
+export async function selectStatsEntries(userId: string) {
+	return await db
+		.select({
+			movieId: movie.id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			releaseDate: movie.releaseDate,
+			runtime: movie.runtime,
+			voteAverage: movie.voteAverage,
+			status: watchlist.status,
+			addedAt: watchlist.addedAt,
+			watchedAt: watchlist.watchedAt,
+		})
+		.from(watchlist)
+		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.where(eq(watchlist.userId, userId));
+}
+
+export async function selectWatchlistGenreLinks(userId: string) {
+	return await db
+		.select({
+			movieId: movieToGenre.movieId,
+			genreId: genre.id,
+			name: genre.name,
+		})
+		.from(watchlist)
+		.innerJoin(movieToGenre, eq(watchlist.movieId, movieToGenre.movieId))
+		.innerJoin(genre, eq(movieToGenre.genreId, genre.id))
+		.where(eq(watchlist.userId, userId));
 }
 
 export async function findMovieById(movieId: number) {

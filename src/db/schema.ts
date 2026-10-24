@@ -8,6 +8,7 @@ import {
 	pgEnum,
 	pgTable,
 	primaryKey,
+	real,
 	text,
 	timestamp,
 	uniqueIndex,
@@ -92,6 +93,8 @@ export const movie = pgTable("movie", {
 	releaseDate: text("release_date"),
 	posterPath: text("poster_path"),
 	backdropPath: text("backdrop_path"),
+	runtime: integer("runtime"),
+	voteAverage: real("vote_average"),
 	addedAt: timestamp("created_at").defaultNow().notNull(),
 });
 
