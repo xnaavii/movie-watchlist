@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
@@ -12,6 +13,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { CheckYourEmail } from "#/features/auth/components/CheckYourEmail";
 import { SocialSignInButtons } from "#/features/auth/components/SocialSignInButtons";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
@@ -31,6 +33,7 @@ export function LoginForm({
 	const router = useRouter();
 	const { redirect, error: oauthError } = routeApi.useSearch();
 	const { socialProviders } = authRouteApi.useLoaderData();
+	const [unverifiedEmail, setUnverifiedEmail] = useState<string>();
 
 	const form = useForm({
 		defaultValues: {
@@ -44,9 +47,13 @@ export function LoginForm({
 			const { data, error } = await authClient.signIn.email({
 				email: value.email,
 				password: value.password,
+				callbackURL: redirect ?? "/",
 			});
 
-			if (error) {
+			// Better Auth has already emailed a fresh verification link
+			if (error?.code === "EMAIL_NOT_VERIFIED") {
+				setUnverifiedEmail(value.email);
+			} else if (error) {
 				toast.error(`Message: ${error.message}, Status: ${error.status}`);
 			} else {
 				router.history.push(redirect ?? "/");
@@ -54,6 +61,10 @@ export function LoginForm({
 			}
 		},
 	});
+
+	if (unverifiedEmail) {
+		return <CheckYourEmail email={unverifiedEmail} redirect={redirect} />;
+	}
 
 	return (
 		<form
