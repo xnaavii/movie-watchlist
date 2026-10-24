@@ -24,7 +24,7 @@ interface MovieRowProps {
 
 export function MovieRow({
 	movies,
-  movieLogos,
+	movieLogos,
 	watchlistStatuses,
 	showRanks,
 	variant = "poster",

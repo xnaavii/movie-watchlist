@@ -21,7 +21,9 @@ export function StatTile({ label, value, detail, icon: Icon }: StatTileProps) {
 			<p className="text-2xl sm:text-3xl font-semibold tracking-tight tabular-nums">
 				{value}
 			</p>
-			{detail && <p className="text-xs text-muted-foreground truncate">{detail}</p>}
+			{detail && (
+				<p className="text-xs text-muted-foreground truncate">{detail}</p>
+			)}
 		</Card>
 	);
 }
