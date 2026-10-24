@@ -34,6 +34,14 @@ export const auth = betterAuth({
 		},
 	},
 	socialProviders: { google },
+	account: {
+		accountLinking: {
+			// Email sign-ups aren't verified, so without this Google refuses to
+			// link to an existing account with the same address. Google has
+			// verified the email, which also marks the local account verified.
+			requireLocalEmailVerified: false,
+		},
+	},
 	// Preview deployments, which sign in through the production callback
 	trustedOrigins: ["https://*.petrovic-valpovo.workers.dev"],
 	database: drizzleAdapter(db, {
