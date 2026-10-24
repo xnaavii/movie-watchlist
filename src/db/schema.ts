@@ -9,6 +9,7 @@ import {
 	pgTable,
 	primaryKey,
 	real,
+	smallint,
 	text,
 	timestamp,
 	uniqueIndex,
@@ -157,6 +158,89 @@ export const imdbRating = pgTable("imdb_rating", {
 	imdbVotes: text("imdb_votes"),
 	fetchedAt: timestamp("fetched_at").notNull().defaultNow(),
 });
+
+// Sound: Dolby Atmos showcase titles, community Atmos votes and sound ratings.
+// Keyed by TMDB id + media type so TV shows can join without a migration.
+export const mediaTypeEnum = pgEnum("media_type", ["movie", "tv"]);
+
+export const atmosTitleSourceEnum = pgEnum("atmos_title_source", [
+	"curated",
+	"community",
+]);
+
+export const listeningSetupEnum = pgEnum("listening_setup", [
+	"tv_speakers",
+	"soundbar",
+	"atmos_soundbar",
+	"surround",
+	"atmos_surround",
+	"headphones",
+]);
+
+export const atmosTitle = pgTable(
+	"atmos_title",
+	{
+		tmdbId: integer("tmdb_id").notNull(),
+		mediaType: mediaTypeEnum("media_type").notNull(),
+		title: text("title").notNull(),
+		releaseDate: text("release_date"),
+		posterPath: text("poster_path"),
+		backdropPath: text("backdrop_path"),
+		source: atmosTitleSourceEnum("source").notNull(),
+		// Matches an entry in the curated seed list, so it is only resolved once.
+		seedKey: text("seed_key").unique(),
+		note: text("note"),
+		addedAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(t) => [primaryKey({ columns: [t.tmdbId, t.mediaType] })],
+);
+
+export const atmosVote = pgTable(
+	"atmos_vote",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		tmdbId: integer("tmdb_id").notNull(),
+		mediaType: mediaTypeEnum("media_type").notNull(),
+		hasAtmos: boolean("has_atmos").notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.notNull(),
+	},
+	(t) => [
+		primaryKey({ columns: [t.userId, t.tmdbId, t.mediaType] }),
+		index("atmos_vote_title_idx").on(t.tmdbId, t.mediaType),
+	],
+);
+
+export const soundRating = pgTable(
+	"sound_rating",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		tmdbId: integer("tmdb_id").notNull(),
+		mediaType: mediaTypeEnum("media_type").notNull(),
+		// 1 to 10.
+		overall: smallint("overall").notNull(),
+		// Optional 1 to 5 sub-scores.
+		immersion: smallint("immersion"),
+		bass: smallint("bass"),
+		dialogue: smallint("dialogue"),
+		setup: listeningSetupEnum("setup"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.notNull(),
+	},
+	(t) => [
+		primaryKey({ columns: [t.userId, t.tmdbId, t.mediaType] }),
+		index("sound_rating_title_idx").on(t.tmdbId, t.mediaType),
+	],
+);
 
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
