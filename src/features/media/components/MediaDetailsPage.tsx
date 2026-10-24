@@ -9,6 +9,7 @@ import { TitleAtmosBadge } from "#/features/sound/components/TitleAtmosBadge";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { mediaQueries } from "../queries";
 import type { MediaRef, MediaType } from "../types";
+import { isReleased } from "../utils";
 import { JustWatchButton } from "./JustWatchButton";
 import { MediaBackdropImageView } from "./MediaBackdropImageView";
 import { MediaCastView } from "./MediaCastView";
@@ -54,7 +55,9 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
 				<MediaWhereToWatchView media={media} />
 				{media.mediaType === "tv" && <TVSeasons show={media} />}
-				<AtmosFeedback tmdbId={media.id} mediaType={media.mediaType} />
+				{isReleased(media) && (
+					<AtmosFeedback tmdbId={media.id} mediaType={media.mediaType} />
+				)}
 				<MediaTrailerView media={media} title={media.title} />
 				<MediaGalleryView media={media} title={media.title} />
 				<MediaCastView media={media} />
