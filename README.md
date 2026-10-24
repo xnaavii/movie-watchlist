@@ -19,6 +19,7 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 - Discover movies with filters (genre, year, language, rating, sort)
 - Full-text search with debounced infinite scroll
+- AI picks: describe a mood ("cozy 90s mystery under 2 hours") on the Pick page or in search, and get a short list with a reason for each, optionally drawn from your watchlist
 - Personal watchlist with watch status (want to watch / watched)
 - Sign in with email, Google or Apple
 - Movie details: cast & crew, trailers, similar movies, IMDb ratings, streaming availability
@@ -56,6 +57,7 @@ cp .env.example .env
 | `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. Enables "Continue with Google", see [social login setup](docs/social-login-setup.md) |
 | `APPLE_CLIENT_ID` / `APPLE_CLIENT_SECRET`   | Optional. Enables "Continue with Apple", see [social login setup](docs/social-login-setup.md)  |
+| `ANTHROPIC_API_KEY`  | [Claude Console](https://console.anthropic.com/settings/keys) — powers AI picks. Optional: the rest of the app works without it |
 
 ### 4. Push the database schema
 

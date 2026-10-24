@@ -4,6 +4,7 @@ import {
 	ListVideo,
 	type LucideIcon,
 	Search,
+	Sparkles,
 	User,
 } from "lucide-react";
 import { BrandMark } from "./BrandMark";
@@ -16,6 +17,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
 	{ to: "/search", icon: Search },
+	{ to: "/pick", icon: Sparkles },
 	{ to: "/discover", icon: Compass },
 	{ to: "/watchlist", icon: ListVideo },
 	{ to: "/profile", icon: User },

@@ -1,6 +1,6 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import { Compass, ListVideo, Search, User } from "lucide-react";
+import { Compass, ListVideo, Search, Sparkles, User } from "lucide-react";
 import { cn } from "#/lib/utils";
 import { BrandMark } from "./BrandMark";
 import { ModeToggle } from "./ModeToggle";
@@ -17,6 +17,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
 	{ to: "/search", icon: Search },
+	{ to: "/pick", icon: Sparkles },
 	{ to: "/discover", icon: Compass },
 	{ to: "/watchlist", icon: ListVideo },
 	{ to: "/profile", icon: User },
