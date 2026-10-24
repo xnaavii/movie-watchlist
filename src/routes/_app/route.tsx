@@ -8,10 +8,10 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-[auto_1fr] h-svh overflow-hidden ">
+		<div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] h-svh overflow-hidden">
 			<Navbar />
 			<Sidebar />
-			<main className="overflow-y-auto min-h-0" id="main-scrollable-area">
+			<main className="relative overflow-y-auto min-h-0" id="main-scrollable-area">
 				<Outlet />
 			</main>
 		</div>
