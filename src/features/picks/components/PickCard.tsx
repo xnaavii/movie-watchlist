@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { Badge } from "#/components/ui/badge";
 import { MediaCard } from "#/features/media/components/MediaCard";
-import { normalizeMovie } from "#/features/media/utils";
+import { mediaKey, normalizeMovie } from "#/features/media/utils";
+import { watchlistQueries } from "#/features/watchlist/queries";
 import type { Pick } from "../types";
 
 type PickCardProps = {
@@ -11,12 +13,21 @@ type PickCardProps = {
 
 /** A regular movie card with the reason it was picked underneath. */
 export function PickCard({ pick, rank }: PickCardProps) {
+	// Picks are cached for the session, so read the badge from the live
+	// watchlist and fall back to what the pick knew while that loads.
+	const { data: statuses } = useQuery(watchlistQueries.watchlistStatuses());
+	const watchlistStatus = statuses
+		? statuses[mediaKey({ mediaType: "movie", id: pick.movie.id })]
+		: pick.onWatchlist
+			? "want_to_watch"
+			: undefined;
+
 	return (
 		<li className="flex flex-col gap-2 min-w-0">
 			<div className="relative">
 				<MediaCard
 					media={normalizeMovie(pick.movie)}
-					watchlistStatus={pick.onWatchlist ? "want_to_watch" : undefined}
+					watchlistStatus={watchlistStatus}
 				/>
 				<Badge
 					variant={rank === 1 ? "default" : "secondary"}
