@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDiscoverParams, normalizeReview } from "./utils";
+import { buildDiscoverParams, isReleased, normalizeReview } from "./utils";
 import { formatReviewDate, stripMarkdown } from "./utils/format";
 
 describe("buildDiscoverParams", () => {
@@ -63,5 +63,49 @@ describe("stripMarkdown", () => {
 		expect(
 			stripMarkdown("## Title\n**Bold** and [a link](https://x.com)"),
 		).toBe("Title\nBold and a link");
+	});
+});
+
+describe("isReleased", () => {
+	const today = new Date("2026-10-24T12:00:00Z");
+
+	it("counts a title released today or earlier", () => {
+		expect(
+			isReleased({ mediaType: "movie", releaseDate: "2026-10-24" }, today),
+		).toBe(true);
+		expect(
+			isReleased({ mediaType: "tv", releaseDate: "2019-03-01" }, today),
+		).toBe(true);
+	});
+
+	it("does not count a title that comes out later", () => {
+		expect(
+			isReleased(
+				{
+					mediaType: "movie",
+					releaseDate: "2026-12-18",
+					status: "Post Production",
+				},
+				today,
+			),
+		).toBe(false);
+		expect(
+			isReleased({ mediaType: "tv", releaseDate: "2027-01-05" }, today),
+		).toBe(false);
+	});
+
+	it("falls back to the TMDB status when there is no date", () => {
+		expect(isReleased({ mediaType: "movie", status: "Released" }, today)).toBe(
+			true,
+		);
+		expect(isReleased({ mediaType: "movie", status: "Planned" }, today)).toBe(
+			false,
+		);
+		expect(
+			isReleased(
+				{ mediaType: "tv", releaseDate: "", status: "In Production" },
+				today,
+			),
+		).toBe(false);
 	});
 });

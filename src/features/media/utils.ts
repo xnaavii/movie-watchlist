@@ -54,9 +54,33 @@ export function formatReleaseYear(
 	return releaseDate.slice(0, 4);
 }
 
+/**
+ * Whether a title is out yet: a movie that has premiered or a show whose first
+ * episode has aired. Without a date, only a movie TMDB marks as released counts.
+ */
+export function isReleased(
+	media: Pick<MediaDetails, "mediaType" | "releaseDate" | "status">,
+	today: Date = new Date(),
+): boolean {
+	if (media.releaseDate) {
+		return media.releaseDate <= today.toISOString().slice(0, 10);
+	}
+	return media.mediaType === "movie" && media.status === "Released";
+}
+
 /** "movie:550", a key that stays unique across movies and TV shows. */
 export const mediaKey = ({ mediaType, id }: MediaRef): string =>
 	`${mediaType}:${id}`;
+
+/** Alternates two lists, so movies and TV shows share a row evenly. */
+export function interleave<T>(a: T[], b: T[]): T[] {
+	const merged: T[] = [];
+	for (let i = 0; i < Math.max(a.length, b.length); i++) {
+		if (i < a.length) merged.push(a[i]);
+		if (i < b.length) merged.push(b[i]);
+	}
+	return merged;
+}
 
 export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
 	movie: "Movie",

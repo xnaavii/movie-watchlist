@@ -43,7 +43,7 @@ export function MediaCastView({ media }: MediaCastViewProps) {
 				<CarouselContent className="-ml-4">
 					{cast.map((person) => (
 						<CarouselItem key={person.id} className="pl-4 basis-auto">
-							<div className="flex flex-col items-center gap-2 w-24 md:w-28 text-center">
+							<div className="flex flex-col items-center gap-3 w-28 md:w-32 text-center">
 								<Avatar className="size-20 md:size-24">
 									<AvatarImage
 										src={toTmdbImageUrl(person.profile_path, "w185")}
@@ -52,13 +52,18 @@ export function MediaCastView({ media }: MediaCastViewProps) {
 									/>
 									<AvatarFallback>{initials(person.name)}</AvatarFallback>
 								</Avatar>
-								<div className="flex flex-col">
-									<span className="text-sm font-medium line-clamp-1">
+								<div className="flex flex-col gap-0.5">
+									<span className="text-sm font-medium leading-snug text-balance wrap-break-word">
 										{person.name}
 									</span>
-									<span className="text-xs text-muted-foreground line-clamp-1">
-										{person.character}
-									</span>
+									{person.character && (
+										<span
+											className="text-xs text-muted-foreground leading-snug text-balance line-clamp-2"
+											title={person.character}
+										>
+											{person.character}
+										</span>
+									)}
 								</div>
 							</div>
 						</CarouselItem>

@@ -10,16 +10,17 @@ import {
 } from "./server/watchlist.functions";
 
 export const watchlistQueries = {
+	/** Prefix shared by every watchlist query, for invalidating them all. */
+	allKey: ["watchlist"] as const,
 	status: ({ mediaType, id }: MediaRef) =>
 		queryOptions({
 			queryKey: ["watchlist", "status", mediaType, id],
 			queryFn: () => getWatchlistStatusFn({ data: { mediaType, id } }),
 		}),
-	mediaByGenreId: (genreId: number) =>
+	mediaByGenre: (genreSlug: string) =>
 		queryOptions({
-			queryKey: ["watchlist", "media", "genre", genreId],
-			queryFn: () => getWatchlistMediaByGenreFn({ data: { genreId } }),
-			enabled: !!genreId,
+			queryKey: ["watchlist", "media", "genre", genreSlug],
+			queryFn: () => getWatchlistMediaByGenreFn({ data: { genreSlug } }),
 		}),
 	list: () =>
 		queryOptions({

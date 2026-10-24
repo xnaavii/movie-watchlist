@@ -1,6 +1,9 @@
 import type { MovieCredits as MediaCreditsData } from "@lorenzopant/tmdb";
 import type { MediaPerson } from "../types";
 
+/** The full cast has its own row further down the page. */
+const HEADER_CAST = 3;
+
 interface MediaCreditsProps {
 	credits?: MediaCreditsData;
 	/** TV shows credit their creators instead of a director. */
@@ -22,26 +25,21 @@ export function MediaCredits({ credits, createdBy }: MediaCreditsProps) {
 		: leads.length > 1
 			? "Directors"
 			: "Director";
-	const topCast = credits.cast.slice(0, 5);
+	const topCast = credits.cast.slice(0, HEADER_CAST);
 
 	return (
 		<>
 			{leads.length > 0 && (
-				<div className="flex gap-1 items-center justify-center md:justify-start">
-					<p className="text-muted-foreground">{leadLabel}</p>
-					<p>{leads.join(", ")}</p>
-				</div>
+				<p className="text-balance">
+					<span className="text-muted-foreground">{leadLabel}</span>{" "}
+					{leads.join(", ")}
+				</p>
 			)}
 			{topCast.length > 0 && (
-				<div className="flex gap-1 items-center justify-center md:justify-start flex-wrap">
-					<p className="text-muted-foreground">Starring</p>
-					{topCast.map((cast, i) => (
-						<p key={cast.id}>
-							{cast.name}
-							{topCast.length > i + 1 ? "," : null}
-						</p>
-					))}
-				</div>
+				<p className="text-balance">
+					<span className="text-muted-foreground">Starring</span>{" "}
+					{topCast.map((cast) => cast.name).join(", ")}
+				</p>
 			)}
 		</>
 	);

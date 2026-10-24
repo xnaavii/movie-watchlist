@@ -1,4 +1,3 @@
-import type { Genre } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
 import {
@@ -9,11 +8,11 @@ import {
 	CarouselPrevious,
 } from "#/components/ui/carousel";
 import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
+import type { DiscoverGenre } from "../genres";
 import { getGenreIcon } from "../utils/genreIcons";
-import { toGenreSlug } from "../utils/slug";
 
 interface GenreRowProps {
-	genres: Genre[];
+	genres: DiscoverGenre[];
 }
 
 export function GenreRow({ genres }: GenreRowProps) {
@@ -24,11 +23,11 @@ export function GenreRow({ genres }: GenreRowProps) {
 			className="w-full relative"
 		>
 			<CarouselContent>
-				{genres?.map((genre) => {
-					const Icon = getGenreIcon(genre.id);
+				{genres.map((genre) => {
+					const Icon = getGenreIcon(genre.slug);
 
 					return (
-						<CarouselItem key={genre.id} className="pl-4 basis-auto">
+						<CarouselItem key={genre.slug} className="pl-4 basis-auto">
 							<Item
 								asChild
 								className="w-30 h-20 md:w-40 md:h-30"
@@ -36,7 +35,7 @@ export function GenreRow({ genres }: GenreRowProps) {
 							>
 								<Link
 									to="/discover/$genreSlug"
-									params={{ genreSlug: toGenreSlug(genre) }}
+									params={{ genreSlug: genre.slug }}
 								>
 									<ItemContent className="flex-col items-center justify-center gap-2">
 										<Icon className="size-5 md:size-6 text-muted-foreground transition-colors group-hover/item:text-foreground" />

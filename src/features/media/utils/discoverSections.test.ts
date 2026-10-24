@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+	buildAiringThisWeekParams,
 	buildComingSoonParams,
 	buildNewReleasesParams,
+	buildNewSeriesParams,
 	TOP_RATED_PARAMS,
 	withGenre,
 } from "./discoverSections";
@@ -37,5 +39,23 @@ describe("withGenre", () => {
 		expect(params.with_genres).toBe(878);
 		expect(params.sort_by).toBe(TOP_RATED_PARAMS.sort_by);
 		expect(TOP_RATED_PARAMS.with_genres).toBeUndefined();
+	});
+});
+
+describe("buildNewSeriesParams", () => {
+	it("covers shows that premiered in the last three months", () => {
+		const params = buildNewSeriesParams(new Date("2026-10-23T12:00:00Z"));
+
+		expect(params["first_air_date.gte"]).toBe("2026-07-23");
+		expect(params["first_air_date.lte"]).toBe("2026-10-23");
+	});
+});
+
+describe("buildAiringThisWeekParams", () => {
+	it("covers the next seven days", () => {
+		const params = buildAiringThisWeekParams(new Date("2026-12-28T12:00:00Z"));
+
+		expect(params["air_date.gte"]).toBe("2026-12-28");
+		expect(params["air_date.lte"]).toBe("2027-01-04");
 	});
 });

@@ -17,7 +17,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
-import { toGenreSlug } from "#/features/media/utils/slug";
+import { findDiscoverGenreById } from "#/features/media/genres";
 import type { GenreCount } from "#/features/watchlist/utils/stats";
 import { cn } from "#/lib/utils";
 
@@ -133,10 +133,12 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 									maxBarSize={20}
 									className="cursor-pointer"
 									onClick={(entry) => {
-										const genre = entry.payload as GenreCount;
+										const { id } = entry.payload as GenreCount;
+										const genre = findDiscoverGenreById(id);
+										if (!genre) return;
 										navigate({
 											to: "/discover/$genreSlug",
-											params: { genreSlug: toGenreSlug(genre) },
+											params: { genreSlug: genre.slug },
 										});
 									}}
 								>

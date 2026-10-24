@@ -1,7 +1,6 @@
 import type { MediaType } from "../types";
 
 type Sluggable = { id: number; title: string };
-type NamedGenre = { id: number; name: string };
 
 export const slugify = (text: string): string =>
 	text
@@ -24,18 +23,6 @@ export const parseMediaSlug = (slug: string): number | null => {
 	const match = /^(\d+)(?:-[a-z0-9-]*)?$/i.exec(slug);
 	return match ? Number(match[1]) : null;
 };
-
-export const toGenreSlug = ({ name }: NamedGenre): string => slugify(name);
-
-// Accepts the readable slug or a legacy numeric id so old links keep working.
-export const findGenreBySlug = <T extends NamedGenre>(
-	genres: T[],
-	genreSlug: string,
-): T | undefined =>
-	genres.find(
-		(genre) =>
-			toGenreSlug(genre) === genreSlug || String(genre.id) === genreSlug,
-	);
 
 const MEDIA_PATH_PREFIX: Record<MediaType, string> = {
 	movie: "/movies",

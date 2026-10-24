@@ -1,19 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import {
-	ALL_GENRES_SLUG,
-	type DiscoverSectionSlug,
-	type SectionGenre,
-} from "../sections";
-import { toGenreSlug } from "../utils/slug";
+import type { DiscoverGenre } from "../genres";
+import { ALL_GENRES_SLUG, type DiscoverSectionSlug } from "../sections";
 
 interface SectionHeaderProps {
 	title: string;
 	description?: string;
 	/** Adds a "See more" link to the section's full page. */
 	section?: DiscoverSectionSlug;
-	genre?: SectionGenre;
+	genre?: DiscoverGenre;
 }
 
 export function SectionHeader({
@@ -35,7 +31,7 @@ export function SectionHeader({
 					<Link
 						to="/discover/$genreSlug/$section"
 						params={{
-							genreSlug: genre ? toGenreSlug(genre) : ALL_GENRES_SLUG,
+							genreSlug: genre?.slug ?? ALL_GENRES_SLUG,
 							section,
 						}}
 						aria-label={`See more ${title}`}

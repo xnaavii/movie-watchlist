@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-	findGenreBySlug,
-	parseMediaSlug,
-	slugify,
-	toGenreSlug,
-	toMediaSlug,
-} from "./slug";
+import { parseMediaSlug, slugify, toMediaSlug } from "./slug";
 
 describe("slugify", () => {
 	it("lowercases and joins words with dashes", () => {
@@ -49,25 +43,5 @@ describe("parseMediaSlug", () => {
 	it("rejects slugs without a leading id", () => {
 		expect(parseMediaSlug("fight-club")).toBeNull();
 		expect(parseMediaSlug("550abc")).toBeNull();
-	});
-});
-
-describe("findGenreBySlug", () => {
-	const genres = [
-		{ id: 28, name: "Action" },
-		{ id: 878, name: "Science Fiction" },
-	];
-
-	it("finds a genre by its readable slug", () => {
-		expect(toGenreSlug(genres[1])).toBe("science-fiction");
-		expect(findGenreBySlug(genres, "science-fiction")).toBe(genres[1]);
-	});
-
-	it("still finds a genre by its legacy numeric id", () => {
-		expect(findGenreBySlug(genres, "28")).toBe(genres[0]);
-	});
-
-	it("returns undefined for unknown slugs", () => {
-		expect(findGenreBySlug(genres, "western")).toBeUndefined();
 	});
 });

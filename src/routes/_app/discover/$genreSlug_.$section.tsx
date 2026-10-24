@@ -1,5 +1,4 @@
 import {
-	type QueryClient,
 	useSuspenseInfiniteQuery,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -11,18 +10,16 @@ import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { MediaGrid } from "#/features/media/components/MediaGrid";
-import { mediaQueries } from "#/features/media/queries";
+import { type DiscoverGenre, findDiscoverGenre } from "#/features/media/genres";
 import {
 	ALL_GENRES_SLUG,
 	type DiscoverSection,
 	getDiscoverSection,
 	listDiscoverSections,
-	type SectionGenre,
 	sectionQuery,
 } from "#/features/media/sections";
 import type { MediaItem } from "#/features/media/types";
 import { mediaKey } from "#/features/media/utils";
-import { findGenreBySlug, toGenreSlug } from "#/features/media/utils/slug";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { cn } from "#/lib/utils";
@@ -30,13 +27,13 @@ import { seo } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 	loader: async ({ context, params }) => {
-		const genre = await resolveGenre(context.queryClient, params.genreSlug);
+		const genre = resolveGenre(params.genreSlug);
 		const section = getDiscoverSection(params.section, genre);
 		if (!section) throw notFound();
 
 		const [movies] = await Promise.all([
 			context.queryClient.ensureInfiniteQueryData(
-				sectionQuery(section.slug, genre?.id),
+				sectionQuery(section.slug, genre),
 			),
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
 		]);
@@ -63,19 +60,12 @@ export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 	notFoundComponent: DiscoverSectionNotFound,
 });
 
-async function resolveGenre(
-	queryClient: QueryClient,
-	genreSlug: string,
-): Promise<SectionGenre | undefined> {
+function resolveGenre(genreSlug: string): DiscoverGenre | undefined {
 	if (genreSlug === ALL_GENRES_SLUG) return undefined;
 
-	const { genres } = await queryClient.ensureQueryData(
-		mediaQueries.genres("movie"),
-	);
-	const genre = findGenreBySlug(genres, genreSlug);
+	const genre = findDiscoverGenre(genreSlug);
 	if (!genre) throw notFound();
-
-	return { id: genre.id, name: genre.name };
+	return genre;
 }
 
 function DiscoverSectionPage() {
@@ -91,7 +81,7 @@ function DiscoverSectionPage() {
 		hasNextPage,
 		isFetchingNextPage,
 		isFetchNextPageError,
-	} = useSuspenseInfiniteQuery(sectionQuery(section.slug, genre?.id));
+	} = useSuspenseInfiniteQuery(sectionQuery(section.slug, genre));
 
 	// TMDB pages can overlap as rankings shift, so drop repeats.
 	const movies = useMemo(() => {
@@ -112,13 +102,19 @@ function DiscoverSectionPage() {
 		disabled: isFetchNextPageError,
 	});
 
-	const genreSlug = genre ? toGenreSlug(genre) : ALL_GENRES_SLUG;
+	const genreSlug = genre?.slug ?? ALL_GENRES_SLUG;
 
 	return (
 		<>
 			<header className="flex flex-col gap-6">
 				<BackButtonView
-					fallbackTo={genre ? `/discover/${genreSlug}` : "/discover"}
+					fallbackTo={
+						genre
+							? `/discover/${genreSlug}`
+							: section.mediaType === "tv"
+								? "/discover/tv-shows"
+								: "/discover/movies"
+					}
 				/>
 				<div className="flex flex-col gap-2">
 					{genre && (
