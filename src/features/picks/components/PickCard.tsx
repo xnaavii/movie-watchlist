@@ -1,71 +1,38 @@
-import { Link } from "@tanstack/react-router";
+import { Sparkles } from "lucide-react";
 import { Badge } from "#/components/ui/badge";
-import { formatReleaseYear } from "#/features/movies/utils";
-import { toMovieSlug } from "#/features/movies/utils/slug";
-import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
+import { MovieCard } from "#/features/movies/components/MovieCard";
+import { normalizeMovie } from "#/features/movies/utils";
 import type { Pick } from "../types";
 
 type PickCardProps = {
 	pick: Pick;
 	rank: number;
-	genreNames: Map<number, string>;
 };
 
-export function PickCard({ pick, rank, genreNames }: PickCardProps) {
-	const { movie, reason, onWatchlist } = pick;
-	const slug = toMovieSlug(movie);
-	const genres = movie.genre_ids
-		.map((id) => genreNames.get(id))
-		.filter(Boolean)
-		.slice(0, 2)
-		.join(", ");
-
+/** A regular movie card with the reason it was picked underneath. */
+export function PickCard({ pick, rank }: PickCardProps) {
 	return (
-		<li className="flex gap-4 md:gap-5 p-3 md:p-4 rounded-3xl bg-card ring-1 ring-border">
-			<Link
-				to="/movies/$movieSlug"
-				params={{ movieSlug: slug }}
-				className="shrink-0 w-24 md:w-28 rounded-2xl overflow-hidden focus-visible:ring-3 focus-visible:ring-ring/30 outline-none"
-			>
-				<img
-					src={movie.poster_path}
-					alt={`${movie.title} poster`}
-					className="aspect-2/3 w-full object-cover"
+		<li className="flex flex-col gap-2 min-w-0">
+			<div className="relative">
+				<MovieCard
+					movie={normalizeMovie(pick.movie)}
+					watchlistStatus={pick.onWatchlist ? "want_to_watch" : undefined}
 				/>
-			</Link>
-			<div className="flex flex-col gap-2 min-w-0 flex-1 py-1">
-				<div className="flex items-start justify-between gap-3">
-					<div className="flex flex-col gap-0.5 min-w-0">
-						<span className="text-xs font-medium text-muted-foreground tabular-nums">
-							Pick {rank}
-						</span>
-						<Link
-							to="/movies/$movieSlug"
-							params={{ movieSlug: slug }}
-							className="text-base md:text-lg font-semibold leading-tight line-clamp-2 hover:underline underline-offset-4"
-						>
-							{movie.title}
-						</Link>
-						<p className="text-sm text-muted-foreground">
-							{[
-								formatReleaseYear(movie.release_date),
-								genres,
-								movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : "",
-							]
-								.filter(Boolean)
-								.join(" · ")}
-						</p>
-					</div>
-					<WatchlistStatusButtonView movieId={movie.id} />
-				</div>
-				<p className="text-sm md:text-base leading-relaxed text-pretty">
-					{reason}
+				<Badge
+					variant={rank === 1 ? "default" : "secondary"}
+					className="absolute top-3 left-3 z-30 tabular-nums pointer-events-none"
+				>
+					{rank === 1 && <Sparkles data-icon="inline-start" />}
+					{rank === 1 ? "Top pick" : `#${rank}`}
+				</Badge>
+			</div>
+			<div className="flex flex-col gap-1 px-1">
+				<h3 className="text-sm md:text-base font-semibold line-clamp-1">
+					{pick.movie.title}
+				</h3>
+				<p className="text-xs md:text-sm text-muted-foreground text-pretty">
+					{pick.reason}
 				</p>
-				{onWatchlist && (
-					<Badge variant="outline" className="mt-auto">
-						On your watchlist
-					</Badge>
-				)}
 			</div>
 		</li>
 	);
