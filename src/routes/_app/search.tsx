@@ -26,6 +26,9 @@ import {
 	DEFAULT_PICK_OPTIONS,
 	type PickOptions,
 	PickOptionsBar,
+	pickOptionsFromSearch,
+	pickOptionsToSearch,
+	pickSearchSchema,
 	toPickRequest,
 } from "#/features/picks/components/PickOptionsBar";
 import { PickPill } from "#/features/picks/components/PickPill";
@@ -35,10 +38,15 @@ import type { PickRequest } from "#/features/picks/types";
 import { looksLikeDescription } from "#/features/picks/utils/picks";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 
-const searchParamsSchema = searchFilterSearchSchema.extend({
-	q: z.string().catch(""),
-	ai: z.boolean().optional().catch(undefined),
-});
+const searchParamsSchema = searchFilterSearchSchema
+	.extend(pickSearchSchema.shape)
+	.extend({
+		q: z.string().catch(""),
+		ai: z.boolean().optional().catch(undefined),
+	});
+
+/** Clears the AI picks params when leaving AI mode. */
+const NO_PICK_SEARCH = pickOptionsToSearch(DEFAULT_PICK_OPTIONS);
 
 /** With no query, the page shows what's popular in the picked type. */
 const popularList = (type: MediaType | undefined) =>
@@ -76,16 +84,19 @@ export const Route = createFileRoute("/_app/search")({
 });
 
 function SearchPage() {
-	const { q, ai, ...filters } = Route.useSearch();
+	const { q, ai, mood, time, company, watchlist, attempt, ...filters } =
+		Route.useSearch();
 	const navigate = Route.useNavigate();
 	const [draft, setDraft] = useState(q);
-	const [pickOptions, setPickOptions] =
-		useState<PickOptions>(DEFAULT_PICK_OPTIONS);
-	// AI picks only run when asked for, since each one is an AI call.
-	const [pickRequest, setPickRequest] = useState<PickRequest | null>(() =>
-		ai && q ? toPickRequest(q, DEFAULT_PICK_OPTIONS) : null,
+	const [pickOptions, setPickOptions] = useState<PickOptions>(() =>
+		pickOptionsFromSearch({ mood, time, company, watchlist }),
 	);
-	const [aiAttempt, setAiAttempt] = useState(0);
+	// AI picks only run when asked for, since each one is an AI call. The run
+	// is rebuilt from the URL on the way back, so it hits the cached answer.
+	const [pickRequest, setPickRequest] = useState<PickRequest | null>(() =>
+		ai && q ? toPickRequest(q, pickOptions) : null,
+	);
+	const aiAttempt = attempt ?? 0;
 	const isDescriptive = looksLikeDescription(q);
 
 	useEffect(() => {
@@ -103,9 +114,13 @@ function SearchPage() {
 
 	function askAi(prompt: string, options = pickOptions) {
 		setPickRequest(toPickRequest(prompt, options));
-		setAiAttempt(0);
 		navigate({
-			search: (prev) => ({ ...prev, q: prompt.trim(), ai: true }),
+			search: (prev) => ({
+				...prev,
+				...pickOptionsToSearch(options),
+				q: prompt.trim(),
+				ai: true,
+			}),
 			replace: true,
 		});
 	}
@@ -114,7 +129,12 @@ function SearchPage() {
 		if (useAi === !!ai) return;
 		setPickRequest(null);
 		navigate({
-			search: (prev) => ({ ...prev, q: draft, ai: useAi || undefined }),
+			search: (prev) => ({
+				...prev,
+				...NO_PICK_SEARCH,
+				q: draft,
+				ai: useAi || undefined,
+			}),
 			replace: true,
 		});
 	}
@@ -213,7 +233,12 @@ function SearchPage() {
 					<PickResults
 						request={pickRequest}
 						attempt={aiAttempt}
-						onPickAgain={() => setAiAttempt((n) => n + 1)}
+						onPickAgain={() =>
+							navigate({
+								search: (prev) => ({ ...prev, attempt: aiAttempt + 1 }),
+								replace: true,
+							})
+						}
 					/>
 				) : (
 					<p className="text-muted-foreground text-pretty">

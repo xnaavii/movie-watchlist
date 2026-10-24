@@ -25,6 +25,9 @@ export function PickPromptField({ value, onChange }: PickPromptFieldProps) {
 				value={value}
 				maxLength={MAX_PROMPT_LENGTH}
 				rows={3}
+				// The box sizes to its content, so it needs room for the placeholder,
+				// which wraps onto four lines on a phone.
+				className="min-h-30 md:min-h-20"
 				autoFocus
 				placeholder="Describe what you feel like watching. A cozy 90s mystery under 2 hours, something like Knives Out…"
 				onChange={(e) => onChange(e.target.value)}
