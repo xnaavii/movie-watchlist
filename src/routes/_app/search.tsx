@@ -28,6 +28,7 @@ import {
 	toPickRequest,
 } from "#/features/picks/components/PickOptionsBar";
 import { PickPill } from "#/features/picks/components/PickPill";
+import { PickPromptField } from "#/features/picks/components/PickPromptField";
 import { PickResults } from "#/features/picks/components/PickResults";
 import type { PickRequest } from "#/features/picks/types";
 import { looksLikeDescription } from "#/features/picks/utils/picks";
@@ -173,23 +174,6 @@ function SearchPage() {
 	return (
 		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-12 md:mt-0">
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
-				<div className="flex gap-2">
-					<SearchBar
-						value={draft}
-						onChange={setDraft}
-						placeholder={
-							ai
-								? "Describe what you feel like watching, e.g. a cozy 90s mystery…"
-								: undefined
-						}
-					/>
-					{ai && (
-						<Button type="submit" variant="contrast" className="shrink-0">
-							<Sparkles />
-							Pick for me
-						</Button>
-					)}
-				</div>
 				<div className="flex flex-wrap items-center gap-2">
 					<PickPill selected={!ai} onClick={() => setMode(false)}>
 						Titles
@@ -198,18 +182,20 @@ function SearchPage() {
 						<Sparkles />
 						AI picks
 					</PickPill>
-					{ai && (
-						<>
-							<div className="hidden sm:block h-5 w-px bg-border mx-1" />
-							<PickOptionsBar
-								values={pickOptions}
-								onChange={(patch) =>
-									setPickOptions((prev) => ({ ...prev, ...patch }))
-								}
-							/>
-						</>
-					)}
 				</div>
+				{ai ? (
+					<>
+						<PickPromptField value={draft} onChange={setDraft} />
+						<PickOptionsBar
+							values={pickOptions}
+							onChange={(patch) =>
+								setPickOptions((prev) => ({ ...prev, ...patch }))
+							}
+						/>
+					</>
+				) : (
+					<SearchBar value={draft} onChange={setDraft} />
+				)}
 			</form>
 			{ai ? (
 				pickRequest ? (
