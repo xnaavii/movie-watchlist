@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
 	NativeSelect,
 	NativeSelectOption,
@@ -23,6 +24,39 @@ export const DEFAULT_PICK_OPTIONS: PickOptions = {
 	company: undefined,
 	useWatchlist: false,
 };
+
+/**
+ * The last AI picks run lives in the URL, so coming back from a title lands
+ * on the same cached answer instead of asking the AI again.
+ */
+export const pickSearchSchema = z.object({
+	mood: z.enum(PICK_MOODS).optional().catch(undefined),
+	time: z.enum(["short", "medium"]).optional().catch(undefined),
+	company: z.enum(PICK_COMPANY).optional().catch(undefined),
+	watchlist: z.boolean().optional().catch(undefined),
+	attempt: z.coerce.number().int().positive().optional().catch(undefined),
+});
+export type PickSearch = z.infer<typeof pickSearchSchema>;
+
+export function pickOptionsFromSearch(search: PickSearch): PickOptions {
+	return {
+		mood: search.mood,
+		time: search.time ?? "any",
+		company: search.company,
+		useWatchlist: search.watchlist ?? false,
+	};
+}
+
+/** Defaults are left out so a plain run keeps a short URL. */
+export function pickOptionsToSearch(options: PickOptions): PickSearch {
+	return {
+		mood: options.mood,
+		time: options.time === "any" ? undefined : options.time,
+		company: options.company,
+		watchlist: options.useWatchlist || undefined,
+		attempt: undefined,
+	};
+}
 
 type PickOptionsBarProps = {
 	values: PickOptions;
