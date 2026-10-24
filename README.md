@@ -1,6 +1,11 @@
-# Watchlist
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-dark.svg">
+    <img src="docs/brand/logo-light.svg" alt="Watchlist" height="40">
+  </picture>
+</h1>
 
-A discovery and watchlist app for movies (TV shows coming soon) built with TanStack Start, deployed on Cloudflare Workers.
+A discovery and watchlist app for movies and TV shows built with TanStack Start, deployed on Cloudflare Workers.
 Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ## Stack
