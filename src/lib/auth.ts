@@ -3,8 +3,11 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { oAuthProxy } from "better-auth/plugins/oauth-proxy";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
+import { account, session, user } from "@/db/schema";
 import { sendResetPasswordEmail } from "@/features/auth/email/sendResetPasswordEmail";
+import { sendVerificationEmail } from "@/features/auth/email/sendVerificationEmail";
 
 const PRODUCTION_URL = "https://watchlist.xnaavii.com";
 
@@ -28,18 +31,39 @@ export type SocialProvider = keyof typeof enabledSocialProviders;
 export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
+		requireEmailVerification: true,
 		revokeSessionsOnPasswordReset: true,
 		sendResetPassword: async ({ user, url }) => {
 			await sendResetPasswordEmail({ to: user.email, name: user.name, url });
 		},
 	},
+	emailVerification: {
+		sendOnSignUp: true,
+		// Unverified users who try to log in get a fresh link
+		sendOnSignIn: true,
+		autoSignInAfterVerification: true,
+		expiresIn: 60 * 60 * 24,
+		sendVerificationEmail: async ({ user, url }) => {
+			await sendVerificationEmail({ to: user.email, name: user.name, url });
+		},
+	},
 	socialProviders: { google },
 	account: {
 		accountLinking: {
-			// Email sign-ups aren't verified, so without this Google refuses to
-			// link to an existing account with the same address. Google has
-			// verified the email, which also marks the local account verified.
+			// Let Google sign in to an existing account with the same email even
+			// if it was never verified. Google has verified the address, and the
+			// hook below drops any password nobody proved they own.
 			requireLocalEmailVerified: false,
+		},
+	},
+	databaseHooks: {
+		account: {
+			create: {
+				before: async (newAccount) => {
+					if (newAccount.providerId === "credential") return;
+					await removeUnverifiedPassword(newAccount.userId);
+				},
+			},
 		},
 	},
 	// Preview deployments, which sign in through the production callback
@@ -57,3 +81,24 @@ export const auth = betterAuth({
 		tanstackStartCookies(),
 	],
 });
+
+/**
+ * When a provider links to an account whose email was never verified, whoever
+ * set its password never proved they own the address. Remove that password and
+ * its sessions so only the verified owner keeps access. They can set a new
+ * password with "Forgot password".
+ */
+async function removeUnverifiedPassword(userId: string) {
+	const [existing] = await db
+		.select({ emailVerified: user.emailVerified })
+		.from(user)
+		.where(eq(user.id, userId));
+	if (!existing || existing.emailVerified) return;
+
+	await db
+		.delete(account)
+		.where(
+			and(eq(account.userId, userId), eq(account.providerId, "credential")),
+		);
+	await db.delete(session).where(eq(session.userId, userId));
+}
