@@ -14,6 +14,7 @@ export function useRemoveFromWatchlist({ movieId }: { movieId: number }) {
 			queryClient.invalidateQueries({
 				queryKey: watchlistQueries.status(movieId).queryKey,
 			});
+			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
 			toast.success("Removed from watchlist");
 		},
 		onError: (error) => {

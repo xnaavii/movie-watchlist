@@ -4,6 +4,8 @@ import { LoginForm } from "#/features/auth/forms/LoginForm";
 
 const loginSearchSchema = z.object({
 	redirect: z.string().optional(),
+	// Set by Better Auth when a Google sign in fails
+	error: z.string().optional(),
 });
 
 export const Route = createFileRoute("/auth/login")({

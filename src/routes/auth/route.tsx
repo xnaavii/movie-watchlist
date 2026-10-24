@@ -1,9 +1,13 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { VenetianMask } from "lucide-react";
+import { BrandMark } from "#/components/BrandMark";
+import { SITE_CONFIG } from "#/config/site";
 import { AuthMovieShowcase } from "#/features/movies/components/AuthMovieShowcase";
+import { getSocialProviders } from "#/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
 	component: AuthLayout,
+	loader: async () => ({ socialProviders: await getSocialProviders() }),
+	staleTime: Number.POSITIVE_INFINITY,
 });
 
 function AuthLayout() {
@@ -13,9 +17,9 @@ function AuthLayout() {
 				<div className="flex justify-center gap-2 md:justify-start">
 					<Link to={"/"} className="flex items-center gap-2 font-medium">
 						<div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-							<VenetianMask className="size-4 text-sidebar-primary" />
+							<BrandMark />
 						</div>
-						Watchlist App
+						{SITE_CONFIG.name}
 					</Link>
 				</div>
 				<div className="flex flex-1 items-center justify-center">

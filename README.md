@@ -1,6 +1,6 @@
-# Movie Watchlist
+# Watchlist
 
-A movie discovery and watchlist app built with TanStack Start, deployed on Cloudflare Workers.
+A discovery and watchlist app for movies (TV shows coming soon) built with TanStack Start, deployed on Cloudflare Workers.
 Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ## Stack
@@ -13,13 +13,16 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 - **Movie data:** [TMDB API](https://www.themoviedb.org/documentation/api) via `@lorenzopant/tmdb`
 - **Ratings:** OMDb API (IMDb ratings)
 - **Streaming availability:** Watchmode API
+- **AI picks:** Cloudflare Workers AI (Llama 3.3 70B) through the `AI` binding, no API key needed
 - **Deployment:** Cloudflare Workers
 
 ## Features
 
 - Discover movies with filters (genre, year, language, rating, sort)
 - Full-text search with debounced infinite scroll
+- AI picks: describe a mood ("cozy 90s mystery under 2 hours") on the Pick page or in search, and get a short list with a reason for each, optionally drawn from your watchlist
 - Personal watchlist with watch status (want to watch / watched)
+- Sign in with email or Google
 - Movie details: cast & crew, trailers, similar movies, IMDb ratings, streaming availability
 
 ## Getting started
@@ -53,6 +56,7 @@ cp .env.example .env
 | `TMDB_BEARER_TOKEN`  | [TMDB API settings](https://www.themoviedb.org/settings/api) — v4 auth bearer token |
 | `OMDB_API_KEY`       | [OMDb API](https://www.omdbapi.com/apikey.aspx) — used for IMDb ratings             |
 | `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. Enables "Continue with Google", see [Google sign-in setup](docs/social-login-setup.md) |
 
 ### 4. Push the database schema
 

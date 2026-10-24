@@ -14,6 +14,7 @@ import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
 import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
+import { Route as AppPickRouteImport } from './routes/_app/pick'
 import { Route as AppSearchRouteImport } from './routes/_app/search'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -22,6 +23,7 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
 import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
 import { Route as AppDiscoverGenreSlugRouteImport } from './routes/_app/discover/$genreSlug'
+import { Route as AppDiscoverAtmosRouteImport } from './routes/_app/discover/atmos'
 import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
@@ -47,6 +49,11 @@ const AppProtectedRoute = AppProtectedRouteImport.update({
 const AppDiscoverRouteRoute = AppDiscoverRouteRouteImport.update({
   id: '/discover',
   path: '/discover',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppPickRoute = AppPickRouteImport.update({
+  id: '/pick',
+  path: '/pick',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSearchRoute = AppSearchRouteImport.update({
@@ -89,6 +96,11 @@ const AppDiscoverGenreSlugRoute = AppDiscoverGenreSlugRouteImport.update({
   path: '/$genreSlug',
   getParentRoute: () => AppDiscoverRouteRoute,
 } as any)
+const AppDiscoverAtmosRoute = AppDiscoverAtmosRouteImport.update({
+  id: '/atmos',
+  path: '/atmos',
+  getParentRoute: () => AppDiscoverRouteRoute,
+} as any)
 const AppMoviesMovieSlugRoute = AppMoviesMovieSlugRouteImport.update({
   id: '/movies/$movieSlug',
   path: '/movies/$movieSlug',
@@ -110,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/discover': typeof AppDiscoverRouteRouteWithChildren
+  '/pick': typeof AppPickRoute
   '/search': typeof AppSearchRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
@@ -117,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/discover/atmos': typeof AppDiscoverAtmosRoute
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
@@ -125,6 +139,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/pick': typeof AppPickRoute
   '/search': typeof AppSearchRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
@@ -132,6 +147,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
   '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/discover/atmos': typeof AppDiscoverAtmosRoute
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
@@ -143,6 +159,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/discover': typeof AppDiscoverRouteRouteWithChildren
   '/_app/_protected': typeof AppProtectedRouteWithChildren
+  '/_app/pick': typeof AppPickRoute
   '/_app/search': typeof AppSearchRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
@@ -151,6 +168,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
   '/_app/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/_app/discover/atmos': typeof AppDiscoverAtmosRoute
   '/_app/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
@@ -162,6 +180,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/discover'
+    | '/pick'
     | '/search'
     | '/auth/forgot-password'
     | '/auth/login'
@@ -169,6 +188,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/profile'
     | '/discover/$genreSlug'
+    | '/discover/atmos'
     | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover/'
@@ -177,6 +197,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/pick'
     | '/search'
     | '/auth/forgot-password'
     | '/auth/login'
@@ -184,6 +205,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/profile'
     | '/discover/$genreSlug'
+    | '/discover/atmos'
     | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover'
@@ -194,6 +216,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_app/discover'
     | '/_app/_protected'
+    | '/_app/pick'
     | '/_app/search'
     | '/auth/forgot-password'
     | '/auth/login'
@@ -202,6 +225,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/_protected/profile'
     | '/_app/discover/$genreSlug'
+    | '/_app/discover/atmos'
     | '/_app/movies/$movieSlug'
     | '/api/auth/$'
     | '/_app/discover/'
@@ -249,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof AppDiscoverRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/pick': {
+      id: '/_app/pick'
+      path: '/pick'
+      fullPath: '/pick'
+      preLoaderRoute: typeof AppPickRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/search': {
@@ -307,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverGenreSlugRouteImport
       parentRoute: typeof AppDiscoverRouteRoute
     }
+    '/_app/discover/atmos': {
+      id: '/_app/discover/atmos'
+      path: '/atmos'
+      fullPath: '/discover/atmos'
+      preLoaderRoute: typeof AppDiscoverAtmosRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
+    }
     '/_app/movies/$movieSlug': {
       id: '/_app/movies/$movieSlug'
       path: '/movies/$movieSlug'
@@ -333,11 +371,13 @@ declare module '@tanstack/react-router' {
 
 interface AppDiscoverRouteRouteChildren {
   AppDiscoverGenreSlugRoute: typeof AppDiscoverGenreSlugRoute
+  AppDiscoverAtmosRoute: typeof AppDiscoverAtmosRoute
   AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
 }
 
 const AppDiscoverRouteRouteChildren: AppDiscoverRouteRouteChildren = {
   AppDiscoverGenreSlugRoute: AppDiscoverGenreSlugRoute,
+  AppDiscoverAtmosRoute: AppDiscoverAtmosRoute,
   AppDiscoverIndexRoute: AppDiscoverIndexRoute,
 }
 
@@ -361,6 +401,7 @@ const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppDiscoverRouteRoute: typeof AppDiscoverRouteRouteWithChildren
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
+  AppPickRoute: typeof AppPickRoute
   AppSearchRoute: typeof AppSearchRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
@@ -369,6 +410,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppDiscoverRouteRoute: AppDiscoverRouteRouteWithChildren,
   AppProtectedRoute: AppProtectedRouteWithChildren,
+  AppPickRoute: AppPickRoute,
   AppSearchRoute: AppSearchRoute,
   AppIndexRoute: AppIndexRoute,
   AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,

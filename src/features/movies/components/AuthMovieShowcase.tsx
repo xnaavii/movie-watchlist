@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { movieQueries } from "#/features/movies/queries";
 import type { ShowcaseMovie } from "#/features/movies/utils/showcase";
+import { toMovieSlug } from "#/features/movies/utils/slug";
 import { cn } from "#/lib/utils";
 
 const SLIDE_DURATION = 7000;
@@ -78,7 +80,16 @@ export function AuthMovieShowcase() {
 					<div className="absolute inset-0 bg-linear-to-t from-black via-black/40 via-45% to-black/10" />
 
 					{active && isReady && (
-						<ShowcaseDetails key={active.id} movie={active} />
+						<>
+							<Link
+								to="/movies/$movieSlug"
+								params={{ movieSlug: toMovieSlug(active) }}
+								className="absolute inset-0 cursor-pointer focus-visible:outline-none focus-visible:inset-ring-2 focus-visible:inset-ring-white"
+							>
+								<span className="sr-only">View {active.title}</span>
+							</Link>
+							<ShowcaseDetails key={active.id} movie={active} />
+						</>
 					)}
 
 					{movies.length > 1 && (
@@ -122,7 +133,7 @@ function ShowcaseDetails({ movie }: { movie: ShowcaseMovie }) {
 		.join(" · ");
 
 	return (
-		<div className="absolute inset-x-10 bottom-16 flex flex-col gap-4 text-white xl:inset-x-14">
+		<div className="pointer-events-none absolute inset-x-10 bottom-16 flex flex-col gap-4 text-white xl:inset-x-14">
 			<p className="animate-in fade-in text-xs font-medium tracking-widest text-white/60 uppercase duration-700">
 				Trending this week
 			</p>

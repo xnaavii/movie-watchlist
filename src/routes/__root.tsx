@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "#/components/ThemeProvider";
 import { Button } from "#/components/ui/button";
+import { SITE_CONFIG } from "#/config/site";
 import { seo } from "#/utils/seo";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -30,9 +31,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			...seo({
-				title: "Movie Watchlist",
-				description:
-					"Discover movies, build your watchlist, and track what you've watched.",
+				title: SITE_CONFIG.name,
+				description: SITE_CONFIG.description,
 			}),
 		],
 		links: [

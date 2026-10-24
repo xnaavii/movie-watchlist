@@ -48,7 +48,7 @@ describe("buildMovieHead", () => {
 	it("includes the year in the title and points og:url and canonical at the page", () => {
 		const head = buildMovieHead(movie, url);
 		expect(head.meta[0]).toEqual({
-			title: "Fight Club (1999) | Movie Watchlist",
+			title: "Fight Club (1999) | Watchlist",
 		});
 		expect(content(head, "og:url")).toBe(url);
 		expect(content(head, "og:type")).toBe("video.movie");
