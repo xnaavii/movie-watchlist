@@ -65,7 +65,7 @@ export function MovieFilterBar({
 	const hasFilters = hasActiveFilters(values);
 
 	return (
-		<div className="flex flex-wrap items-center gap-2">
+		<div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
 			<Select
 				value={values.sort ?? sortOptions[0]}
 				onValueChange={(value) =>
@@ -74,7 +74,7 @@ export function MovieFilterBar({
 					})
 				}
 			>
-				<SelectTrigger aria-label="Sort by">
+				<SelectTrigger className="w-full sm:w-auto" aria-label="Sort by">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
@@ -93,7 +93,7 @@ export function MovieFilterBar({
 						onChange({ status: value === ANY ? undefined : (value as Status) })
 					}
 				>
-					<SelectTrigger aria-label="Status">
+					<SelectTrigger className="w-full sm:w-auto" aria-label="Status">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -111,7 +111,7 @@ export function MovieFilterBar({
 				value={values.genre ? String(values.genre) : ANY}
 				onValueChange={(value) => onChange({ genre: toNumber(value) })}
 			>
-				<SelectTrigger aria-label="Genre">
+				<SelectTrigger className="w-full sm:w-auto" aria-label="Genre">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
@@ -128,7 +128,7 @@ export function MovieFilterBar({
 				value={values.from ? String(values.from) : ANY}
 				onValueChange={(value) => onChange({ from: toNumber(value) })}
 			>
-				<SelectTrigger aria-label="Released from">
+				<SelectTrigger className="w-full sm:w-auto" aria-label="Released from">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
@@ -145,7 +145,7 @@ export function MovieFilterBar({
 				value={values.to ? String(values.to) : ANY}
 				onValueChange={(value) => onChange({ to: toNumber(value) })}
 			>
-				<SelectTrigger aria-label="Released until">
+				<SelectTrigger className="w-full sm:w-auto" aria-label="Released until">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
@@ -163,7 +163,7 @@ export function MovieFilterBar({
 					value={values.rating ? String(values.rating) : ANY}
 					onValueChange={(value) => onChange({ rating: toNumber(value) })}
 				>
-					<SelectTrigger aria-label="Minimum rating">
+					<SelectTrigger className="w-full sm:w-auto" aria-label="Minimum rating">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -180,7 +180,12 @@ export function MovieFilterBar({
 			)}
 
 			{hasFilters && (
-				<Button variant="ghost" size="sm" onClick={onClear}>
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={onClear}
+					className="col-span-2 justify-self-start sm:col-span-1"
+				>
 					<X />
 					Clear
 				</Button>
