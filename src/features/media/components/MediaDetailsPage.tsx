@@ -5,7 +5,6 @@ import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
 import { AtmosFeedback } from "#/features/sound/components/AtmosFeedback";
-import { TitleAtmosBadge } from "#/features/sound/components/TitleAtmosBadge";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { mediaQueries } from "../queries";
 import type { MediaRef, MediaType } from "../types";
@@ -33,24 +32,31 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 			className="flex flex-col gap-6 relative"
 			key={`${media.mediaType}:${media.id}`}
 		>
-			<div className="relative">
-				<MediaBackdropImageView media={media} title={media.title} />
+			{/* The hero grows with its content instead of squeezing it into the
+			    backdrop, so titles with lots of detail keep the same rhythm. */}
+			<section className="relative md:min-h-svh md:flex md:flex-col md:justify-end">
+				<div className="md:absolute md:inset-0">
+					<MediaBackdropImageView media={media} title={media.title} />
+				</div>
 				<BackButtonView
 					fallbackTo="/discover"
 					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-30"
 				/>
-				<div className="relative -mt-12 md:mt-0 md:absolute md:inset-0 flex flex-col md:justify-end px-4 md:p-6 lg:p-8 z-20">
-					<div className="flex flex-col items-center md:items-start gap-8 text-center md:text-left">
-						<MediaLogoView media={media} title={media.title} />
+				<div className="relative z-20 -mt-12 md:mt-0 px-4 md:px-6 lg:px-8 md:pt-28 md:pb-10 lg:pb-14">
+					<div className="flex flex-col items-center md:items-start gap-6 md:gap-8 text-center md:text-left max-w-2xl mx-auto md:mx-0">
+						<MediaLogoView
+							media={media}
+							title={media.title}
+							imageClassName="w-auto h-auto max-w-[clamp(12rem,24vw,22rem)] max-h-[clamp(4.5rem,16vh,9rem)]"
+						/>
 						<MediaDetailsView media={media} />
-						<TitleAtmosBadge tmdbId={media.id} mediaType={media.mediaType} />
 						<div className="flex flex-wrap justify-center md:justify-start gap-2">
 							<WatchlistStatusButtonView media={media} />
 							<JustWatchButton title={media.title} />
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
 				<MediaWhereToWatchView media={media} />

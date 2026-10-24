@@ -1,11 +1,19 @@
+import { cn } from "#/lib/utils";
+
 interface MediaLogoProps {
 	logoSrc: string | undefined;
 	title: string;
 	isLoading?: boolean;
 	className?: string;
+	imageClassName?: string;
 }
 
-export function MediaLogo({ logoSrc, title, className }: MediaLogoProps) {
+export function MediaLogo({
+	logoSrc,
+	title,
+	className,
+	imageClassName,
+}: MediaLogoProps) {
 	return (
 		<div className={className} title={title}>
 			{logoSrc ? (
@@ -14,7 +22,10 @@ export function MediaLogo({ logoSrc, title, className }: MediaLogoProps) {
 					<img
 						src={logoSrc}
 						alt={title}
-						className="relative w-[clamp(12rem,14vw,40rem)] object-contain drop-shadow-2xl"
+						className={cn(
+							"relative w-[clamp(12rem,14vw,40rem)] object-contain drop-shadow-2xl",
+							imageClassName,
+						)}
 						loading="eager"
 						fetchPriority="high"
 					/>
