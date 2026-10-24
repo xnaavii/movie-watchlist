@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useLocation } from "@tanstack/react-router";
 import { RefreshCw, Sparkles } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import {
 	Empty,
-	EmptyContent,
 	EmptyDescription,
 	EmptyHeader,
 	EmptyMedia,
@@ -113,36 +111,26 @@ function PickResultsPending() {
 	);
 }
 
-function PickResultsError({ message }: { message: string }) {
-	const location = useLocation();
-	const signedOut = message === PICK_ERRORS.signedOut;
+function errorDescription(message: string) {
+	if (message === PICK_ERRORS.notConfigured) {
+		return "AI picks aren't set up on this server yet.";
+	}
+	if (message === PICK_ERRORS.rateLimited) {
+		return "That's a lot of picks in a row. Give it a minute and try again.";
+	}
+	return message;
+}
 
+function PickResultsError({ message }: { message: string }) {
 	return (
 		<Empty className="bg-muted rounded-4xl">
 			<EmptyHeader>
 				<EmptyMedia variant="icon" className="bg-primary/10 text-primary">
 					<Sparkles />
 				</EmptyMedia>
-				<EmptyTitle>
-					{signedOut ? "Sign in to get AI picks" : "Couldn't pick right now"}
-				</EmptyTitle>
-				<EmptyDescription>
-					{signedOut
-						? "Picks use your watchlist and what you've already seen, so you need an account."
-						: message === PICK_ERRORS.notConfigured
-							? "AI picks aren't set up on this server yet."
-							: message}
-				</EmptyDescription>
+				<EmptyTitle>Couldn't pick right now</EmptyTitle>
+				<EmptyDescription>{errorDescription(message)}</EmptyDescription>
 			</EmptyHeader>
-			{signedOut && (
-				<EmptyContent>
-					<Button variant="contrast" asChild>
-						<Link to="/auth/login" search={{ redirect: location.href }}>
-							Sign in
-						</Link>
-					</Button>
-				</EmptyContent>
-			)}
 		</Empty>
 	);
 }
