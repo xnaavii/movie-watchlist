@@ -1,10 +1,7 @@
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "#/components/ui/select";
+	NativeSelect,
+	NativeSelectOption,
+} from "#/components/ui/native-select";
 import {
 	PICK_COMPANY,
 	PICK_MOODS,
@@ -35,66 +32,56 @@ type PickOptionsBarProps = {
 export function PickOptionsBar({ values, onChange }: PickOptionsBarProps) {
 	return (
 		<div className="flex flex-wrap items-center gap-2">
-			<Select
+			<NativeSelect
+				aria-label="Mood"
 				value={values.mood ?? ANY}
-				onValueChange={(value) =>
+				onChange={(event) => {
+					const value = event.target.value;
 					onChange({
 						mood: value === ANY ? undefined : (value as PickOptions["mood"]),
-					})
-				}
+					});
+				}}
 			>
-				<SelectTrigger aria-label="Mood">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ANY}>Any mood</SelectItem>
-					{PICK_MOODS.map((mood) => (
-						<SelectItem key={mood} value={mood}>
-							{mood}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				<NativeSelectOption value={ANY}>Any mood</NativeSelectOption>
+				{PICK_MOODS.map((mood) => (
+					<NativeSelectOption key={mood} value={mood}>
+						{mood}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
-			<Select
+			<NativeSelect
+				aria-label="Length"
 				value={values.time}
-				onValueChange={(value) =>
-					onChange({ time: value as PickOptions["time"] })
+				onChange={(event) =>
+					onChange({ time: event.target.value as PickOptions["time"] })
 				}
 			>
-				<SelectTrigger aria-label="Length">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					{PICK_TIMES.map((option) => (
-						<SelectItem key={option.value} value={option.value}>
-							{option.label}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				{PICK_TIMES.map((option) => (
+					<NativeSelectOption key={option.value} value={option.value}>
+						{option.label}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
-			<Select
+			<NativeSelect
+				aria-label="Watching with"
 				value={values.company ?? ANY}
-				onValueChange={(value) =>
+				onChange={(event) => {
+					const value = event.target.value;
 					onChange({
 						company:
 							value === ANY ? undefined : (value as PickOptions["company"]),
-					})
-				}
+					});
+				}}
 			>
-				<SelectTrigger aria-label="Watching with">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ANY}>Anyone</SelectItem>
-					{PICK_COMPANY.map((company) => (
-						<SelectItem key={company} value={company}>
-							{company}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
+				<NativeSelectOption value={ANY}>Anyone</NativeSelectOption>
+				{PICK_COMPANY.map((company) => (
+					<NativeSelectOption key={company} value={company}>
+						{company}
+					</NativeSelectOption>
+				))}
+			</NativeSelect>
 
 			<PickPill
 				selected={values.useWatchlist}
