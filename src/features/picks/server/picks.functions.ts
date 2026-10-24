@@ -7,7 +7,7 @@ import type {
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader } from "@tanstack/react-start/server";
 import type { z } from "zod";
-import type { TmdbGenre } from "#/features/movies/types";
+import type { TmdbGenre } from "#/features/media/types";
 import { selectUserWatchlist } from "#/features/watchlist/server/watchlist.server";
 import { AiBadOutputError, AiNotConfiguredError, generateJson } from "#/lib/ai";
 import { getSession } from "#/lib/auth.functions";
@@ -172,17 +172,16 @@ async function getViewerHistory(
 	useWatchlist: boolean,
 ): Promise<ViewerHistory> {
 	if (!userId) return NO_HISTORY;
-	const rows = await selectUserWatchlist(userId);
-	const watched = rows.filter((row) => row.watchlist.status === "watched");
-	const wantToWatch = rows.filter(
-		(row) => row.watchlist.status === "want_to_watch",
-	);
+	// Picks are movies only for now, so saved TV shows stay out of it.
+	const rows = await selectUserWatchlist(userId, "movie");
+	const watched = rows.filter((row) => row.status === "watched");
+	const wantToWatch = rows.filter((row) => row.status === "want_to_watch");
 
 	const details = useWatchlist
 		? await Promise.all(
 				wantToWatch.slice(0, WATCHLIST_CANDIDATE_LIMIT).map((row) =>
 					tmdb.movies
-						.details({ movie_id: row.movie.id })
+						.details({ movie_id: row.media.id })
 						.then(toResultItem)
 						.catch(() => null),
 				),
@@ -193,13 +192,13 @@ async function getViewerHistory(
 		wantToWatch: details.filter(
 			(movie): movie is MovieResultItem => movie !== null,
 		),
-		wantToWatchIds: new Set(wantToWatch.map((row) => row.movie.id)),
-		watchedIds: new Set(watched.map((row) => row.movie.id)),
+		wantToWatchIds: new Set(wantToWatch.map((row) => row.media.id)),
+		watchedIds: new Set(watched.map((row) => row.media.id)),
 		watchedTitles: watched
 			.slice(0, WATCHED_TASTE_LIMIT)
 			.map(
 				(row) =>
-					`${row.movie.title} (${row.movie.releaseDate?.slice(0, 4) ?? "?"})`,
+					`${row.media.title} (${row.media.releaseDate?.slice(0, 4) ?? "?"})`,
 			),
 	};
 }

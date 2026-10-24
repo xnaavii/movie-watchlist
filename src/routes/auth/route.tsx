@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { BrandMark } from "#/components/BrandMark";
 import { SITE_CONFIG } from "#/config/site";
-import { AuthMovieShowcase } from "#/features/movies/components/AuthMovieShowcase";
+import { AuthMediaShowcase } from "#/features/media/components/AuthMediaShowcase";
 import { getSocialProviders } from "#/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
@@ -28,7 +28,7 @@ function AuthLayout() {
 					</div>
 				</div>
 			</div>
-			<AuthMovieShowcase />
+			<AuthMediaShowcase />
 		</div>
 	);
 }

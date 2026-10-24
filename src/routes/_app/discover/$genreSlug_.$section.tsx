@@ -10,8 +10,8 @@ import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
-import { MovieGrid } from "#/features/movies/components/MovieGrid";
-import { movieQueries } from "#/features/movies/queries";
+import { MediaGrid } from "#/features/media/components/MediaGrid";
+import { mediaQueries } from "#/features/media/queries";
 import {
 	ALL_GENRES_SLUG,
 	type DiscoverSection,
@@ -19,9 +19,10 @@ import {
 	listDiscoverSections,
 	type SectionGenre,
 	sectionQuery,
-} from "#/features/movies/sections";
-import { normalizeMovie } from "#/features/movies/utils";
-import { findGenreBySlug, toGenreSlug } from "#/features/movies/utils/slug";
+} from "#/features/media/sections";
+import type { MediaItem } from "#/features/media/types";
+import { mediaKey } from "#/features/media/utils";
+import { findGenreBySlug, toGenreSlug } from "#/features/media/utils/slug";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { cn } from "#/lib/utils";
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
 		]);
 
-		return { section, poster: movies.pages[0]?.results[0]?.poster_path };
+		return { section, poster: movies.pages[0]?.results[0]?.posterPath };
 	},
 	head: ({ loaderData, params }) => {
 		if (!loaderData) return {};
@@ -68,7 +69,9 @@ async function resolveGenre(
 ): Promise<SectionGenre | undefined> {
 	if (genreSlug === ALL_GENRES_SLUG) return undefined;
 
-	const { genres } = await queryClient.ensureQueryData(movieQueries.genres({}));
+	const { genres } = await queryClient.ensureQueryData(
+		mediaQueries.genres("movie"),
+	);
 	const genre = findGenreBySlug(genres, genreSlug);
 	if (!genre) throw notFound();
 
@@ -92,13 +95,13 @@ function DiscoverSectionPage() {
 
 	// TMDB pages can overlap as rankings shift, so drop repeats.
 	const movies = useMemo(() => {
-		const byId = new Map<number, ReturnType<typeof normalizeMovie>>();
+		const byKey = new Map<string, MediaItem>();
 		for (const page of moviePages.pages) {
-			for (const movie of page.results) {
-				if (!byId.has(movie.id)) byId.set(movie.id, normalizeMovie(movie));
+			for (const item of page.results) {
+				if (!byKey.has(mediaKey(item))) byKey.set(mediaKey(item), item);
 			}
 		}
-		return [...byId.values()];
+		return [...byKey.values()];
 	}, [moviePages]);
 
 	const sentinelRef = useInfiniteScrollTrigger({
@@ -133,14 +136,14 @@ function DiscoverSectionPage() {
 					</p>
 				</div>
 				<SectionSwitcher
-					sections={listDiscoverSections(genre)}
+					sections={listDiscoverSections(genre, section.mediaType)}
 					active={section.slug}
 					genreSlug={genreSlug}
 				/>
 			</header>
 
 			<section className="flex flex-col gap-4" aria-label={section.title}>
-				<MovieGrid movies={movies} watchlistStatuses={watchlistStatuses} />
+				<MediaGrid items={movies} watchlistStatuses={watchlistStatuses} />
 				<InfiniteScrollFooter
 					ref={sentinelRef}
 					isFetchingNextPage={isFetchingNextPage}

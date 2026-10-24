@@ -1,4 +1,4 @@
-import { slugify } from "#/features/movies/utils/slug";
+import { slugify } from "#/features/media/utils/slug";
 import type { AtmosSeed } from "../seed";
 import type { AtmosShowcaseItem, SoundAggregate } from "../types";
 

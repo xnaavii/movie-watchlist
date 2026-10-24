@@ -1,70 +1,70 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { MediaRef } from "#/features/media/types";
 import {
 	type WatchlistFilters,
 	watchlistFilterSearchSchema,
-} from "#/features/movies/utils/filters";
+} from "#/features/media/utils/filters";
 import { ensureSession, getSession } from "#/lib/auth.functions";
 import { buildProfileStats } from "../utils/stats";
 import {
 	addToWatchlist,
-	backfillMovieDetails,
+	backfillMediaDetails,
 	deleteFromWatchlist,
-	findMovieById,
-	findOrCreateMovie,
+	findOrCreateMedia,
 	getWatchlistStatus,
 	selectStatsEntries,
-	selectUserWatchlist,
 	selectUserWatchlistPage,
 	selectUserWatchlistStatuses,
 	selectWatchlistGenreLinks,
-	selectWatchlistMoviesByGenreId,
+	selectWatchlistMediaByGenreId,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
 const WATCHLIST_PAGE_SIZE = 20;
 
+/** Keeps only the ref, so callers can pass a whole media item. */
+const toRef = ({ mediaType, id }: MediaRef): MediaRef => ({ mediaType, id });
+
 export const addToWatchlistFn = createServerFn({ method: "POST" })
-	.validator((data: { movieId: number }) => data)
+	.validator(toRef)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
-		const movieRow = await findOrCreateMovie(data.movieId);
+		await findOrCreateMedia(data);
 
-		const [newRow] = await addToWatchlist(session.user.id, movieRow.id);
+		const [newRow] = await addToWatchlist(session.user.id, data);
 
 		if (!newRow) {
-			throw new Error("Movie already in watchlist");
+			throw new Error("Already in your watchlist");
 		}
 
 		return newRow;
 	});
 
 export const removeFromWatchlist = createServerFn({ method: "POST" })
-	.validator((data: { movieId: number }) => data)
+	.validator(toRef)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
-		const movieRow = await findMovieById(data.movieId);
-		if (!movieRow) return null;
-
-		return await deleteFromWatchlist({
-			userId: session.user.id,
-			movieId: movieRow.id,
-		});
+		return await deleteFromWatchlist(session.user.id, data);
 	});
 
 export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
-	.validator((data: { movieId: number; status: WatchlistStatusInsert }) => data)
+	.validator((data: MediaRef & { status: WatchlistStatusInsert }) => ({
+		...toRef(data),
+		status: data.status,
+	}))
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
+		const { status, ...ref } = data;
 
-		const movieRow = await findOrCreateMovie(data.movieId);
+		await findOrCreateMedia(ref);
 
 		const updated = await updateWatchlistStatus({
 			userId: session.user.id,
-			movieId: movieRow.id,
-			status: data.status,
+			ref,
+			status,
 		});
 
 		if (!updated) {
@@ -75,23 +75,14 @@ export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
 	});
 
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
-	.validator((data: { movieId: number }) => data)
+	.validator(toRef)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 
 		if (!session) return null;
 
-		return await getWatchlistStatus(session.user.id, data.movieId);
+		return await getWatchlistStatus(session.user.id, data);
 	});
-
-export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
-	async () => {
-		const session = await getSession();
-		if (!session) return [];
-
-		return await selectUserWatchlist(session.user.id);
-	},
-);
 
 export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
 	.validator((data: { page: number; filters?: WatchlistFilters }) => ({
@@ -126,11 +117,11 @@ export const getUserWatchlistStatusesFn = createServerFn({
 	return await selectUserWatchlistStatuses(session.user.id);
 });
 
-export const getWatchlistMoviesByGenreFn = createServerFn({ method: "GET" })
+export const getWatchlistMediaByGenreFn = createServerFn({ method: "GET" })
 	.validator((data: { genreId: number }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
-		return await selectWatchlistMoviesByGenreId(session.user.id, data.genreId);
+		return await selectWatchlistMediaByGenreId(session.user.id, data.genreId);
 	});
 
 export const getProfileStatsFn = createServerFn({ method: "GET" }).handler(
@@ -138,7 +129,7 @@ export const getProfileStatsFn = createServerFn({ method: "GET" }).handler(
 		const session = await ensureSession();
 		const userId = session.user.id;
 
-		await backfillMovieDetails(userId);
+		await backfillMediaDetails(userId);
 		const [entries, genreLinks] = await Promise.all([
 			selectStatsEntries(userId),
 			selectWatchlistGenreLinks(userId),

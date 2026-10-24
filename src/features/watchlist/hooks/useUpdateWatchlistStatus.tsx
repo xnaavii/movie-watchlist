@@ -2,18 +2,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import type { MediaRef } from "#/features/media/types";
 import { authClient } from "#/lib/auth-client";
 import { watchlistQueries } from "../queries";
 import { updateWatchlistStatusFn } from "../server/watchlist.functions";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
 
 interface UseUpdateWatchlistStatus {
-	movieId: number;
+	media: MediaRef;
 }
 
-export function useUpdateWatchlistStatus({
-	movieId,
-}: UseUpdateWatchlistStatus) {
+export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	const updateWatchlistStatus = useServerFn(updateWatchlistStatusFn);
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
@@ -21,12 +20,14 @@ export function useUpdateWatchlistStatus({
 
 	const mutation = useMutation({
 		mutationFn: (status: WatchlistStatusInsert) =>
-			updateWatchlistStatus({ data: { movieId, status } }),
+			updateWatchlistStatus({
+				data: { mediaType: media.mediaType, id: media.id, status },
+			}),
 		onSuccess: (_data, status) => {
 			queryClient.invalidateQueries({
-				queryKey: watchlistQueries.status(movieId).queryKey,
+				queryKey: watchlistQueries.status(media).queryKey,
 			});
-			// A status filter on the watchlist page can hide or reveal this movie.
+			// A status filter on the watchlist page can hide or reveal this title.
 			queryClient.invalidateQueries({ queryKey: ["watchlist", "list"] });
 			queryClient.invalidateQueries({ queryKey: watchlistQueries.statsKey });
 			toast.success(

@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
-import { MovieRow } from "#/features/movies/components/MovieRow";
-import { useMovieLogos } from "#/features/movies/hooks/useMovieLogos";
+import { MediaRow } from "#/features/media/components/MediaRow";
+import { useMediaLogos } from "#/features/media/hooks/useMediaLogos";
 import { watchlistQueries } from "@/features/watchlist/queries";
 
 export function WatchlistMoviesView() {
@@ -10,8 +10,8 @@ export function WatchlistMoviesView() {
 	const { data: watchlistStatuses } = useSuspenseQuery(
 		watchlistQueries.watchlistStatuses(),
 	);
-	const watchlistMovies = userWatchlist.results.map(({ movie }) => movie);
-	const watchlistMoviesLogos = useMovieLogos(watchlistMovies);
+	const watchlistMovies = userWatchlist.results.map(({ media }) => media);
+	const watchlistMoviesLogos = useMediaLogos(watchlistMovies);
 
 	return (
 		watchlistMovies?.length > 0 && (
@@ -24,9 +24,9 @@ export function WatchlistMoviesView() {
 						<Link to="/watchlist">See all</Link>
 					</Button>
 				</div>
-				<MovieRow
-					movies={watchlistMovies}
-					movieLogos={watchlistMoviesLogos}
+				<MediaRow
+					items={watchlistMovies}
+					logos={watchlistMoviesLogos}
 					watchlistStatuses={watchlistStatuses}
 				/>
 			</section>

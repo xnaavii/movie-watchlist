@@ -24,6 +24,7 @@ import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/ind
 import { Route as AppDiscoverGenreSlugRouteImport } from './routes/_app/discover/$genreSlug'
 import { Route as AppDiscoverAtmosRouteImport } from './routes/_app/discover/atmos'
 import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
+import { Route as AppTvTvSlugRouteImport } from './routes/_app/tv/$tvSlug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
 import { Route as AppDiscoverGenreSlugSectionRouteImport } from './routes/_app/discover/$genreSlug_.$section'
@@ -101,6 +102,11 @@ const AppMoviesMovieSlugRoute = AppMoviesMovieSlugRouteImport.update({
   path: '/movies/$movieSlug',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppTvTvSlugRoute = AppTvTvSlugRouteImport.update({
+  id: '/tv/$tvSlug',
+  path: '/tv/$tvSlug',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
   '/discover/atmos': typeof AppDiscoverAtmosRoute
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
+  '/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
   '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
   '/discover/atmos': typeof AppDiscoverAtmosRoute
   '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
+  '/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
   '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/_app/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
   '/_app/discover/atmos': typeof AppDiscoverAtmosRoute
   '/_app/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
+  '/_app/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
   '/_app/discover/$genreSlug_/$section': typeof AppDiscoverGenreSlugSectionRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/discover/$genreSlug'
     | '/discover/atmos'
     | '/movies/$movieSlug'
+    | '/tv/$tvSlug'
     | '/api/auth/$'
     | '/discover/'
     | '/discover/$genreSlug/$section'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/discover/$genreSlug'
     | '/discover/atmos'
     | '/movies/$movieSlug'
+    | '/tv/$tvSlug'
     | '/api/auth/$'
     | '/discover'
     | '/discover/$genreSlug/$section'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/_app/discover/$genreSlug'
     | '/_app/discover/atmos'
     | '/_app/movies/$movieSlug'
+    | '/_app/tv/$tvSlug'
     | '/api/auth/$'
     | '/_app/discover/'
     | '/_app/discover/$genreSlug_/$section'
@@ -346,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMoviesMovieSlugRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/tv/$tvSlug': {
+      id: '/_app/tv/$tvSlug'
+      path: '/tv/$tvSlug'
+      fullPath: '/tv/$tvSlug'
+      preLoaderRoute: typeof AppTvTvSlugRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -407,6 +426,7 @@ interface AppRouteRouteChildren {
   AppSearchRoute: typeof AppSearchRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
+  AppTvTvSlugRoute: typeof AppTvTvSlugRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -415,6 +435,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppSearchRoute: AppSearchRoute,
   AppIndexRoute: AppIndexRoute,
   AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,
+  AppTvTvSlugRoute: AppTvTvSlugRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

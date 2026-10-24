@@ -6,17 +6,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Container } from "#/components/Container";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
-import { MovieCard } from "#/features/movies/components/MovieCard";
+import { MediaCard } from "#/features/media/components/MediaCard";
 import {
-	MovieFilterBar,
-	type MovieFilterValues,
-} from "#/features/movies/components/MovieFilterBar";
+	MediaFilterBar,
+	type MediaFilterValues,
+} from "#/features/media/components/MediaFilterBar";
+import { mediaKey } from "#/features/media/utils";
 import {
 	hasActiveFilters,
 	WATCHLIST_SORTS,
 	type WatchlistFilters,
 	watchlistFilterSearchSchema,
-} from "#/features/movies/utils/filters";
+} from "#/features/media/utils/filters";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getErrorMessage } from "#/lib/utils";
@@ -52,13 +53,13 @@ function WatchlistPage() {
 		isFetchNextPageError,
 	} = useSuspenseInfiniteQuery(watchlistQueries.infiniteList(filters));
 
-	// Pages are offset based, so a movie can show up twice if the list changes
+	// Pages are offset based, so a title can show up twice if the list changes
 	// while paging. Keep the first copy of each.
 	const items = Array.from(
 		new Map(
 			data.pages
 				.flatMap((page) => page.results)
-				.map((item) => [item.movie.id, item]),
+				.map((item) => [mediaKey(item.media), item]),
 		).values(),
 	);
 	const { data: statuses } = useSuspenseQuery(
@@ -73,7 +74,7 @@ function WatchlistPage() {
 		disabled: isFetchNextPageError,
 	});
 
-	function updateFilters(patch: MovieFilterValues) {
+	function updateFilters(patch: MediaFilterValues) {
 		navigate({
 			search: (prev) => ({ ...prev, ...(patch as Partial<WatchlistFilters>) }),
 			replace: true,
@@ -92,7 +93,7 @@ function WatchlistPage() {
 		<Container>
 			<div className="flex flex-col gap-4">
 				<BrandedTitle>My Watchlist</BrandedTitle>
-				<MovieFilterBar
+				<MediaFilterBar
 					values={filters}
 					sortOptions={WATCHLIST_SORTS}
 					showStatus
@@ -102,15 +103,15 @@ function WatchlistPage() {
 			</div>
 			{items.length === 0 && (
 				<p className="text-muted-foreground">
-					No movies in your watchlist match these filters.
+					Nothing in your watchlist matches these filters.
 				</p>
 			)}
 			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
-				{items.map(({ movie }) => (
-					<MovieCard
-						key={movie.id}
-						movie={movie}
-						watchlistStatus={statuses[movie.id] ?? null}
+				{items.map(({ media }) => (
+					<MediaCard
+						key={mediaKey(media)}
+						media={media}
+						watchlistStatus={statuses[mediaKey(media)] ?? null}
 					/>
 				))}
 			</div>

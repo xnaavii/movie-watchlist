@@ -2,6 +2,7 @@ import type { TitleSource } from "@watchmode/api-client";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
+	foreignKey,
 	index,
 	integer,
 	jsonb,
@@ -88,33 +89,51 @@ export const verification = pgTable(
 	(table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const movie = pgTable("movie", {
-	id: integer("id").primaryKey(),
-	title: text("title").notNull(),
-	releaseDate: text("release_date"),
-	posterPath: text("poster_path"),
-	backdropPath: text("backdrop_path"),
-	runtime: integer("runtime"),
-	voteAverage: real("vote_average"),
-	addedAt: timestamp("created_at").defaultNow().notNull(),
-});
+// Sound tables below share this enum; TMDB ids only identify a title together
+// with its media type, since movie and TV ids overlap.
+export const mediaTypeEnum = pgEnum("media_type", ["movie", "tv"]);
+
+export const media = pgTable(
+	"media",
+	{
+		tmdbId: integer("tmdb_id").notNull(),
+		mediaType: mediaTypeEnum("media_type").notNull(),
+		title: text("title").notNull(),
+		// Release date for movies, first air date for TV shows.
+		releaseDate: text("release_date"),
+		posterPath: text("poster_path"),
+		backdropPath: text("backdrop_path"),
+		// Minutes to watch the whole title: the movie, or every episode of a show.
+		runtime: integer("runtime"),
+		voteAverage: real("vote_average"),
+		addedAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(t) => [primaryKey({ columns: [t.tmdbId, t.mediaType] })],
+);
 
 export const genre = pgTable("genre", {
 	id: integer("id").primaryKey(),
 	name: text("name").notNull(),
 });
 
-export const movieToGenre = pgTable(
-	"movie_to_genre",
+export const mediaToGenre = pgTable(
+	"media_to_genre",
 	{
-		movieId: integer("movie_id")
-			.notNull()
-			.references(() => movie.id, { onDelete: "cascade" }),
+		tmdbId: integer("tmdb_id").notNull(),
 		genreId: integer("genre_id")
 			.notNull()
 			.references(() => genre.id, { onDelete: "cascade" }),
+		// Last, to match where the TV shows migration added it.
+		mediaType: mediaTypeEnum("media_type").notNull(),
 	},
-	(t) => [primaryKey({ columns: [t.movieId, t.genreId] })],
+	(t) => [
+		primaryKey({ columns: [t.tmdbId, t.genreId, t.mediaType] }),
+		foreignKey({
+			name: "media_to_genre_media_fk",
+			columns: [t.tmdbId, t.mediaType],
+			foreignColumns: [media.tmdbId, media.mediaType],
+		}).onDelete("cascade"),
+	],
 );
 
 export const watchlistStatusEnum = pgEnum("status", [
@@ -129,9 +148,8 @@ export const watchlist = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
-		movieId: integer("movie_id")
-			.notNull()
-			.references(() => movie.id, { onDelete: "cascade" }),
+		tmdbId: integer("tmdb_id").notNull(),
+		mediaType: mediaTypeEnum("media_type").notNull(),
 		status: watchlistStatusEnum().notNull().default("want_to_watch"),
 		addedAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
@@ -141,8 +159,17 @@ export const watchlist = pgTable(
 		watchedAt: timestamp("watched_at"),
 	},
 	(table) => [
-		uniqueIndex("watchlist_user_movie_unique").on(table.userId, table.movieId),
+		uniqueIndex("watchlist_user_media_unique").on(
+			table.userId,
+			table.tmdbId,
+			table.mediaType,
+		),
 		index("watchlist_user_id_idx").on(table.userId),
+		foreignKey({
+			name: "watchlist_media_fk",
+			columns: [table.tmdbId, table.mediaType],
+			foreignColumns: [media.tmdbId, media.mediaType],
+		}).onDelete("cascade"),
 	],
 );
 
@@ -160,8 +187,7 @@ export const imdbRating = pgTable("imdb_rating", {
 });
 
 // Sound: Dolby Atmos showcase titles, community Atmos votes and sound ratings.
-// Keyed by TMDB id + media type so TV shows can join without a migration.
-export const mediaTypeEnum = pgEnum("media_type", ["movie", "tv"]);
+// Keyed by TMDB id + media type, like the watchlist.
 
 export const atmosTitleSourceEnum = pgEnum("atmos_title_source", [
 	"curated",
@@ -262,30 +288,30 @@ export const accountRelations = relations(account, ({ one }) => ({
 	}),
 }));
 
-export const movieRelations = relations(movie, ({ many }) => ({
+export const mediaRelations = relations(media, ({ many }) => ({
 	watchlistEntries: many(watchlist),
-	movieToGenres: many(movieToGenre),
+	mediaToGenres: many(mediaToGenre),
 }));
 
 export const genreRelations = relations(genre, ({ many }) => ({
-	movieToGenres: many(movieToGenre),
+	mediaToGenres: many(mediaToGenre),
 }));
 
-export const movieToGenreRelations = relations(movieToGenre, ({ one }) => ({
-	movie: one(movie, {
-		fields: [movieToGenre.movieId],
-		references: [movie.id],
+export const mediaToGenreRelations = relations(mediaToGenre, ({ one }) => ({
+	media: one(media, {
+		fields: [mediaToGenre.tmdbId, mediaToGenre.mediaType],
+		references: [media.tmdbId, media.mediaType],
 	}),
 	genre: one(genre, {
-		fields: [movieToGenre.genreId],
+		fields: [mediaToGenre.genreId],
 		references: [genre.id],
 	}),
 }));
 
 export const watchlistRelations = relations(watchlist, ({ one }) => ({
-	movie: one(movie, {
-		fields: [watchlist.movieId],
-		references: [movie.id],
+	media: one(media, {
+		fields: [watchlist.tmdbId, watchlist.mediaType],
+		references: [media.tmdbId, media.mediaType],
 	}),
 	user: one(user, {
 		fields: [watchlist.userId],

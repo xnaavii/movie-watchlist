@@ -17,7 +17,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
-import { toGenreSlug } from "#/features/movies/utils/slug";
+import { toGenreSlug } from "#/features/media/utils/slug";
 import type { GenreCount } from "#/features/watchlist/utils/stats";
 import { cn } from "#/lib/utils";
 

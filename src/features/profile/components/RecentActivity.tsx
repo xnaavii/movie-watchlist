@@ -1,7 +1,7 @@
-import { Link } from "@tanstack/react-router";
 import { Bookmark, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
-import { toMovieSlug } from "#/features/movies/utils/slug";
+import { MediaLink } from "#/features/media/components/MediaLink";
+import { mediaKey } from "#/features/media/utils";
 import {
 	type ActivityItem,
 	formatRelativeTime,
@@ -21,15 +21,9 @@ export function RecentActivity({ items }: RecentActivityProps) {
 			<CardContent>
 				<ul className="flex flex-col">
 					{items.map((item) => (
-						<li key={item.movieId}>
-							<Link
-								to="/movies/$movieSlug"
-								params={{
-									movieSlug: toMovieSlug({
-										id: item.movieId,
-										title: item.title,
-									}),
-								}}
+						<li key={mediaKey(item)}>
+							<MediaLink
+								media={item}
 								className="-mx-2 flex items-center gap-2 sm:gap-3 rounded-2xl p-2 transition-colors hover:bg-muted"
 							>
 								<div className="aspect-2/3 w-8 sm:w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
@@ -49,7 +43,7 @@ export function RecentActivity({ items }: RecentActivityProps) {
 									</p>
 								</div>
 								<ActionPill action={item.action} />
-							</Link>
+							</MediaLink>
 						</li>
 					))}
 				</ul>

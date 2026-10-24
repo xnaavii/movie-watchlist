@@ -1,6 +1,6 @@
 import type { DiscoverMovieParams, MovieResultItem } from "@lorenzopant/tmdb";
-import type { TmdbGenre } from "#/features/movies/types";
-import { normalizeText } from "#/features/movies/utils/search";
+import type { TmdbGenre } from "#/features/media/types";
+import { normalizeText } from "#/features/media/utils/search";
 import {
 	PICK_TIMES,
 	type Pick,

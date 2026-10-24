@@ -9,9 +9,9 @@ import {
 	EmptyTitle,
 } from "#/components/ui/empty";
 import { Skeleton } from "#/components/ui/skeleton";
-import { MovieCard } from "#/features/movies/components/MovieCard";
-import { MovieCardSkeleton } from "#/features/movies/components/MovieCardSkeleton";
-import { normalizeMovie } from "#/features/movies/utils";
+import { MediaCard } from "#/features/media/components/MediaCard";
+import { MediaCardSkeleton } from "#/features/media/components/MediaCardSkeleton";
+import { normalizeMovie } from "#/features/media/utils";
 import { picksQueries } from "../queries";
 import { PICK_ERRORS, type PickRequest } from "../types";
 import { PickCard } from "./PickCard";
@@ -78,7 +78,7 @@ export function PickResults({
 					<ul className={GRID}>
 						{data.more.map((movie) => (
 							<li key={movie.id}>
-								<MovieCard movie={normalizeMovie(movie)} />
+								<MediaCard media={normalizeMovie(movie)} />
 							</li>
 						))}
 					</ul>
@@ -101,7 +101,7 @@ function PickResultsPending() {
 				{Array.from({ length: 5 }, (_, i) => (
 					// biome-ignore lint/suspicious/noArrayIndexKey: static placeholders
 					<li key={i} className="flex flex-col gap-2">
-						<MovieCardSkeleton />
+						<MediaCardSkeleton />
 						<Skeleton className="h-4 w-2/3 rounded-full" />
 						<Skeleton className="h-3 w-full rounded-full" />
 					</li>

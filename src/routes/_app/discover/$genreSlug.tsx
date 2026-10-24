@@ -14,13 +14,13 @@ import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
-import { GenreDiscoverSections } from "#/features/movies/components/GenreDiscoverSections";
-import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
-import { MovieGrid } from "#/features/movies/components/MovieGrid";
-import { MovieRow } from "#/features/movies/components/MovieRow";
-import { movieQueries } from "#/features/movies/queries";
-import { normalizeMovie } from "#/features/movies/utils";
-import { findGenreBySlug, toGenreSlug } from "#/features/movies/utils/slug";
+import { GenreDiscoverSections } from "#/features/media/components/GenreDiscoverSections";
+import { MediaBackdropMarquee } from "#/features/media/components/MediaBackdropMarquee";
+import { MediaGrid } from "#/features/media/components/MediaGrid";
+import { MediaRow } from "#/features/media/components/MediaRow";
+import { mediaQueries } from "#/features/media/queries";
+import type { MediaItem } from "#/features/media/types";
+import { findGenreBySlug, toGenreSlug } from "#/features/media/utils/slug";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getSession } from "#/lib/auth.functions";
@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 		const session = await getSession();
 
 		const genres = await context.queryClient.query({
-			...movieQueries.genres({}),
+			...mediaQueries.genres("movie"),
 			staleTime: "static",
 		});
 
@@ -60,12 +60,15 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 
 		const [movies, watchlistMovies, watchlistStatuses] = await Promise.all([
 			context.queryClient.infiniteQuery({
-				...movieQueries.infiniteDiscover({ with_genres: genreId }),
+				...mediaQueries.infiniteDiscover({
+					mediaType: "movie",
+					params: { with_genres: genreId },
+				}),
 				staleTime: "static",
 			}),
 			session
 				? context.queryClient.query({
-						...watchlistQueries.moviesByGenreId(genreId),
+						...watchlistQueries.mediaByGenreId(genreId),
 						staleTime: "static",
 					})
 				: null,
@@ -93,7 +96,7 @@ function DiscoverGenrePage() {
 	const { isAuthenticated } = Route.useLoaderData();
 	const { genreSlug } = Route.useParams();
 
-	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
+	const { data: genres } = useSuspenseQuery(mediaQueries.genres("movie"));
 	const selectedGenre = findGenreBySlug(genres.genres, genreSlug);
 	const genreId = selectedGenre?.id ?? 0;
 
@@ -102,7 +105,7 @@ function DiscoverGenrePage() {
 		enabled: isAuthenticated,
 	});
 	const { data: watchlistMovies } = useQuery({
-		...watchlistQueries.moviesByGenreId(genreId),
+		...watchlistQueries.mediaByGenreId(genreId),
 		enabled: isAuthenticated,
 	});
 
@@ -113,11 +116,14 @@ function DiscoverGenrePage() {
 		isFetchingNextPage,
 		isFetchNextPageError,
 	} = useSuspenseInfiniteQuery(
-		movieQueries.infiniteDiscover({ with_genres: genreId }),
+		mediaQueries.infiniteDiscover({
+			mediaType: "movie",
+			params: { with_genres: genreId },
+		}),
 	);
 
 	const movies = useMemo(() => {
-		const map = new Map();
+		const map = new Map<number, MediaItem>();
 		for (const page of moviesPages.pages) {
 			for (const movie of page.results) {
 				map.set(movie.id, movie);
@@ -145,11 +151,7 @@ function DiscoverGenrePage() {
 					</p>
 				</div>
 				<div className="pointer-events-none absolute inset-0 size-full bg-background/60 z-10"></div>
-				<MovieBackdropMarquee
-					movies={moviesPages.pages[0].results.map((movie) =>
-						normalizeMovie(movie),
-					)}
-				/>
+				<MediaBackdropMarquee items={moviesPages.pages[0].results} />
 			</div>
 
 			{isAuthenticated && (
@@ -164,8 +166,8 @@ function DiscoverGenrePage() {
 					</div>
 
 					{watchlistMovies && watchlistStatuses ? (
-						<MovieRow
-							movies={watchlistMovies}
+						<MediaRow
+							items={watchlistMovies}
 							watchlistStatuses={watchlistStatuses}
 						/>
 					) : null}
@@ -183,10 +185,7 @@ function DiscoverGenrePage() {
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					{selectedGenre?.name} Popular
 				</h2>
-				<MovieGrid
-					movies={movies.map((movie) => normalizeMovie(movie))}
-					watchlistStatuses={watchlistStatuses}
-				/>
+				<MediaGrid items={movies} watchlistStatuses={watchlistStatuses} />
 				<InfiniteScrollFooter
 					ref={sentinelRef}
 					isFetchingNextPage={isFetchingNextPage}

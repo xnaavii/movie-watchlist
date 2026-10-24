@@ -1,19 +1,21 @@
 // RemoveFromWatchlistButton.tsx
+
 import { BookmarkMinus } from "lucide-react";
 import { Button } from "#/components/ui/button";
+import type { MediaRef } from "#/features/media/types";
 import { cn } from "#/lib/utils";
 import { useRemoveFromWatchlist } from "../hooks/useRemoveFromWatchlist";
 
 type RemoveFromWatchlistButtonProps = {
-	movieId: number;
+	media: MediaRef;
 	className?: string;
 };
 
 export function RemoveFromWatchlistButton({
-	movieId,
+	media,
 	className,
 }: RemoveFromWatchlistButtonProps) {
-	const { remove, isPending } = useRemoveFromWatchlist({ movieId });
+	const { remove, isPending } = useRemoveFromWatchlist({ media });
 
 	return (
 		<Button

@@ -6,21 +6,22 @@ import { z } from "zod";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { SearchBar } from "#/components/SearchBar";
 import { Button } from "#/components/ui/button";
-import { MovieCard } from "#/features/movies/components/MovieCard";
+import { MediaCard } from "#/features/media/components/MediaCard";
 import {
-	MovieFilterBar,
-	type MovieFilterValues,
-} from "#/features/movies/components/MovieFilterBar";
-import { MovieRow } from "#/features/movies/components/MovieRow";
-import { movieQueries } from "#/features/movies/queries";
-import { normalizeMovie } from "#/features/movies/utils";
+	MediaFilterBar,
+	type MediaFilterValues,
+} from "#/features/media/components/MediaFilterBar";
+import { MediaRow } from "#/features/media/components/MediaRow";
+import { mediaQueries } from "#/features/media/queries";
+import type { MediaType } from "#/features/media/types";
+import { mediaKey } from "#/features/media/utils";
 import {
-	filterAndSortMovies,
+	filterAndSortMedia,
 	SEARCH_SORTS,
 	type SearchFilters,
 	searchFilterSearchSchema,
-} from "#/features/movies/utils/filters";
-import { normalizeText } from "#/features/movies/utils/search";
+} from "#/features/media/utils/filters";
+import { normalizeText } from "#/features/media/utils/search";
 import {
 	DEFAULT_PICK_OPTIONS,
 	type PickOptions,
@@ -39,20 +40,30 @@ const searchParamsSchema = searchFilterSearchSchema.extend({
 	ai: z.boolean().optional().catch(undefined),
 });
 
+/** With no query, the page shows what's popular in the picked type. */
+const popularList = (type: MediaType | undefined) =>
+	type === "tv"
+		? ({ mediaType: "tv", list: "popular" } as const)
+		: ({ mediaType: "movie", list: "popular" } as const);
+
 export const Route = createFileRoute("/_app/search")({
 	component: SearchPage,
 	validateSearch: searchParamsSchema,
-	loaderDeps: ({ search }) => ({ q: search.q, ai: search.ai }),
+	loaderDeps: ({ search }) => ({
+		q: search.q,
+		ai: search.ai,
+		type: search.type,
+	}),
 	loader: ({ context, deps }) => {
 		if (deps.ai) return;
 		if (deps.q) {
 			context.queryClient.infiniteQuery({
-				...movieQueries.infiniteSearch(deps.q),
+				...mediaQueries.infiniteSearch(deps.q),
 				staleTime: "static",
 			});
 		} else {
 			context.queryClient.infiniteQuery({
-				...movieQueries.infiniteList("popular"),
+				...mediaQueries.infiniteList(popularList(deps.type)),
 				staleTime: "static",
 			});
 		}
@@ -114,11 +125,11 @@ function SearchPage() {
 	}
 
 	const search = useInfiniteQuery({
-		...movieQueries.infiniteSearch(q),
+		...mediaQueries.infiniteSearch(q),
 		enabled: !ai,
 	});
 	const popular = useInfiniteQuery({
-		...movieQueries.infiniteList("popular"),
+		...mediaQueries.infiniteList(popularList(filters.type)),
 		enabled: !q && !ai,
 	});
 	const {
@@ -135,10 +146,10 @@ function SearchPage() {
 		new Map(
 			data?.pages
 				.flatMap((page) => page.results)
-				.map((movie) => [movie.id, movie]),
+				.map((item) => [mediaKey(item), item]),
 		).values(),
 	);
-	const movies = filterAndSortMovies(loadedMovies, filters);
+	const movies = filterAndSortMedia(loadedMovies, filters);
 
 	// When filters hide everything loaded so far, "Look further" takes over so
 	// the page does not page through the whole catalogue on its own.
@@ -154,7 +165,7 @@ function SearchPage() {
 		return <p>There was an error: {error?.message}</p>;
 	}
 
-	function updateFilters(patch: MovieFilterValues) {
+	function updateFilters(patch: MediaFilterValues) {
 		navigate({
 			search: (prev) => ({ ...prev, ...(patch as Partial<SearchFilters>) }),
 			replace: true,
@@ -241,8 +252,8 @@ function SearchPage() {
 						<>
 							{person && (
 								<section className="flex flex-col gap-4">
-									<h2 className="text-xl">Movies with {person.name}</h2>
-									<MovieRow movies={person.movies.map(normalizeMovie)} />
+									<h2 className="text-xl">Known for: {person.name}</h2>
+									<MediaRow items={person.credits} />
 								</section>
 							)}
 							{loadedMovies.length > 0 && (
@@ -250,7 +261,9 @@ function SearchPage() {
 									<div className="flex flex-col gap-1">
 										<h2 className="text-xl">
 											{!q
-												? "Popular movies"
+												? filters.type === "tv"
+													? "Popular TV shows"
+													: "Popular movies"
 												: isFuzzy
 													? `Closest matches for ${q}`
 													: `Showing results for ${q}`}
@@ -262,7 +275,7 @@ function SearchPage() {
 											</p>
 										)}
 									</div>
-									<MovieFilterBar
+									<MediaFilterBar
 										values={filters}
 										sortOptions={SEARCH_SORTS}
 										showRating
@@ -274,7 +287,7 @@ function SearchPage() {
 									{movies.length === 0 && (
 										<div className="flex flex-col items-start gap-3">
 											<p className="text-muted-foreground">
-												None of the {loadedMovies.length} movies loaded so far
+												None of the {loadedMovies.length} titles loaded so far
 												match these filters.
 											</p>
 											{hasNextPage && (
@@ -289,8 +302,8 @@ function SearchPage() {
 										</div>
 									)}
 									<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
-										{movies.map((movie) => (
-											<MovieCard key={movie.id} movie={normalizeMovie(movie)} />
+										{movies.map((item) => (
+											<MediaCard key={mediaKey(item)} media={item} />
 										))}
 									</div>
 									{movies.length > 0 && (

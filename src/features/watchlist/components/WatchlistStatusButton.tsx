@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { MediaRef } from "#/features/media/types";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
 import { useUpdateWatchlistStatus } from "../hooks/useUpdateWatchlistStatus";
@@ -8,25 +9,25 @@ import { RemoveFromWatchlistButton } from "./RemoveFromWatchlistButton";
 import { WatchlistStatusButton } from "./WatchlistStatusButtonView";
 
 type WatchlistStatusButtonViewProps = {
-	movieId: number;
+	media: MediaRef;
 	className?: string;
 };
 
 export function WatchlistStatusButtonView({
-	movieId,
+	media,
 	className,
 }: WatchlistStatusButtonViewProps) {
 	const { data: session } = authClient.useSession();
 	const { data: status } = useQuery({
-		...watchlistQueries.status(movieId),
+		...watchlistQueries.status(media),
 		enabled: !!session,
 	});
 	const { updateStatus, isPending: isUpdating } = useUpdateWatchlistStatus({
-		movieId,
+		media,
 	});
 
 	if (status == null) {
-		return <AddToWatchlistButton movieId={movieId} className={className} />;
+		return <AddToWatchlistButton media={media} className={className} />;
 	}
 
 	return (
@@ -36,7 +37,7 @@ export function WatchlistStatusButtonView({
 				isPending={isUpdating}
 				onSelect={updateStatus}
 			/>
-			<RemoveFromWatchlistButton movieId={movieId} />
+			<RemoveFromWatchlistButton media={media} />
 		</div>
 	);
 }
