@@ -10,6 +10,15 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "#/components/ui/dialog";
+import { FieldLegend, FieldSet } from "#/components/ui/field";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemMedia,
+	ItemTitle,
+} from "#/components/ui/item";
 import { PickPill } from "#/features/picks/components/PickPill";
 import { useSoundActions } from "../hooks/useSoundActions";
 import { soundQueries } from "../queries";
@@ -53,24 +62,25 @@ export function AtmosFeedback(ref: TitleRef) {
 
 	return (
 		<Dialog>
-			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border p-4 md:p-5">
-				<div className="flex items-center gap-3 min-w-0">
-					<span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted">
-						<AudioLines className="size-5" aria-hidden="true" />
-					</span>
-					<div className="flex flex-col min-w-0">
-						<p className="font-medium tracking-tight">
-							Help improve the Dolby Atmos experience
-						</p>
-						<p className="text-sm text-muted-foreground">{summary}</p>
-					</div>
-				</div>
-				<DialogTrigger asChild>
-					<Button variant="outline" className="self-start sm:self-auto">
-						Share feedback
-					</Button>
-				</DialogTrigger>
-			</div>
+			<Item
+				variant="outline"
+				className="rounded-3xl border-primary/20 bg-primary/5 p-4 md:p-5 dark:bg-primary/10"
+			>
+				<ItemMedia className="size-10 rounded-full bg-primary text-primary-foreground">
+					<AudioLines className="size-5" aria-hidden="true" />
+				</ItemMedia>
+				<ItemContent>
+					<ItemTitle className="text-base tracking-tight">
+						Help improve the Dolby Atmos experience
+					</ItemTitle>
+					<ItemDescription>{summary}</ItemDescription>
+				</ItemContent>
+				<ItemActions>
+					<DialogTrigger asChild>
+						<Button variant="contrast">Share feedback</Button>
+					</DialogTrigger>
+				</ItemActions>
+			</Item>
 			<AtmosFeedbackDialogContent titleRef={ref} />
 		</Dialog>
 	);
@@ -118,7 +128,7 @@ function FeedbackForm({
 		<div className="flex flex-col gap-8">
 			<div className="flex flex-col gap-6">
 				{sound.curatedNote && (
-					<p className="text-pretty">
+					<p className="text-pretty border-l-2 border-primary pl-4">
 						<span className="font-medium">What to listen for: </span>
 						<span className="text-muted-foreground">{sound.curatedNote}</span>
 					</p>
@@ -263,14 +273,14 @@ function ScoreGroup({
 	children: ReactNode;
 }) {
 	return (
-		<fieldset className="flex flex-col gap-2">
-			<legend className="text-sm font-medium mb-2">
+		<FieldSet className="gap-0">
+			<FieldLegend variant="label">
 				{label}
 				{hint && (
 					<span className="ml-2 font-normal text-muted-foreground">{hint}</span>
 				)}
-			</legend>
+			</FieldLegend>
 			<div className="flex flex-wrap gap-2">{children}</div>
-		</fieldset>
+		</FieldSet>
 	);
 }
