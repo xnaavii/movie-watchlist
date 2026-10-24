@@ -1,8 +1,15 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 
+/**
+ * Single source of truth for the app's branding. The PWA manifest
+ * (public/manifest.json) is static, so keep it in sync by hand.
+ */
 export const SITE_CONFIG = {
-	name: "Movie Watchlist",
+	name: "Watchlist",
+	shortName: "Watchlist",
+	description:
+		"Find what to watch next, build your watchlist, and track what you've watched.",
 	url: import.meta.env.VITE_SITE_URL ?? "http://localhost:3000",
 } as const;
 

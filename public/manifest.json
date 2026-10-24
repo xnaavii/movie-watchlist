@@ -1,6 +1,6 @@
 {
-  "short_name": "MW",
-  "name": "Movie Watchlist App",
+  "short_name": "Watchlist",
+  "name": "Watchlist",
   "icons": [
     {
       "src": "favicon.ico",

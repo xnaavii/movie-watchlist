@@ -1,6 +1,6 @@
-# Movie Watchlist
+# Watchlist
 
-A movie discovery and watchlist app built with TanStack Start, deployed on Cloudflare Workers.
+A discovery and watchlist app for movies (TV shows coming soon) built with TanStack Start, deployed on Cloudflare Workers.
 Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ## Stack
