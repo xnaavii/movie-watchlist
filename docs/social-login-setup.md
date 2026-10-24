@@ -47,7 +47,9 @@ Settings → Variables and Secrets → **Add**, type **Secret**):
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 
-Or from the terminal, one at a time: `pnpm wrangler secret put GOOGLE_CLIENT_SECRET`.
+Use the dashboard rather than `wrangler secret put`. PR preview builds upload
+Worker versions without deploying them, so `wrangler secret put` usually fails
+with "the latest version of your Worker isn't currently deployed".
 
 Use the **Secret** type, not plain text. Plain-text variables get replaced by
 the `vars` in `wrangler.jsonc` on every deploy, secrets don't. Preview
