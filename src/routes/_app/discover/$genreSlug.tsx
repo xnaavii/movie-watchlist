@@ -168,11 +168,12 @@ function DiscoverGenrePage() {
 				</section>
 			)}
 
-			<GenreDiscoverSections
-				genreId={genreId}
-				genreName={selectedGenre?.name}
-				watchlistStatuses={watchlistStatuses}
-			/>
+			{selectedGenre && (
+				<GenreDiscoverSections
+					genre={selectedGenre}
+					watchlistStatuses={watchlistStatuses}
+				/>
+			)}
 
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">

@@ -1,25 +1,21 @@
-import type { MovieResultItem } from "@lorenzopant/tmdb";
-import {
-	type QueryKey,
-	type UseSuspenseQueryOptions,
-	useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import {
+	type DiscoverSectionSlug,
+	getDiscoverSection,
+	type SectionGenre,
+	sectionQuery,
+} from "../sections";
 import { normalizeMovie } from "../utils";
 import { MovieRow } from "./MovieRow";
 import { MovieRowSkeleton } from "./MovieRowSkeleton";
+import { SectionHeader } from "./SectionHeader";
 
-type MovieResults = { results: MovieResultItem[] };
-
-interface DiscoverMovieSectionProps<
-	TData extends MovieResults,
-	TQueryKey extends QueryKey,
-> {
-	title: string;
-	description: string;
-	query: UseSuspenseQueryOptions<TData, Error, TData, TQueryKey>;
+interface DiscoverMovieSectionProps {
+	section: DiscoverSectionSlug;
+	genre?: SectionGenre;
 	watchlistStatuses?: Record<number, WatchlistStatus>;
 }
 
@@ -27,10 +23,7 @@ interface DiscoverMovieSectionProps<
  * A titled movie row that loads on its own, so a slow or failing TMDB request
  * only affects its own section instead of the whole discover page.
  */
-export function DiscoverMovieSection<
-	TData extends MovieResults,
-	TQueryKey extends QueryKey,
->(props: DiscoverMovieSectionProps<TData, TQueryKey>) {
+export function DiscoverMovieSection(props: DiscoverMovieSectionProps) {
 	return (
 		<ErrorBoundary fallback={null}>
 			<Suspense fallback={<MovieRowSkeleton />}>
@@ -40,27 +33,27 @@ export function DiscoverMovieSection<
 	);
 }
 
-function DiscoverMovieSectionContent<
-	TData extends MovieResults,
-	TQueryKey extends QueryKey,
->({
-	title,
-	description,
-	query,
+function DiscoverMovieSectionContent({
+	section,
+	genre,
 	watchlistStatuses,
-}: DiscoverMovieSectionProps<TData, TQueryKey>) {
-	const { data } = useSuspenseQuery(query);
+}: DiscoverMovieSectionProps) {
+	const { data } = useSuspenseInfiniteQuery(sectionQuery(section, genre?.id));
+	const details = getDiscoverSection(section, genre);
+	const firstPage = data.pages[0];
 
-	if (data.results.length === 0) return null;
+	if (!details || !firstPage || firstPage.results.length === 0) return null;
 
 	return (
 		<section className="flex flex-col gap-4">
-			<div className="flex flex-col gap-1">
-				<h2 className="text-xl lg:text-2xl tracking-tighter">{title}</h2>
-				<p className="text-sm text-muted-foreground">{description}</p>
-			</div>
+			<SectionHeader
+				title={details.title}
+				description={details.description}
+				section={firstPage.total_pages > 1 ? section : undefined}
+				genre={genre}
+			/>
 			<MovieRow
-				movies={data.results.map((movie) => normalizeMovie(movie))}
+				movies={firstPage.results.map((movie) => normalizeMovie(movie))}
 				watchlistStatuses={watchlistStatuses}
 			/>
 		</section>
