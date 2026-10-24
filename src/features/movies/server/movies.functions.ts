@@ -7,9 +7,11 @@ import type {
 	MovieImagesParams,
 	MovieListParams,
 	MovieRecommendationsParams,
+	MovieResultItem,
 	MovieReviewsParams,
 	MovieVideosParams,
-	SearchMoviesParams,
+	PaginatedResponse,
+	TrendingParams,
 	WithLanguage,
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
@@ -19,11 +21,32 @@ import { db } from "#/db";
 import { imdbRating, streamingSource } from "#/db/schema";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
-import type { OmdbResponse, TMDBMovieList } from "../types";
+import type {
+	OmdbResponse,
+	ResolvedSearch,
+	SearchPerson,
+	SmartSearchParams,
+	SmartSearchResponse,
+	TMDBMovieList,
+} from "../types";
+import {
+	buildFallbackQueries,
+	isPersonMatch,
+	parseSearchQuery,
+	rankFuzzyResults,
+	rankSearchResults,
+} from "../utils/search";
+import {
+	pickLogo,
+	type ShowcaseMovie,
+	selectShowcaseCandidates,
+	toShowcaseMovie,
+} from "../utils/showcase";
 
 const OMDB_API_KEY = env.OMDB_API_KEY;
 const IMDB_RATING_TTL_MS = 24 * 60 * 60 * 1000;
 const STREAMING_SOURCE_TTL_MS = 24 * 60 * 60 * 1000;
+const PERSON_MOVIE_LIMIT = 20;
 
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: MovieDetailsParams) => data)
@@ -157,15 +180,133 @@ export const getLanguages = createServerFn({ method: "GET" }).handler(
 );
 
 export const searchMovies = createServerFn({ method: "GET" })
-	.validator((data: SearchMoviesParams) => data)
-	.handler(async ({ data }) => {
+	.validator((data: SmartSearchParams) => data)
+	.handler(async ({ data }): Promise<SmartSearchResponse> => {
 		try {
-			return await tmdb.search.movies({ ...data });
+			const page = data.page ?? 1;
+
+			if (data.resolved && page > 1) {
+				const response = await tmdb.search.movies({
+					query: data.resolved.query,
+					year: data.resolved.year,
+					page,
+				});
+				return {
+					...response,
+					results: rankResults(data.query, response.results, data.resolved),
+					resolved: data.resolved,
+					person: null,
+				};
+			}
+
+			const [movies, person] = await Promise.all([
+				findMovies(data.query),
+				findPerson(data.query),
+			]);
+			return { ...movies, person };
 		} catch (error) {
 			throw new Error(
 				error instanceof TMDBError
 					? error.message
 					: "Failed to get search results",
+			);
+		}
+	});
+
+function rankResults(
+	query: string,
+	results: MovieResultItem[],
+	resolved: ResolvedSearch,
+) {
+	return resolved.fuzzy
+		? rankFuzzyResults(query, results)
+		: rankSearchResults(parseSearchQuery(query).title, results);
+}
+
+/**
+ * Tries the query as typed (with any trailing year used as a filter), then
+ * without the year filter, then looser spellings, and returns the first that
+ * finds something.
+ */
+async function findMovies(query: string) {
+	const { title, year } = parseSearchQuery(query);
+	const attempts: ResolvedSearch[] = [
+		{ query: title, year, fuzzy: false },
+		...(year ? [{ query, fuzzy: false }] : []),
+		...buildFallbackQueries(title).map((fallback) => ({
+			query: fallback,
+			fuzzy: true,
+		})),
+	];
+
+	let response: PaginatedResponse<MovieResultItem> | undefined;
+	for (const resolved of attempts) {
+		response = await tmdb.search.movies({
+			query: resolved.query,
+			year: resolved.year,
+		});
+		if (response.results.length > 0) {
+			return {
+				...response,
+				results: rankResults(query, response.results, resolved),
+				resolved,
+			};
+		}
+	}
+
+	return {
+		page: 1,
+		total_pages: 0,
+		total_results: 0,
+		...response,
+		results: [],
+		resolved: attempts[0],
+	};
+}
+
+/** When the query names an actor or director, returns their best-known movies. */
+async function findPerson(query: string): Promise<SearchPerson | null> {
+	try {
+		const { results } = await tmdb.search.person({ query });
+		const person = results[0];
+		if (!person || !isPersonMatch(query, person)) return null;
+
+		const credits = await tmdb.people.movie_credits({ person_id: person.id });
+		const movies =
+			person.known_for_department === "Acting"
+				? credits.cast
+				: credits.crew.filter(
+						(credit) => credit.department === person.known_for_department,
+					);
+
+		const unique = new Map<number, MovieResultItem>();
+		for (const movie of movies) {
+			if (movie.poster_path && !unique.has(movie.id)) {
+				unique.set(movie.id, movie);
+			}
+		}
+
+		const knownFor = [...unique.values()]
+			.sort((a, b) => b.vote_count - a.vote_count)
+			.slice(0, PERSON_MOVIE_LIMIT);
+		if (knownFor.length === 0) return null;
+
+		return { id: person.id, name: person.name, movies: knownFor };
+	} catch {
+		return null;
+	}
+}
+
+export const getTrendingMovies = createServerFn({ method: "GET" })
+	.validator((data: TrendingParams) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.trending.movies({ ...data });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get trending movies",
 			);
 		}
 	});
@@ -192,6 +333,52 @@ export const getMovieImages = createServerFn({ method: "GET" })
 				error instanceof TMDBError
 					? error.message
 					: "Failed to get movie images",
+			);
+		}
+	});
+
+/**
+ * Trending movies with their logos for the auth page showcase. Never throws:
+ * an empty list tells the page to keep its stock background.
+ */
+export const getAuthShowcase = createServerFn({ method: "GET" }).handler(
+	async (): Promise<ShowcaseMovie[]> => {
+		try {
+			const [trending, genres] = await Promise.all([
+				tmdb.trending.movies({ time_window: "week" }),
+				tmdb.genres.movie_list({}),
+			]);
+			const candidates = selectShowcaseCandidates(trending.results);
+			const logos = await Promise.all(
+				candidates.map((movie) =>
+					tmdb.movies
+						.images({
+							movie_id: movie.id,
+							include_image_language: ["en", "null"],
+						})
+						.then((images) => pickLogo(images.logos))
+						.catch(() => null),
+				),
+			);
+			return candidates
+				.map((movie, i) => toShowcaseMovie(movie, genres.genres, logos[i]))
+				.filter((movie): movie is ShowcaseMovie => movie !== null);
+		} catch {
+			return [];
+		}
+	},
+);
+
+export const getMovieWatchProviders = createServerFn({ method: "GET" })
+	.validator((data: { movie_id: number }) => data)
+	.handler(async ({ data }) => {
+		try {
+			return await tmdb.movies.watch_providers({ movie_id: data.movie_id });
+		} catch (error) {
+			throw new Error(
+				error instanceof TMDBError
+					? error.message
+					: "Failed to get where to watch the movie",
 			);
 		}
 	});

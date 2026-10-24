@@ -22,7 +22,7 @@ export function WatchlistStatusButton({
 	return (
 		<div className={cn("flex gap-2", className)}>
 			<Button
-				variant={isWantToWatch ? "default" : "secondary"}
+				variant={isWantToWatch ? "contrast" : "secondary"}
 				disabled={isPending}
 				onClick={() => onSelect("want_to_watch")}
 				size={isWantToWatch ? "default" : "icon"}

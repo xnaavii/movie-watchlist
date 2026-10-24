@@ -2,8 +2,9 @@ import type { Genre, MovieResultItem } from "@lorenzopant/tmdb";
 import { Link } from "@tanstack/react-router";
 import AutoPlay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "#/components/ui/button";
 import {
 	Carousel,
 	type CarouselApi,
@@ -12,6 +13,8 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "#/components/ui/carousel";
+import { toMovieSlug } from "#/features/movies/utils/slug";
+import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import { Genres } from "./Genres";
@@ -80,8 +83,8 @@ export function FeaturedMoviesCarousel({
 						<CarouselItem key={movie.id} title={movie.title}>
 							<div className="group relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl">
 								<Link
-									to="/movies/$id"
-									params={{ id: movie.id }}
+									to="/movies/$movieSlug"
+									params={{ movieSlug: toMovieSlug(movie) }}
 									className="absolute inset-0"
 								>
 									<span className="sr-only">View {movie.title}</span>
@@ -132,6 +135,20 @@ export function FeaturedMoviesCarousel({
 													{movie.overview}
 												</p>
 											)}
+											<div className="pointer-events-auto flex flex-wrap gap-2 pt-2">
+												{!watchlistStatus && (
+													<AddToWatchlistButton movieId={movie.id} showLabel />
+												)}
+												<Button asChild size="lg" variant="secondary">
+													<Link
+														to="/movies/$movieSlug"
+														params={{ movieSlug: toMovieSlug(movie) }}
+													>
+														Details
+														<Info />
+													</Link>
+												</Button>
+											</div>
 										</div>
 									</div>
 								</div>

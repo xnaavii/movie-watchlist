@@ -3,26 +3,34 @@ import {
 	useSuspenseInfiniteQuery,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	redirect,
+} from "@tanstack/react-router";
 import { useMemo } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
+import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
+import { GenreDiscoverSections } from "#/features/movies/components/GenreDiscoverSections";
 import { MovieBackdropMarquee } from "#/features/movies/components/MovieBackdropMarquee";
 import { MovieGrid } from "#/features/movies/components/MovieGrid";
 import { MovieRow } from "#/features/movies/components/MovieRow";
 import { movieQueries } from "#/features/movies/queries";
 import { normalizeMovie } from "#/features/movies/utils";
+import { findGenreBySlug, toGenreSlug } from "#/features/movies/utils/slug";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getSession } from "#/lib/auth.functions";
 
-export const Route = createFileRoute("/_app/discover/$genreId")({
+export const Route = createFileRoute("/_app/discover/$genreSlug")({
 	params: {
 		priority: 10,
-		parse: ({ genreId }) => {
-			if (!/^\d+$/.test(genreId)) throw notFound();
-			return { genreId: Number(genreId) };
+		parse: ({ genreSlug }) => {
+			if (!/^[a-z0-9-]+$/i.test(genreSlug)) throw notFound();
+			return { genreSlug };
 		},
 	},
 	loader: async ({ context, params }) => {
@@ -32,18 +40,30 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 			movieQueries.genres({}),
 		);
 
-		const genre = genres.genres.find((genre) => genre.id === params.genreId);
+		const genre = findGenreBySlug(genres.genres, params.genreSlug);
 		if (!genre) {
 			throw notFound();
 		}
 
+		// Send legacy numeric URLs to the readable one.
+		const canonicalSlug = toGenreSlug(genre);
+		if (params.genreSlug !== canonicalSlug) {
+			throw redirect({
+				to: "/discover/$genreSlug",
+				params: { genreSlug: canonicalSlug },
+				statusCode: 301,
+				replace: true,
+			});
+		}
+		const genreId = genre.id;
+
 		const [movies, watchlistMovies, watchlistStatuses] = await Promise.all([
 			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteDiscover({ with_genres: params.genreId }),
+				movieQueries.infiniteDiscover({ with_genres: genreId }),
 			),
 			session
 				? context.queryClient.ensureQueryData(
-						watchlistQueries.moviesByGenreId(params.genreId),
+						watchlistQueries.moviesByGenreId(genreId),
 					)
 				: null,
 			session
@@ -67,10 +87,11 @@ export const Route = createFileRoute("/_app/discover/$genreId")({
 
 function DiscoverGenrePage() {
 	const { isAuthenticated } = Route.useLoaderData();
-	const { genreId } = Route.useParams();
+	const { genreSlug } = Route.useParams();
 
 	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
-	const selectedGenre = genres.genres.find((genre) => genre.id === genreId);
+	const selectedGenre = findGenreBySlug(genres.genres, genreSlug);
+	const genreId = selectedGenre?.id ?? 0;
 
 	const { data: watchlistStatuses } = useQuery({
 		...watchlistQueries.watchlistStatuses(),
@@ -86,6 +107,7 @@ function DiscoverGenrePage() {
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		isFetchNextPageError,
 	} = useSuspenseInfiniteQuery(
 		movieQueries.infiniteDiscover({ with_genres: genreId }),
 	);
@@ -100,9 +122,13 @@ function DiscoverGenrePage() {
 		return [...map.values()];
 	}, [moviesPages]);
 
-	const sentinelRef = useInfiniteScrollTrigger(() => {
-		if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-	}, hasNextPage);
+	const sentinelRef = useInfiniteScrollTrigger({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+		itemCount: movies.length,
+		disabled: isFetchNextPageError,
+	});
 
 	return (
 		<>
@@ -142,6 +168,12 @@ function DiscoverGenrePage() {
 				</section>
 			)}
 
+			<GenreDiscoverSections
+				genreId={genreId}
+				genreName={selectedGenre?.name}
+				watchlistStatuses={watchlistStatuses}
+			/>
+
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">
 					{selectedGenre?.name} Popular
@@ -150,7 +182,12 @@ function DiscoverGenrePage() {
 					movies={movies.map((movie) => normalizeMovie(movie))}
 					watchlistStatuses={watchlistStatuses}
 				/>
-				<div ref={sentinelRef} className="h-1" aria-hidden="true" />
+				<InfiniteScrollFooter
+					ref={sentinelRef}
+					isFetchingNextPage={isFetchingNextPage}
+					isError={isFetchNextPageError}
+					onRetry={() => fetchNextPage()}
+				/>
 			</section>
 		</>
 	);

@@ -1,19 +1,25 @@
 import type { MovieDetails } from "@lorenzopant/tmdb";
+import { formatRuntime } from "../utils/format";
 import { Genres } from "./Genres";
 import { IMDBRatingView } from "./IMDBRatingView";
 import { MovieCreditsView } from "./MovieCreditsView";
 import { MovieOverview } from "./MovieOverview";
 
 export function MovieDetailsView({ movie }: { movie: MovieDetails }) {
+	const releaseYear = movie.release_date
+		? new Date(movie.release_date).getFullYear()
+		: null;
+	const meta = [releaseYear, formatRuntime(movie.runtime)].filter(Boolean);
+
 	return (
 		<div className="flex flex-col items-center md:items-start gap-4 text-sm md:text-base max-w-[65ch]">
 			<div className="flex flex-col items-center md:items-start gap-1">
 				<h1 className="font-medium tracking-tighter text-3xl md:text-4xl">
 					{movie.title}
 				</h1>
-				<p className="text-muted-foreground">
-					{new Date(movie.release_date).getFullYear()}
-				</p>
+				{meta.length > 0 && (
+					<p className="text-muted-foreground">{meta.join(" · ")}</p>
+				)}
 			</div>
 			<Genres
 				genres={movie.genres}

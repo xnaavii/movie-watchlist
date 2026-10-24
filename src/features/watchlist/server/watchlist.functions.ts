@@ -1,4 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import {
+	type WatchlistFilters,
+	watchlistFilterSearchSchema,
+} from "#/features/movies/utils/filters";
 import { ensureSession, getSession } from "#/lib/auth.functions";
 import {
 	addToWatchlist,
@@ -86,7 +90,10 @@ export const getUserWatchlist = createServerFn({ method: "GET" }).handler(
 );
 
 export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
-	.validator((data: { page: number }) => data)
+	.validator((data: { page: number; filters?: WatchlistFilters }) => ({
+		page: data.page,
+		filters: watchlistFilterSearchSchema.parse(data.filters ?? {}),
+	}))
 	.handler(async ({ data }) => {
 		const session = await getSession();
 		if (!session) {
@@ -97,6 +104,7 @@ export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
 		const rows = await selectUserWatchlistPage(session.user.id, {
 			limit: WATCHLIST_PAGE_SIZE,
 			offset,
+			filters: data.filters,
 		});
 
 		return {

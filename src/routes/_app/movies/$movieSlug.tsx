@@ -1,37 +1,47 @@
 import type { MovieDetails as MovieDetailsData } from "@lorenzopant/tmdb";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	redirect,
+} from "@tanstack/react-router";
 import { Suspense } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
 import { Button } from "#/components/ui/button";
-import { SITE_CONFIG } from "#/config/site";
+import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { JustWatchButton } from "#/features/movies/components/JustWatchButton";
 import { MovieBackdropImageView } from "#/features/movies/components/MovieBackdropImageView";
+import { MovieCastView } from "#/features/movies/components/MovieCastView";
 import { MovieDetailsView } from "#/features/movies/components/MovieDetailsView";
+import { MovieFacts } from "#/features/movies/components/MovieFacts";
+import { MovieGalleryView } from "#/features/movies/components/MovieGalleryView";
 import { MovieLogoView } from "#/features/movies/components/MovieLogoView";
 import { MovieReviewsView } from "#/features/movies/components/MovieReviewsView";
 import { MovieRowSkeleton } from "#/features/movies/components/MovieRowSkeleton";
 import { MovieTrailerView } from "#/features/movies/components/MovieTrailerView";
+import { MovieWhereToWatchView } from "#/features/movies/components/MovieWhereToWatchView";
 import { RecommendedMoviesView } from "#/features/movies/components/RecommendedMoviesView";
 import {
 	imdbRatingQueryOptions,
 	movieQueries,
 } from "#/features/movies/queries";
+import { buildMovieHead } from "#/features/movies/utils/meta";
+import { parseMovieSlug, toMovieSlug } from "#/features/movies/utils/slug";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
-import { seo, truncateForMeta, truncateTitle } from "#/utils/seo";
 
-export const Route = createFileRoute("/_app/movies/$id")({
+export const Route = createFileRoute("/_app/movies/$movieSlug")({
 	params: {
 		priority: 10,
-		parse: ({ id }) => {
-			if (!/^\d+$/.test(id)) throw notFound();
-			return { id: Number(id) };
+		parse: ({ movieSlug }) => {
+			if (parseMovieSlug(movieSlug) === null) throw notFound();
+			return { movieSlug };
 		},
 	},
 	loader: async ({ params, context: { queryClient } }) => {
-		const movieId = params.id;
+		const movieId = Number(parseMovieSlug(params.movieSlug));
 
 		let movie: MovieDetailsData;
 		try {
@@ -42,6 +52,17 @@ export const Route = createFileRoute("/_app/movies/$id")({
 			throw notFound();
 		}
 
+		// Send id-only or outdated slugs to the canonical readable URL.
+		const canonicalSlug = toMovieSlug(movie);
+		if (params.movieSlug !== canonicalSlug) {
+			throw redirect({
+				to: "/movies/$movieSlug",
+				params: { movieSlug: canonicalSlug },
+				statusCode: 301,
+				replace: true,
+			});
+		}
+
 		await Promise.allSettled([
 			queryClient.ensureQueryData(movieQueries.credits({ movie_id: movieId })),
 			queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
@@ -49,6 +70,9 @@ export const Route = createFileRoute("/_app/movies/$id")({
 				movieQueries.recommendations({ movie_id: movieId }),
 			),
 			queryClient.ensureQueryData(movieQueries.reviews({ movie_id: movieId })),
+			queryClient.ensureQueryData(
+				movieQueries.watchProviders({ movie_id: movieId }),
+			),
 			...(movie.imdb_id
 				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
 				: []),
@@ -57,27 +81,15 @@ export const Route = createFileRoute("/_app/movies/$id")({
 
 		return { movie };
 	},
-	head: ({ loaderData, params }) => {
+	head: ({ loaderData }) => {
 		if (!loaderData) {
-			return { meta: [{ title: "Movie not found" }] };
+			return { meta: [{ title: `Movie not found | ${SITE_CONFIG.name}` }] };
 		}
 		const movie = loaderData.movie;
-		const pageUrl = `${SITE_CONFIG.url}/${params.id}`;
-		const imageUrl = movie.backdrop_path || undefined;
-		const pageTitle = `${truncateTitle(movie.title)} | ${SITE_CONFIG.name}`;
-
-		return {
-			meta: [
-				...seo({
-					title: pageTitle,
-					description: truncateForMeta(movie.overview),
-					image: imageUrl,
-				}),
-				{ property: "og:type", content: "video.movie" },
-				{ property: "og:url", content: pageUrl },
-				{ name: "twitter:url", content: pageUrl },
-			],
-		};
+		return buildMovieHead(
+			movie,
+			`${getSiteUrl()}/movies/${toMovieSlug(movie)}`,
+		);
 	},
 	component: MovieDetailsPage,
 	pendingComponent: MovieDetailsPagePending,
@@ -85,7 +97,8 @@ export const Route = createFileRoute("/_app/movies/$id")({
 });
 
 function MovieDetailsPage() {
-	const { id } = Route.useParams();
+	const { movieSlug } = Route.useParams();
+	const id = Number(parseMovieSlug(movieSlug));
 
 	const { data: movie } = useSuspenseQuery(
 		movieQueries.details({ movie_id: id }),
@@ -112,7 +125,11 @@ function MovieDetailsPage() {
 			</div>
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
+				<MovieWhereToWatchView movieId={movie.id} />
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
+				<MovieGalleryView movieId={movie.id} movieTitle={movie.title} />
+				<MovieCastView movieId={movie.id} />
+				<MovieFacts movie={movie} />
 				<MovieReviewsView movieId={movie.id} />
 				<Suspense fallback={<MovieRowSkeleton />}>
 					<RecommendedMoviesView movieId={movie.id} />

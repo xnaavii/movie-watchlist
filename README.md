@@ -26,8 +26,11 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ### 1. Install dependencies
 
+This project uses [pnpm](https://pnpm.io). If you don't have it yet, enable it with Corepack (ships with Node), which picks up the version pinned in `package.json`:
+
 ```bash
-npm install
+corepack enable
+pnpm install
 ```
 
 ### 2. Set up your database
@@ -46,7 +49,7 @@ cp .env.example .env
 | -------------------- | ----------------------------------------------------------------------------------- |
 | `DATABASE_URL`       | Auto-populated by [Neon Launchpad](https://neon.new)                                |
 | `BETTER_AUTH_URL`    | Your app's base URL (e.g. `http://localhost:3000` in dev)                           |
-| `BETTER_AUTH_SECRET` | Generate with `npx -y @better-auth/cli secret`                                      |
+| `BETTER_AUTH_SECRET` | Generate with `pnpm dlx @better-auth/cli secret`                                    |
 | `TMDB_BEARER_TOKEN`  | [TMDB API settings](https://www.themoviedb.org/settings/api) — v4 auth bearer token |
 | `OMDB_API_KEY`       | [OMDb API](https://www.omdbapi.com/apikey.aspx) — used for IMDb ratings             |
 | `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
@@ -54,19 +57,19 @@ cp .env.example .env
 ### 4. Push the database schema
 
 ```bash
-npm run db:push
+pnpm db:push
 ```
 
 ### 5. Run the dev server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ## Testing
 
 ```bash
-npm run test
+pnpm test
 ```
 
 ## Deployment
@@ -74,8 +77,8 @@ npm run test
 Deployed to Cloudflare Workers via Wrangler:
 
 ```bash
-npm run build
-npm run deploy
+pnpm build
+pnpm run deploy
 ```
 
 Environment variables/secrets are managed via `wrangler secret put <NAME>` for production — set each of the variables above (except `BETTER_AUTH_URL`, which should point at your production URL).

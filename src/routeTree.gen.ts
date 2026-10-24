@@ -9,60 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as AppSearchRouteImport } from './routes/_app/search'
 import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
 import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
-import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppMoviesIdRouteImport } from './routes/_app/movies/$id'
-import { Route as AppDiscoverGenreIdRouteImport } from './routes/_app/discover/$genreId'
+import { Route as AppSearchRouteImport } from './routes/_app/search'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
+import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
+import { Route as AppDiscoverGenreSlugRouteImport } from './routes/_app/discover/$genreSlug'
+import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
 
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/_app',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AppSearchRoute = AppSearchRouteImport.update({
-  id: '/search',
-  path: '/search',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppProtectedRoute = AppProtectedRouteImport.update({
@@ -74,30 +49,55 @@ const AppDiscoverRouteRoute = AppDiscoverRouteRouteImport.update({
   path: '/discover',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppDiscoverIndexRoute = AppDiscoverIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppDiscoverRouteRoute,
-} as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppMoviesIdRoute = AppMoviesIdRouteImport.update({
-  id: '/movies/$id',
-  path: '/movies/$id',
+const AppSearchRoute = AppSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppDiscoverGenreIdRoute = AppDiscoverGenreIdRouteImport.update({
-  id: '/$genreId',
-  path: '/$genreId',
-  getParentRoute: () => AppDiscoverRouteRoute,
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AppProtectedRoute,
+} as any)
+const AppDiscoverIndexRoute = AppDiscoverIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDiscoverRouteRoute,
+} as any)
+const AppDiscoverGenreSlugRoute = AppDiscoverGenreSlugRouteImport.update({
+  id: '/$genreSlug',
+  path: '/$genreSlug',
+  getParentRoute: () => AppDiscoverRouteRoute,
+} as any)
+const AppMoviesMovieSlugRoute = AppMoviesMovieSlugRouteImport.update({
+  id: '/movies/$movieSlug',
+  path: '/movies/$movieSlug',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppProtectedWatchlistIndexRoute =
   AppProtectedWatchlistIndexRouteImport.update({
@@ -116,8 +116,8 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/movies/$id': typeof AppMoviesIdRoute
+  '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
   '/watchlist/': typeof AppProtectedWatchlistIndexRoute
@@ -131,8 +131,8 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/profile': typeof AppProtectedProfileRoute
-  '/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/movies/$id': typeof AppMoviesIdRoute
+  '/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
   '/watchlist': typeof AppProtectedWatchlistIndexRoute
@@ -150,8 +150,8 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
-  '/_app/discover/$genreId': typeof AppDiscoverGenreIdRoute
-  '/_app/movies/$id': typeof AppMoviesIdRoute
+  '/_app/discover/$genreSlug': typeof AppDiscoverGenreSlugRoute
+  '/_app/movies/$movieSlug': typeof AppMoviesMovieSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
   '/_app/_protected/watchlist/': typeof AppProtectedWatchlistIndexRoute
@@ -168,8 +168,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/profile'
-    | '/discover/$genreId'
-    | '/movies/$id'
+    | '/discover/$genreSlug'
+    | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover/'
     | '/watchlist/'
@@ -183,8 +183,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/profile'
-    | '/discover/$genreId'
-    | '/movies/$id'
+    | '/discover/$genreSlug'
+    | '/movies/$movieSlug'
     | '/api/auth/$'
     | '/discover'
     | '/watchlist'
@@ -201,8 +201,8 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/_app/'
     | '/_app/_protected/profile'
-    | '/_app/discover/$genreId'
-    | '/_app/movies/$id'
+    | '/_app/discover/$genreSlug'
+    | '/_app/movies/$movieSlug'
     | '/api/auth/$'
     | '/_app/discover/'
     | '/_app/_protected/watchlist/'
@@ -216,13 +216,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -230,46 +223,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/': {
       id: '/_app/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/forgot-password': {
-      id: '/auth/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/auth/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_app/search': {
-      id: '/_app/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof AppSearchRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/_protected': {
@@ -286,33 +251,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/discover/': {
-      id: '/_app/discover/'
-      path: '/'
-      fullPath: '/discover/'
-      preLoaderRoute: typeof AppDiscoverIndexRouteImport
-      parentRoute: typeof AppDiscoverRouteRoute
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/movies/$id': {
-      id: '/_app/movies/$id'
-      path: '/movies/$id'
-      fullPath: '/movies/$id'
-      preLoaderRoute: typeof AppMoviesIdRouteImport
+    '/_app/search': {
+      id: '/_app/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AppSearchRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/discover/$genreId': {
-      id: '/_app/discover/$genreId'
-      path: '/$genreId'
-      fullPath: '/discover/$genreId'
-      preLoaderRoute: typeof AppDiscoverGenreIdRouteImport
-      parentRoute: typeof AppDiscoverRouteRoute
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_app/_protected/profile': {
       id: '/_app/_protected/profile'
@@ -320,6 +292,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile'
       preLoaderRoute: typeof AppProtectedProfileRouteImport
       parentRoute: typeof AppProtectedRoute
+    }
+    '/_app/discover/': {
+      id: '/_app/discover/'
+      path: '/'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof AppDiscoverIndexRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
+    }
+    '/_app/discover/$genreSlug': {
+      id: '/_app/discover/$genreSlug'
+      path: '/$genreSlug'
+      fullPath: '/discover/$genreSlug'
+      preLoaderRoute: typeof AppDiscoverGenreSlugRouteImport
+      parentRoute: typeof AppDiscoverRouteRoute
+    }
+    '/_app/movies/$movieSlug': {
+      id: '/_app/movies/$movieSlug'
+      path: '/movies/$movieSlug'
+      fullPath: '/movies/$movieSlug'
+      preLoaderRoute: typeof AppMoviesMovieSlugRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/_protected/watchlist/': {
       id: '/_app/_protected/watchlist/'
@@ -332,12 +332,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppDiscoverRouteRouteChildren {
-  AppDiscoverGenreIdRoute: typeof AppDiscoverGenreIdRoute
+  AppDiscoverGenreSlugRoute: typeof AppDiscoverGenreSlugRoute
   AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
 }
 
 const AppDiscoverRouteRouteChildren: AppDiscoverRouteRouteChildren = {
-  AppDiscoverGenreIdRoute: AppDiscoverGenreIdRoute,
+  AppDiscoverGenreSlugRoute: AppDiscoverGenreSlugRoute,
   AppDiscoverIndexRoute: AppDiscoverIndexRoute,
 }
 
@@ -363,7 +363,7 @@ interface AppRouteRouteChildren {
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
   AppSearchRoute: typeof AppSearchRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppMoviesIdRoute: typeof AppMoviesIdRoute
+  AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -371,7 +371,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppProtectedRoute: AppProtectedRouteWithChildren,
   AppSearchRoute: AppSearchRoute,
   AppIndexRoute: AppIndexRoute,
-  AppMoviesIdRoute: AppMoviesIdRoute,
+  AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

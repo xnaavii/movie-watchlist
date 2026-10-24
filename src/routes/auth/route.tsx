@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { VenetianMask } from "lucide-react";
+import { AuthMovieShowcase } from "#/features/movies/components/AuthMovieShowcase";
 
 export const Route = createFileRoute("/auth")({
 	component: AuthLayout,
@@ -23,14 +24,7 @@ function AuthLayout() {
 					</div>
 				</div>
 			</div>
-			<div className="relative hidden bg-muted lg:block">
-				<img
-					src="/discover-desktop.png"
-					alt="Showcase of the app"
-					className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-					loading="lazy"
-				/>
-			</div>
+			<AuthMovieShowcase />
 		</div>
 	);
 }
