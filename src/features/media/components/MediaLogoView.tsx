@@ -25,5 +25,12 @@ export function MediaLogoView({ media, title, className }: MediaLogoViewProps) {
 		return <div>{title}</div>;
 	}
 
-	return <MediaLogo logoSrc={logoSrc} title={title} className={className} />;
+	return (
+		<MediaLogo
+			logoSrc={logoSrc}
+			title={title}
+			className={className}
+			overBackground
+		/>
+	);
 }
