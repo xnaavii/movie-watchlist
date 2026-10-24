@@ -14,8 +14,6 @@ interface __BaseEnv_Env {
 	EMAIL_FROM: string;
 	GOOGLE_CLIENT_ID?: string;
 	GOOGLE_CLIENT_SECRET?: string;
-	APPLE_CLIENT_ID?: string;
-	APPLE_CLIENT_SECRET?: string;
 }
 declare namespace Cloudflare {
 	interface Env extends __BaseEnv_Env {}
@@ -25,7 +23,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "VITE_SITE_URL" | "DATABASE_URL" | "BETTER_AUTH_URL" | "BETTER_AUTH_SECRET" | "TMDB_BEARER_TOKEN" | "OMDB_API_KEY" | "WATCHMODE_API_KEY" | "RESEND_API_KEY" | "EMAIL_FROM" | "GOOGLE_CLIENT_ID" | "GOOGLE_CLIENT_SECRET" | "APPLE_CLIENT_ID" | "APPLE_CLIENT_SECRET">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "VITE_SITE_URL" | "DATABASE_URL" | "BETTER_AUTH_URL" | "BETTER_AUTH_SECRET" | "TMDB_BEARER_TOKEN" | "OMDB_API_KEY" | "WATCHMODE_API_KEY" | "RESEND_API_KEY" | "EMAIL_FROM" | "GOOGLE_CLIENT_ID" | "GOOGLE_CLIENT_SECRET">> {}
 }
 
 // Begin runtime types

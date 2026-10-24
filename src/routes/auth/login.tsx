@@ -4,7 +4,7 @@ import { LoginForm } from "#/features/auth/forms/LoginForm";
 
 const loginSearchSchema = z.object({
 	redirect: z.string().optional(),
-	// Set by Better Auth when a Google or Apple sign in fails
+	// Set by Better Auth when a Google sign in fails
 	error: z.string().optional(),
 });
 
