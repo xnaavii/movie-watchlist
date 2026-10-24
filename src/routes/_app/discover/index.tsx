@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AudioLines } from "lucide-react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
@@ -79,6 +80,7 @@ function DiscoverPage() {
 				</h2>
 				<GenreRow genres={genres.genres} />
 			</section>
+			<AtmosShowcaseLink />
 			<section className="flex flex-col gap-4">
 				<h2 className="text-xl lg:text-2xl tracking-tighter">Popular Movies</h2>
 				<MovieRow
@@ -133,6 +135,28 @@ function DiscoverPage() {
 				watchlistStatuses={watchlistStatuses}
 			/>
 		</>
+	);
+}
+
+function AtmosShowcaseLink() {
+	return (
+		<section className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-3xl border p-5 md:p-6">
+			<div className="flex items-start gap-4">
+				<AudioLines className="size-6 shrink-0 mt-0.5" aria-hidden="true" />
+				<div className="flex flex-col gap-1">
+					<h2 className="text-xl lg:text-2xl tracking-tighter">
+						Dolby Atmos showcase
+					</h2>
+					<p className="text-sm text-muted-foreground text-pretty">
+						Movies and series with great Atmos mixes, ranked by how they sound
+						at home. Perfect for testing your speakers.
+					</p>
+				</div>
+			</div>
+			<Button asChild variant="contrast" className="w-fit">
+				<Link to="/discover/atmos">Explore</Link>
+			</Button>
+		</section>
 	);
 }
 
