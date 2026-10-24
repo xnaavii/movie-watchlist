@@ -17,7 +17,7 @@ function AuthLayout() {
 				<div className="flex justify-center gap-2 md:justify-start">
 					<Link to={"/"} className="flex items-center gap-2 font-medium">
 						<div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-							<BrandMark />
+							<BrandMark className="size-4 text-primary-foreground" />
 						</div>
 						{SITE_CONFIG.name}
 					</Link>
