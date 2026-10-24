@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { findDiscoverGenre } from "#/features/media/genres";
 import type { MediaRef } from "#/features/media/types";
 import {
 	type WatchlistFilters,
@@ -16,7 +17,7 @@ import {
 	selectUserWatchlistPage,
 	selectUserWatchlistStatuses,
 	selectWatchlistGenreLinks,
-	selectWatchlistMediaByGenreId,
+	selectWatchlistMediaByGenre,
 	updateWatchlistStatus,
 	type WatchlistStatusInsert,
 } from "./watchlist.server";
@@ -118,10 +119,12 @@ export const getUserWatchlistStatusesFn = createServerFn({
 });
 
 export const getWatchlistMediaByGenreFn = createServerFn({ method: "GET" })
-	.validator((data: { genreId: number }) => data)
+	.validator((data: { genreSlug: string }) => data)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
-		return await selectWatchlistMediaByGenreId(session.user.id, data.genreId);
+		const genre = findDiscoverGenre(data.genreSlug);
+		if (!genre) return [];
+		return await selectWatchlistMediaByGenre(session.user.id, genre.ids);
 	});
 
 export const getProfileStatsFn = createServerFn({ method: "GET" }).handler(

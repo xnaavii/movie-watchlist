@@ -30,6 +30,7 @@ import type {
 	SmartSearchResponse,
 } from "../types";
 import {
+	interleave,
 	normalizeMovie,
 	normalizeMovieDetails,
 	normalizeTVDetails,
@@ -342,15 +343,6 @@ async function searchBoth(
 			shows.results.map(normalizeTVShow),
 		),
 	};
-}
-
-function interleave<T>(a: T[], b: T[]): T[] {
-	const merged: T[] = [];
-	for (let i = 0; i < Math.max(a.length, b.length); i++) {
-		if (i < a.length) merged.push(a[i]);
-		if (i < b.length) merged.push(b[i]);
-	}
-	return merged;
 }
 
 function rankResults(

@@ -17,11 +17,10 @@ export const watchlistQueries = {
 			queryKey: ["watchlist", "status", mediaType, id],
 			queryFn: () => getWatchlistStatusFn({ data: { mediaType, id } }),
 		}),
-	mediaByGenreId: (genreId: number) =>
+	mediaByGenre: (genreSlug: string) =>
 		queryOptions({
-			queryKey: ["watchlist", "media", "genre", genreId],
-			queryFn: () => getWatchlistMediaByGenreFn({ data: { genreId } }),
-			enabled: !!genreId,
+			queryKey: ["watchlist", "media", "genre", genreSlug],
+			queryFn: () => getWatchlistMediaByGenreFn({ data: { genreSlug } }),
 		}),
 	list: () =>
 		queryOptions({

@@ -1,9 +1,10 @@
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
-import { listDiscoverSections, type SectionGenre } from "../sections";
+import type { DiscoverGenre } from "../genres";
+import { listDiscoverSections } from "../sections";
 import { DiscoverMediaSection } from "./DiscoverMediaSection";
 
 interface GenreDiscoverSectionsProps {
-	genre: SectionGenre;
+	genre: DiscoverGenre;
 	watchlistStatuses?: Record<string, WatchlistStatus>;
 }
 

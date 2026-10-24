@@ -1,5 +1,6 @@
-import type { DiscoverMovieParams } from "@lorenzopant/tmdb";
+import type { DiscoverMovieParams, DiscoverTVParams } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions } from "@tanstack/react-query";
+import { type DiscoverGenre, hasMediaType, toWithGenres } from "./genres";
 import {
 	discoverMedia,
 	getMediaList,
@@ -7,17 +8,19 @@ import {
 } from "./server/media.functions";
 import type { MediaPage, MediaType, TMDBMovieList, TMDBTVList } from "./types";
 import {
+	buildAiringThisWeekParams,
 	buildComingSoonParams,
 	buildNewReleasesParams,
+	buildNewSeriesParams,
 	CLASSICS_PARAMS,
 	HIDDEN_GEMS_PARAMS,
 	QUICK_WATCHES_PARAMS,
 	TOP_RATED_PARAMS,
+	TV_HIDDEN_GEMS_PARAMS,
+	TV_POPULAR_PARAMS,
+	TV_TOP_RATED_PARAMS,
 	withGenre,
 } from "./utils/discoverSections";
-
-/** The genre a section is narrowed down to, if any. */
-export type SectionGenre = { id: number; name: string };
 
 /** The genre slug used in section URLs for the unfiltered discover page. */
 export const ALL_GENRES_SLUG = "all";
@@ -31,9 +34,10 @@ interface DiscoverSectionDefinition {
 		title: string;
 		description: (genreName: string) => string;
 	};
-	fetchPage: (page: number, genreId?: number) => Promise<MediaPage>;
+	fetchPage: (page: number, genre?: DiscoverGenre) => Promise<MediaPage>;
 }
 
+// Genre pages list sections in this order, so movies and shows alternate.
 const DISCOVER_SECTIONS = {
 	popular: {
 		mediaType: "movie",
@@ -43,11 +47,20 @@ const DISCOVER_SECTIONS = {
 	},
 	trending: {
 		mediaType: "movie",
-		title: "Trending This Week",
-		description: "What everyone is watching right now",
+		title: "Trending Movies",
+		description: "What everyone is watching this week",
 		fetchPage: (page) =>
 			getTrendingMedia({
 				data: { mediaType: "movie", time_window: "week", page },
+			}),
+	},
+	"trending-tv-shows": {
+		mediaType: "tv",
+		title: "Trending Series",
+		description: "The shows people are bingeing this week",
+		fetchPage: (page) =>
+			getTrendingMedia({
+				data: { mediaType: "tv", time_window: "week", page },
 			}),
 	},
 	"now-in-theaters": {
@@ -64,11 +77,65 @@ const DISCOVER_SECTIONS = {
 			title: "New Releases",
 			description: (name) => `${name} movies from the last few months`,
 		},
-		fetchPage: (page, genreId) =>
-			discoverMovies({
-				...narrow(buildNewReleasesParams(new Date()), genreId),
+		fetchPage: (page, genre) =>
+			discoverMovies(
+				narrow(buildNewReleasesParams(new Date()), "movie", genre),
 				page,
-			}),
+			),
+	},
+	"new-series": {
+		mediaType: "tv",
+		title: "New Series",
+		description: "Shows that premiered in the last few months",
+		genre: {
+			title: "New Series",
+			description: (name) => `${name} shows that premiered recently`,
+		},
+		fetchPage: (page, genre) =>
+			discoverTV(narrow(buildNewSeriesParams(new Date()), "tv", genre), page),
+	},
+	"top-rated": {
+		mediaType: "movie",
+		title: "Top Rated Movies",
+		description: "The highest rated movies on TMDB",
+		genre: {
+			title: "Top Rated Movies",
+			description: (name) => `The highest rated ${name} movies on TMDB`,
+		},
+		// The unfiltered row uses TMDB's own list, the genre row discover.
+		fetchPage: (page, genre) =>
+			genre
+				? discoverMovies(narrow(TOP_RATED_PARAMS, "movie", genre), page)
+				: movieList("top_rated", page),
+	},
+	"top-rated-tv-shows": {
+		mediaType: "tv",
+		title: "Top Rated Series",
+		description: "The highest rated TV shows on TMDB",
+		genre: {
+			title: "Top Rated Series",
+			description: (name) => `The highest rated ${name} shows on TMDB`,
+		},
+		fetchPage: (page, genre) =>
+			genre
+				? discoverTV(narrow(TV_TOP_RATED_PARAMS, "tv", genre), page)
+				: tvList("top_rated", page),
+	},
+	"on-the-air": {
+		mediaType: "tv",
+		title: "New Episodes This Week",
+		description: "Series with episodes airing in the next seven days",
+		genre: {
+			title: "New Episodes This Week",
+			description: (name) => `${name} shows with episodes airing this week`,
+		},
+		fetchPage: (page, genre) =>
+			genre
+				? discoverTV(
+						narrow(buildAiringThisWeekParams(new Date()), "tv", genre),
+						page,
+					)
+				: tvList("on_the_air", page),
 	},
 	"coming-soon": {
 		mediaType: "movie",
@@ -78,25 +145,11 @@ const DISCOVER_SECTIONS = {
 			title: "Coming Soon",
 			description: (name) => `Upcoming ${name} releases to keep an eye on`,
 		},
-		fetchPage: (page, genreId) =>
-			discoverMovies({
-				...narrow(buildComingSoonParams(new Date()), genreId),
+		fetchPage: (page, genre) =>
+			discoverMovies(
+				narrow(buildComingSoonParams(new Date()), "movie", genre),
 				page,
-			}),
-	},
-	"top-rated": {
-		mediaType: "movie",
-		title: "Top Rated of All Time",
-		description: "The highest rated movies on TMDB",
-		genre: {
-			title: "Top Rated",
-			description: (name) => `The highest rated ${name} movies on TMDB`,
-		},
-		// The unfiltered row uses TMDB's own list, the genre row discover.
-		fetchPage: (page, genreId) =>
-			genreId === undefined
-				? movieList("top_rated", page)
-				: discoverMovies({ ...withGenre(TOP_RATED_PARAMS, genreId), page }),
+			),
 	},
 	"hidden-gems": {
 		mediaType: "movie",
@@ -106,8 +159,19 @@ const DISCOVER_SECTIONS = {
 			title: "Hidden Gems",
 			description: () => "Great reviews, far fewer viewers",
 		},
-		fetchPage: (page, genreId) =>
-			discoverMovies({ ...narrow(HIDDEN_GEMS_PARAMS, genreId), page }),
+		fetchPage: (page, genre) =>
+			discoverMovies(narrow(HIDDEN_GEMS_PARAMS, "movie", genre), page),
+	},
+	"hidden-gem-series": {
+		mediaType: "tv",
+		title: "Hidden Gem Series",
+		description: "Acclaimed shows far fewer people have found",
+		genre: {
+			title: "Hidden Gem Series",
+			description: () => "Acclaimed shows far fewer people have found",
+		},
+		fetchPage: (page, genre) =>
+			discoverTV(narrow(TV_HIDDEN_GEMS_PARAMS, "tv", genre), page),
 	},
 	"quick-watches": {
 		mediaType: "movie",
@@ -117,8 +181,21 @@ const DISCOVER_SECTIONS = {
 			title: "Quick Watches",
 			description: () => "Well loved picks under 95 minutes",
 		},
-		fetchPage: (page, genreId) =>
-			discoverMovies({ ...narrow(QUICK_WATCHES_PARAMS, genreId), page }),
+		fetchPage: (page, genre) =>
+			discoverMovies(narrow(QUICK_WATCHES_PARAMS, "movie", genre), page),
+	},
+	"popular-tv-shows": {
+		mediaType: "tv",
+		title: "Popular Series",
+		description: "The series everyone is talking about",
+		genre: {
+			title: "Popular Series",
+			description: (name) => `The ${name} shows everyone is watching`,
+		},
+		fetchPage: (page, genre) =>
+			genre
+				? discoverTV(narrow(TV_POPULAR_PARAMS, "tv", genre), page)
+				: tvList("popular", page),
 	},
 	"timeless-classics": {
 		mediaType: "movie",
@@ -128,35 +205,8 @@ const DISCOVER_SECTIONS = {
 			title: "Timeless Classics",
 			description: () => "Acclaimed films from before 1980",
 		},
-		fetchPage: (page, genreId) =>
-			discoverMovies({ ...narrow(CLASSICS_PARAMS, genreId), page }),
-	},
-	"popular-tv-shows": {
-		mediaType: "tv",
-		title: "Popular TV Shows",
-		description: "The series everyone is talking about",
-		fetchPage: (page) => tvList("popular", page),
-	},
-	"trending-tv-shows": {
-		mediaType: "tv",
-		title: "Trending Series",
-		description: "The shows people are bingeing this week",
-		fetchPage: (page) =>
-			getTrendingMedia({
-				data: { mediaType: "tv", time_window: "week", page },
-			}),
-	},
-	"on-the-air": {
-		mediaType: "tv",
-		title: "New Episodes This Week",
-		description: "Series with episodes airing in the next seven days",
-		fetchPage: (page) => tvList("on_the_air", page),
-	},
-	"top-rated-tv-shows": {
-		mediaType: "tv",
-		title: "Top Rated Series",
-		description: "The highest rated TV shows on TMDB",
-		fetchPage: (page) => tvList("top_rated", page),
+		fetchPage: (page, genre) =>
+			discoverMovies(narrow(CLASSICS_PARAMS, "movie", genre), page),
 	},
 } satisfies Record<string, DiscoverSectionDefinition>;
 
@@ -167,7 +217,7 @@ export interface DiscoverSection {
 	mediaType: MediaType;
 	title: string;
 	description: string;
-	genre?: SectionGenre;
+	genre?: DiscoverGenre;
 }
 
 const movieList = (list: TMDBMovieList, page: number) =>
@@ -176,11 +226,18 @@ const movieList = (list: TMDBMovieList, page: number) =>
 const tvList = (list: TMDBTVList, page: number) =>
 	getMediaList({ data: { mediaType: "tv", list, page } });
 
-const discoverMovies = (params: DiscoverMovieParams) =>
-	discoverMedia({ data: { mediaType: "movie", params } });
+const discoverMovies = (params: DiscoverMovieParams, page: number) =>
+	discoverMedia({ data: { mediaType: "movie", params: { ...params, page } } });
 
-function narrow<T extends object>(params: T, genreId?: number) {
-	return genreId === undefined ? params : withGenre(params, genreId);
+const discoverTV = (params: DiscoverTVParams, page: number) =>
+	discoverMedia({ data: { mediaType: "tv", params: { ...params, page } } });
+
+function narrow<T extends DiscoverMovieParams | DiscoverTVParams>(
+	params: T,
+	mediaType: MediaType,
+	genre?: DiscoverGenre,
+): T {
+	return genre ? withGenre(params, toWithGenres(genre, mediaType)) : params;
 }
 
 function isSectionSlug(slug: string): slug is DiscoverSectionSlug {
@@ -193,7 +250,7 @@ function isSectionSlug(slug: string): slug is DiscoverSectionSlug {
  */
 export function getDiscoverSection(
 	slug: string,
-	genre?: SectionGenre,
+	genre?: DiscoverGenre,
 ): DiscoverSection | undefined {
 	if (!isSectionSlug(slug)) return undefined;
 	const definition: DiscoverSectionDefinition = DISCOVER_SECTIONS[slug];
@@ -206,7 +263,9 @@ export function getDiscoverSection(
 			description: definition.description,
 		};
 	}
-	if (!definition.genre) return undefined;
+	if (!definition.genre || !hasMediaType(genre, definition.mediaType)) {
+		return undefined;
+	}
 
 	return {
 		slug,
@@ -221,13 +280,16 @@ export function getDiscoverSection(
  * All pages of a section. A row shows the first page and the section page
  * keeps loading the rest, so opening "See more" reuses the cached first page.
  */
-export const sectionQuery = (slug: DiscoverSectionSlug, genreId?: number) =>
+export const sectionQuery = (
+	slug: DiscoverSectionSlug,
+	genre?: DiscoverGenre,
+) =>
 	infiniteQueryOptions({
-		queryKey: ["media", "section", { slug, genreId }],
+		queryKey: ["media", "section", { slug, genre: genre?.slug }],
 		queryFn: ({ pageParam }) =>
 			(DISCOVER_SECTIONS[slug] as DiscoverSectionDefinition).fetchPage(
 				pageParam,
-				genreId,
+				genre,
 			),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) =>
@@ -236,7 +298,7 @@ export const sectionQuery = (slug: DiscoverSectionSlug, genreId?: number) =>
 
 /** Every section that exists for the given genre, in discover page order. */
 export function listDiscoverSections(
-	genre?: SectionGenre,
+	genre?: DiscoverGenre,
 	mediaType?: MediaType,
 ): DiscoverSection[] {
 	return Object.keys(DISCOVER_SECTIONS).flatMap((slug) => {

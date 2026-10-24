@@ -2,10 +2,10 @@ import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { DiscoverGenre } from "../genres";
 import {
 	type DiscoverSectionSlug,
 	getDiscoverSection,
-	type SectionGenre,
 	sectionQuery,
 } from "../sections";
 import { MediaRow } from "./MediaRow";
@@ -14,7 +14,7 @@ import { SectionHeader } from "./SectionHeader";
 
 interface DiscoverMediaSectionProps {
 	section: DiscoverSectionSlug;
-	genre?: SectionGenre;
+	genre?: DiscoverGenre;
 	watchlistStatuses?: Record<string, WatchlistStatus>;
 }
 
@@ -37,7 +37,7 @@ function DiscoverMediaSectionContent({
 	genre,
 	watchlistStatuses,
 }: DiscoverMediaSectionProps) {
-	const { data } = useSuspenseInfiniteQuery(sectionQuery(section, genre?.id));
+	const { data } = useSuspenseInfiniteQuery(sectionQuery(section, genre));
 	const details = getDiscoverSection(section, genre);
 	const firstPage = data.pages[0];
 
