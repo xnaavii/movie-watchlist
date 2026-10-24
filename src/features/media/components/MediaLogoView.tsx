@@ -36,6 +36,7 @@ export function MediaLogoView({
 			title={title}
 			className={className}
 			imageClassName={imageClassName}
+			overBackground
 		/>
 	);
 }

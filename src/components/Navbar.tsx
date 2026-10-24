@@ -26,12 +26,8 @@ function NavIconButton({ to, icon: Icon }: NavItem) {
 	const isActive = !!matchRoute({ to });
 
 	return (
-		<Button size="icon" asChild variant={isActive ? "default" : "link"}>
-			<Link
-				to={to}
-				activeProps={{ className: "text-sidebar-primary-foreground" }}
-				inactiveProps={{ className: "text-primary-foreground" }}
-			>
+		<Button size="icon" asChild variant={isActive ? "default" : "ghost"}>
+			<Link to={to}>
 				<Icon className="size-4" />
 			</Link>
 		</Button>
