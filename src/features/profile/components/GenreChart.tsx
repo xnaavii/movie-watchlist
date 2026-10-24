@@ -48,33 +48,37 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 
 	return (
 		<Card>
-			<CardHeader>
-				<CardTitle>Most watched genres</CardTitle>
-				<CardDescription>
-					{scope === "watched"
-						? "Movies you've marked as watched"
-						: "Everything on your watchlist"}
-				</CardDescription>
-				<CardAction>
-					<div className="flex gap-1 rounded-full bg-muted p-1">
-						{SCOPES.map(({ value, label }) => (
-							<button
-								key={value}
-								type="button"
-								aria-pressed={scope === value}
-								onClick={() => setScope(value)}
-								className={cn(
-									"rounded-full px-3 py-1 text-xs font-medium transition-colors",
-									scope === value
-										? "bg-foreground text-background"
-										: "text-muted-foreground hover:text-foreground",
-								)}
-							>
-								{label}
-							</button>
-						))}
+			<CardHeader className="flex flex-col gap-3 sm:gap-1.5">
+				<div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+					<div className="flex flex-col gap-1.5">
+						<CardTitle>Most watched genres</CardTitle>
+						<CardDescription>
+							{scope === "watched"
+								? "Movies you've marked as watched"
+								: "Everything on your watchlist"}
+						</CardDescription>
 					</div>
-				</CardAction>
+					<CardAction className="static col-start-auto row-span-auto self-start justify-self-start sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:self-start sm:justify-self-end">
+						<div className="flex gap-1 rounded-full bg-muted p-1">
+							{SCOPES.map(({ value, label }) => (
+								<button
+									key={value}
+									type="button"
+									aria-pressed={scope === value}
+									onClick={() => setScope(value)}
+									className={cn(
+										"rounded-full px-2.5 sm:px-3 py-1 text-xs font-medium transition-colors",
+										scope === value
+											? "bg-foreground text-background"
+											: "text-muted-foreground hover:text-foreground",
+									)}
+								>
+									{label}
+								</button>
+							))}
+						</div>
+					</CardAction>
+				</div>
 			</CardHeader>
 			<CardContent>
 				{data.length === 0 ? (
@@ -90,7 +94,7 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 							<BarChart
 								data={data}
 								layout="vertical"
-								margin={{ top: 0, right: 32, bottom: 0, left: 0 }}
+								margin={{ top: 0, right: 24, bottom: 0, left: 0 }}
 								barCategoryGap={8}
 								accessibilityLayer
 							>
@@ -98,10 +102,11 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 								<YAxis
 									type="category"
 									dataKey="name"
-									width={120}
+									width={100}
 									tickLine={false}
 									axisLine={false}
-									tick={{ fill: "var(--foreground)", fontSize: 13 }}
+									tick={{ fill: "var(--foreground)", fontSize: 12 }}
+									className="sm:[&_.recharts-text]:text-[13px]"
 								/>
 								<Tooltip
 									cursor={{ fill: "var(--muted)", radius: 8 }}

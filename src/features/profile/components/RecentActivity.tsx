@@ -30,9 +30,9 @@ export function RecentActivity({ items }: RecentActivityProps) {
 										title: item.title,
 									}),
 								}}
-								className="-mx-2 flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-muted"
+								className="-mx-2 flex items-center gap-2 sm:gap-3 rounded-2xl p-2 transition-colors hover:bg-muted"
 							>
-								<div className="aspect-2/3 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
+								<div className="aspect-2/3 w-8 sm:w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
 									{item.posterPath && (
 										<img
 											src={item.posterPath}
@@ -64,14 +64,14 @@ function ActionPill({ action }: { action: ActivityItem["action"] }) {
 	return (
 		<span
 			className={cn(
-				"inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium",
+				"inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-xs font-medium",
 				watched
 					? "bg-primary text-primary-foreground"
 					: "border border-border text-muted-foreground",
 			)}
 		>
 			<Icon className="size-3" />
-			{watched ? "Watched" : "Saved"}
+			<span className="hidden sm:inline">{watched ? "Watched" : "Saved"}</span>
 		</span>
 	);
 }

@@ -43,7 +43,7 @@ export function ProfileDashboard({ stats }: ProfileDashboardProps) {
 
 	return (
 		<div className="flex flex-col gap-4 lg:gap-6">
-			<div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+			<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
 				<StatTile
 					icon={Eye}
 					label="Watched"

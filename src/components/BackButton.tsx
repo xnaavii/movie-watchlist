@@ -13,7 +13,7 @@ export function BackButton({ className, onBack }: BackButtonProps) {
 			size="icon"
 			variant="secondary"
 			onClick={onBack}
-			className={cn("!rounded-full rounded-full", className)}
+			className={cn("rounded-full", className)}
 		>
 			<ChevronLeft />
 		</Button>
