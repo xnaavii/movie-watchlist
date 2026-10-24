@@ -12,6 +12,7 @@ import {
 	FieldSeparator,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { SocialSignInButtons } from "#/features/auth/components/SocialSignInButtons";
 import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
 
@@ -21,13 +22,15 @@ const formSchema = z.object({
 });
 
 const routeApi = getRouteApi("/auth/login");
+const authRouteApi = getRouteApi("/auth");
 
 export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"form">) {
 	const router = useRouter();
-	const { redirect } = routeApi.useSearch();
+	const { redirect, error: oauthError } = routeApi.useSearch();
+	const { socialProviders } = authRouteApi.useLoaderData();
 
 	const form = useForm({
 		defaultValues: {
@@ -69,6 +72,12 @@ export function LoginForm({
 						Enter your email below to login to your account
 					</p>
 				</div>
+				{oauthError && (
+					<p role="alert" className="text-center text-sm text-destructive">
+						{oauthErrorMessage(oauthError)}
+					</p>
+				)}
+				<SocialSignInButtons providers={socialProviders} redirect={redirect} />
 				<form.Field name="email">
 					{(field) => {
 						const isInvalid =
@@ -146,4 +155,17 @@ export function LoginForm({
 			</FieldGroup>
 		</form>
 	);
+}
+
+function oauthErrorMessage(code: string) {
+	switch (code) {
+		case "access_denied":
+			return "Sign in was cancelled.";
+		case "email_not_found":
+			return "We couldn't get an email address from that account.";
+		case "account_not_linked":
+			return "That email already has an account. Log in with your password first.";
+		default:
+			return "Something went wrong signing you in. Please try again.";
+	}
 }

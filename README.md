@@ -20,6 +20,7 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 - Discover movies with filters (genre, year, language, rating, sort)
 - Full-text search with debounced infinite scroll
 - Personal watchlist with watch status (want to watch / watched)
+- Sign in with email, Google or Apple
 - Movie details: cast & crew, trailers, similar movies, IMDb ratings, streaming availability
 
 ## Getting started
@@ -53,6 +54,8 @@ cp .env.example .env
 | `TMDB_BEARER_TOKEN`  | [TMDB API settings](https://www.themoviedb.org/settings/api) — v4 auth bearer token |
 | `OMDB_API_KEY`       | [OMDb API](https://www.omdbapi.com/apikey.aspx) — used for IMDb ratings             |
 | `WATCHMODE_API_KEY`  | [Watchmode API](https://api.watchmode.com/) — used for streaming availability       |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. Enables "Continue with Google", see [social login setup](docs/social-login-setup.md) |
+| `APPLE_CLIENT_ID` / `APPLE_CLIENT_SECRET`   | Optional. Enables "Continue with Apple", see [social login setup](docs/social-login-setup.md)  |
 
 ### 4. Push the database schema
 

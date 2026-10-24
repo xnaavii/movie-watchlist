@@ -1,9 +1,12 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { VenetianMask } from "lucide-react";
 import { AuthMovieShowcase } from "#/features/movies/components/AuthMovieShowcase";
+import { getSocialProviders } from "#/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
 	component: AuthLayout,
+	loader: async () => ({ socialProviders: await getSocialProviders() }),
+	staleTime: Number.POSITIVE_INFINITY,
 });
 
 function AuthLayout() {

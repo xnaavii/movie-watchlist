@@ -11,6 +11,7 @@
     "build": "vite build",
     "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
+    "auth:apple-secret": "tsx scripts/apple-client-secret.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "format": "biome format",
