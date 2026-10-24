@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { z } from "zod";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { SearchBar } from "#/components/SearchBar";
@@ -45,13 +45,15 @@ export const Route = createFileRoute("/_app/search")({
 	loader: ({ context, deps }) => {
 		if (deps.ai) return;
 		if (deps.q) {
-			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteSearch(deps.q),
-			);
+			context.queryClient.infiniteQuery({
+				...movieQueries.infiniteSearch(deps.q),
+				staleTime: "static",
+			});
 		} else {
-			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteList("popular"),
-			);
+			context.queryClient.infiniteQuery({
+				...movieQueries.infiniteList("popular"),
+				staleTime: "static",
+			});
 		}
 	},
 	pendingComponent: () => (
@@ -105,7 +107,7 @@ function SearchPage() {
 		});
 	}
 
-	function handleSubmit(event: FormEvent) {
+	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (ai) askAi(draft);
 	}

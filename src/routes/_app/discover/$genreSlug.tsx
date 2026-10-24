@@ -36,9 +36,10 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 	loader: async ({ context, params }) => {
 		const session = await getSession();
 
-		const genres = await context.queryClient.ensureQueryData(
-			movieQueries.genres({}),
-		);
+		const genres = await context.queryClient.query({
+			...movieQueries.genres({}),
+			staleTime: "static",
+		});
 
 		const genre = findGenreBySlug(genres.genres, params.genreSlug);
 		if (!genre) {
@@ -58,18 +59,21 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 		const genreId = genre.id;
 
 		const [movies, watchlistMovies, watchlistStatuses] = await Promise.all([
-			context.queryClient.ensureInfiniteQueryData(
-				movieQueries.infiniteDiscover({ with_genres: genreId }),
-			),
+			context.queryClient.infiniteQuery({
+				...movieQueries.infiniteDiscover({ with_genres: genreId }),
+				staleTime: "static",
+			}),
 			session
-				? context.queryClient.ensureQueryData(
-						watchlistQueries.moviesByGenreId(genreId),
-					)
+				? context.queryClient.query({
+						...watchlistQueries.moviesByGenreId(genreId),
+						staleTime: "static",
+					})
 				: null,
 			session
-				? context.queryClient.ensureQueryData(
-						watchlistQueries.watchlistStatuses(),
-					)
+				? context.queryClient.query({
+						...watchlistQueries.watchlistStatuses(),
+						staleTime: "static",
+					})
 				: null,
 		]);
 

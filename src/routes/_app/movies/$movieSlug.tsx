@@ -29,7 +29,7 @@ import {
 } from "#/features/movies/queries";
 import { buildMovieHead } from "#/features/movies/utils/meta";
 import { parseMovieSlug, toMovieSlug } from "#/features/movies/utils/slug";
-import { SoundPanel } from "#/features/sound/components/SoundPanel";
+import { AtmosFeedback } from "#/features/sound/components/AtmosFeedback";
 import { TitleAtmosBadge } from "#/features/sound/components/TitleAtmosBadge";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -47,9 +47,10 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 
 		let movie: MovieDetailsData;
 		try {
-			movie = await queryClient.ensureQueryData(
-				movieQueries.details({ movie_id: movieId }),
-			);
+			movie = await queryClient.query({
+				...movieQueries.details({ movie_id: movieId }),
+				staleTime: "static",
+			});
 		} catch {
 			throw notFound();
 		}
@@ -66,19 +67,38 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 		}
 
 		await Promise.allSettled([
-			queryClient.ensureQueryData(movieQueries.credits({ movie_id: movieId })),
-			queryClient.ensureQueryData(movieQueries.images({ movie_id: movieId })),
-			queryClient.ensureQueryData(
-				movieQueries.recommendations({ movie_id: movieId }),
-			),
-			queryClient.ensureQueryData(movieQueries.reviews({ movie_id: movieId })),
-			queryClient.ensureQueryData(
-				movieQueries.watchProviders({ movie_id: movieId }),
-			),
+			queryClient.query({
+				...movieQueries.credits({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.images({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.recommendations({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.reviews({ movie_id: movieId }),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...movieQueries.watchProviders({ movie_id: movieId }),
+				staleTime: "static",
+			}),
 			...(movie.imdb_id
-				? [queryClient.ensureQueryData(imdbRatingQueryOptions(movie.imdb_id))]
+				? [
+						queryClient.query({
+							...imdbRatingQueryOptions(movie.imdb_id),
+							staleTime: "static",
+						}),
+					]
 				: []),
-			queryClient.ensureQueryData(watchlistQueries.status(movieId)),
+			queryClient.query({
+				...watchlistQueries.status(movieId),
+				staleTime: "static",
+			}),
 		]);
 
 		return { movie };
@@ -129,7 +149,7 @@ function MovieDetailsPage() {
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
 				<MovieWhereToWatchView movieId={movie.id} />
-				<SoundPanel tmdbId={movie.id} mediaType="movie" />
+				<AtmosFeedback tmdbId={movie.id} mediaType="movie" />
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
 				<MovieGalleryView movieId={movie.id} movieTitle={movie.title} />
 				<MovieCastView movieId={movie.id} />

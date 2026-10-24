@@ -1,6 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
-import { type FormEvent, type ReactNode, useState } from "react";
+import { AudioLines } from "lucide-react";
+import { type ReactNode, type SubmitEvent, useState } from "react";
 import { Button } from "#/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "#/components/ui/dialog";
+import { FieldLegend, FieldSet } from "#/components/ui/field";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemMedia,
+	ItemTitle,
+} from "#/components/ui/item";
 import { PickPill } from "#/features/picks/components/PickPill";
 import { useSoundActions } from "../hooks/useSoundActions";
 import { soundQueries } from "../queries";
@@ -13,6 +31,7 @@ import {
 	type TitleRef,
 	type TitleSound,
 } from "../types";
+import { formatScore } from "../utils/sound";
 import { AtmosBadge } from "./AtmosBadge";
 import { SoundScores } from "./SoundScores";
 
@@ -33,36 +52,70 @@ const EMPTY_DRAFT: RatingDraft = {
 
 const range = (max: number) => Array.from({ length: max }, (_, i) => i + 1);
 
-/** Community sound score, Atmos vote and the viewer's own sound rating. */
-export function SoundPanel(ref: TitleRef) {
-	const { data, isLoading, isError } = useQuery(soundQueries.title(ref));
+/** Compact prompt that opens the Atmos vote and sound rating in a dialog. */
+export function AtmosFeedback(ref: TitleRef) {
+	const { data } = useQuery(soundQueries.title(ref));
+	const summary =
+		data && data.sound.count > 0
+			? `Sound ${formatScore(data.sound.overall)} / ${OVERALL_MAX} from ${data.sound.count} ${data.sound.count === 1 ? "rating" : "ratings"}`
+			: "Tell us if it has an Atmos track and how it sounds";
 
 	return (
-		<section className="flex flex-col gap-6">
-			<div className="flex flex-col gap-1">
-				<div className="flex flex-wrap items-center gap-3">
-					<h2 className="text-2xl tracking-tighter">Sound</h2>
-					{data?.isAtmos && <AtmosBadge />}
-				</div>
-				<p className="text-sm text-muted-foreground">
-					How it sounds at home, rated by people who watched it
-				</p>
-			</div>
-
-			{isLoading && (
-				<div className="h-32 max-w-sm rounded-3xl bg-muted animate-pulse" />
-			)}
-			{isError && (
-				<p className="text-sm text-muted-foreground">
-					Sound ratings aren't available right now.
-				</p>
-			)}
-			{data && <SoundPanelContent titleRef={ref} sound={data} />}
-		</section>
+		<Dialog>
+			<Item
+				variant="outline"
+				className="rounded-3xl border-primary/20 bg-primary/5 p-4 md:p-5 dark:bg-primary/10"
+			>
+				<ItemMedia className="size-10 rounded-full bg-primary text-primary-foreground">
+					<AudioLines className="size-5" aria-hidden="true" />
+				</ItemMedia>
+				<ItemContent>
+					<ItemTitle className="text-base tracking-tight">
+						Help improve the Dolby Atmos experience
+					</ItemTitle>
+					<ItemDescription>{summary}</ItemDescription>
+				</ItemContent>
+				<ItemActions>
+					<DialogTrigger asChild>
+						<Button variant="contrast">Share feedback</Button>
+					</DialogTrigger>
+				</ItemActions>
+			</Item>
+			<AtmosFeedbackDialogContent titleRef={ref} />
+		</Dialog>
 	);
 }
 
-function SoundPanelContent({
+function AtmosFeedbackDialogContent({ titleRef }: { titleRef: TitleRef }) {
+	const { data, isLoading, isError } = useQuery(soundQueries.title(titleRef));
+
+	return (
+		<DialogContent className="flex max-h-[85svh] flex-col gap-6 overflow-hidden px-0 pt-8 pb-4 sm:max-w-xl">
+			<DialogHeader className="px-8">
+				<div className="flex flex-wrap items-center gap-2">
+					<DialogTitle className="text-lg">Dolby Atmos and sound</DialogTitle>
+					{data?.isAtmos && <AtmosBadge />}
+				</div>
+				<DialogDescription>
+					How it sounds at home, rated by people who watched it
+				</DialogDescription>
+			</DialogHeader>
+			<div className="mx-2 min-h-0 overflow-y-auto overscroll-contain px-6 pb-4">
+				{isLoading && (
+					<div className="h-32 rounded-3xl bg-muted animate-pulse" />
+				)}
+				{isError && (
+					<p className="text-sm text-muted-foreground">
+						Sound ratings aren't available right now.
+					</p>
+				)}
+				{data && <FeedbackForm titleRef={titleRef} sound={data} />}
+			</div>
+		</DialogContent>
+	);
+}
+
+function FeedbackForm({
 	titleRef,
 	sound,
 }: {
@@ -72,10 +125,10 @@ function SoundPanelContent({
 	const actions = useSoundActions(titleRef);
 
 	return (
-		<div className="grid gap-10 lg:grid-cols-2">
+		<div className="flex flex-col gap-8">
 			<div className="flex flex-col gap-6">
 				{sound.curatedNote && (
-					<p className="text-pretty">
+					<p className="text-pretty border-l-2 border-primary pl-4">
 						<span className="font-medium">What to listen for: </span>
 						<span className="text-muted-foreground">{sound.curatedNote}</span>
 					</p>
@@ -130,17 +183,14 @@ function SoundRatingForm({
 }) {
 	const [draft, setDraft] = useState<RatingDraft>(initial);
 
-	function handleSubmit(event: FormEvent) {
+	function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (draft.overall == null) return;
 		onSave({ ...draft, overall: draft.overall });
 	}
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="flex flex-col gap-5 rounded-3xl border p-5 md:p-6"
-		>
+		<form onSubmit={handleSubmit} className="flex flex-col gap-5 border-t pt-6">
 			<h3 className="text-lg font-medium tracking-tight">
 				{hasRating ? "Your sound rating" : "Rate the sound"}
 			</h3>
@@ -223,14 +273,14 @@ function ScoreGroup({
 	children: ReactNode;
 }) {
 	return (
-		<fieldset className="flex flex-col gap-2">
-			<legend className="text-sm font-medium mb-2">
+		<FieldSet className="gap-0">
+			<FieldLegend variant="label">
 				{label}
 				{hint && (
 					<span className="ml-2 font-normal text-muted-foreground">{hint}</span>
 				)}
-			</legend>
+			</FieldLegend>
 			<div className="flex flex-wrap gap-2">{children}</div>
-		</fieldset>
+		</FieldSet>
 	);
 }
