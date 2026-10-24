@@ -29,7 +29,7 @@ import {
 } from "#/features/movies/queries";
 import { buildMovieHead } from "#/features/movies/utils/meta";
 import { parseMovieSlug, toMovieSlug } from "#/features/movies/utils/slug";
-import { SoundPanel } from "#/features/sound/components/SoundPanel";
+import { AtmosFeedback } from "#/features/sound/components/AtmosFeedback";
 import { TitleAtmosBadge } from "#/features/sound/components/TitleAtmosBadge";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -149,7 +149,7 @@ function MovieDetailsPage() {
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
 				<MovieWhereToWatchView movieId={movie.id} />
-				<SoundPanel tmdbId={movie.id} mediaType="movie" />
+				<AtmosFeedback tmdbId={movie.id} mediaType="movie" />
 				<MovieTrailerView movieId={movie.id} movieTitle={movie.title} />
 				<MovieGalleryView movieId={movie.id} movieTitle={movie.title} />
 				<MovieCastView movieId={movie.id} />
