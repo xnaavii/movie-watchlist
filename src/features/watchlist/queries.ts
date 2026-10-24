@@ -1,23 +1,24 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import type { WatchlistFilters } from "#/features/movies/utils/filters";
+import type { MediaRef } from "#/features/media/types";
+import type { WatchlistFilters } from "#/features/media/utils/filters";
 import {
 	getProfileStatsFn,
 	getUserWatchlistPageFn,
 	getUserWatchlistStatusesFn,
-	getWatchlistMoviesByGenreFn,
+	getWatchlistMediaByGenreFn,
 	getWatchlistStatusFn,
 } from "./server/watchlist.functions";
 
 export const watchlistQueries = {
-	status: (movieId: number) =>
+	status: ({ mediaType, id }: MediaRef) =>
 		queryOptions({
-			queryKey: ["watchlist", "status", movieId],
-			queryFn: () => getWatchlistStatusFn({ data: { movieId } }),
+			queryKey: ["watchlist", "status", mediaType, id],
+			queryFn: () => getWatchlistStatusFn({ data: { mediaType, id } }),
 		}),
-	moviesByGenreId: (genreId: number) =>
+	mediaByGenreId: (genreId: number) =>
 		queryOptions({
-			queryKey: ["watchlist", "movies", "genre", genreId],
-			queryFn: () => getWatchlistMoviesByGenreFn({ data: { genreId } }),
+			queryKey: ["watchlist", "media", "genre", genreId],
+			queryFn: () => getWatchlistMediaByGenreFn({ data: { genreId } }),
 			enabled: !!genreId,
 		}),
 	list: () =>

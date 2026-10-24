@@ -4,10 +4,12 @@ import {
 	formatRelativeTime,
 	formatWatchTime,
 	type StatsEntry,
+	type StatsGenreLink,
 } from "./stats";
 
 const entry = (overrides: Partial<StatsEntry>): StatsEntry => ({
-	movieId: 1,
+	id: 1,
+	mediaType: "movie",
 	title: "Movie",
 	posterPath: null,
 	releaseDate: null,
@@ -22,24 +24,24 @@ const entry = (overrides: Partial<StatsEntry>): StatsEntry => ({
 describe("buildProfileStats", () => {
 	const entries = [
 		entry({
-			movieId: 1,
+			id: 1,
 			status: "watched",
 			runtime: 120,
 			voteAverage: 8,
 			watchedAt: new Date("2026-10-20T00:00:00Z"),
 		}),
-		entry({ movieId: 2, status: "watched", runtime: null, voteAverage: null }),
+		entry({ id: 2, status: "watched", runtime: null, voteAverage: null }),
 		entry({
-			movieId: 3,
+			id: 3,
 			runtime: 90,
 			addedAt: new Date("2026-10-22T00:00:00Z"),
 		}),
 	];
-	const genres = [
-		{ movieId: 1, genreId: 28, name: "Action" },
-		{ movieId: 2, genreId: 28, name: "Action" },
-		{ movieId: 3, genreId: 18, name: "Drama" },
-		{ movieId: 99, genreId: 35, name: "Comedy" },
+	const genres: StatsGenreLink[] = [
+		{ id: 1, mediaType: "movie", genreId: 28, name: "Action" },
+		{ id: 2, mediaType: "movie", genreId: 28, name: "Action" },
+		{ id: 3, mediaType: "movie", genreId: 18, name: "Drama" },
+		{ id: 99, mediaType: "movie", genreId: 35, name: "Comedy" },
 	];
 	const stats = buildProfileStats(entries, genres);
 
@@ -65,10 +67,27 @@ describe("buildProfileStats", () => {
 	});
 
 	it("orders activity newest first, using the watched date for watched movies", () => {
-		expect(stats.recent.map((r) => [r.movieId, r.action])).toEqual([
+		expect(stats.recent.map((r) => [r.id, r.action])).toEqual([
 			[3, "added"],
 			[1, "watched"],
 			[2, "watched"],
+		]);
+	});
+
+	it("keeps a movie and a TV show with the same TMDB id apart", () => {
+		const mixed = buildProfileStats(
+			[
+				entry({ id: 7, mediaType: "movie", status: "want_to_watch" }),
+				entry({ id: 7, mediaType: "tv", status: "watched" }),
+			],
+			[
+				{ id: 7, mediaType: "movie", genreId: 28, name: "Action" },
+				{ id: 7, mediaType: "tv", genreId: 18, name: "Drama" },
+			],
+		);
+		expect(mixed.genres).toEqual([
+			{ id: 18, name: "Drama", watched: 1, saved: 1 },
+			{ id: 28, name: "Action", watched: 0, saved: 1 },
 		]);
 	});
 

@@ -12,36 +12,66 @@ import {
 	sql,
 } from "drizzle-orm";
 import { db } from "#/db";
-import { genre, movie, movieToGenre, watchlist } from "#/db/schema";
-import { getMovieDetails } from "#/features/movies/server/movies.functions";
+import { genre, media, mediaToGenre, watchlist } from "#/db/schema";
+import { getMediaDetails } from "#/features/media/server/media.functions";
+import type { MediaItem, MediaRef, MediaType } from "#/features/media/types";
+import { mediaKey, totalRuntime } from "#/features/media/utils";
 import {
 	normalizeYearRange,
 	type WatchlistFilters,
-} from "#/features/movies/utils/filters";
+} from "#/features/media/utils/filters";
 
 export type WatchlistStatusInsert = typeof watchlist.$inferInsert.status;
 export type WatchlistStatus = typeof watchlist.$inferSelect.status;
-export type NewMovieInsert = typeof movie.$inferInsert;
-export type Movie = typeof movie.$inferInsert;
+export type MediaRow = typeof media.$inferSelect;
+export type NewMediaRow = typeof media.$inferInsert;
 
-export async function addToWatchlist(userId: string, movieId: number) {
+/** Matches the watchlist row for one title. */
+const isWatchlistEntry = (userId: string, ref: MediaRef) =>
+	and(
+		eq(watchlist.userId, userId),
+		eq(watchlist.tmdbId, ref.id),
+		eq(watchlist.mediaType, ref.mediaType),
+	);
+
+const isMedia = (ref: MediaRef) =>
+	and(eq(media.tmdbId, ref.id), eq(media.mediaType, ref.mediaType));
+
+const joinMedia = and(
+	eq(watchlist.tmdbId, media.tmdbId),
+	eq(watchlist.mediaType, media.mediaType),
+);
+
+const joinMediaGenres = and(
+	eq(watchlist.tmdbId, mediaToGenre.tmdbId),
+	eq(watchlist.mediaType, mediaToGenre.mediaType),
+);
+
+/** The shape cards and rows read, from a stored media row. */
+export function toMediaItem(row: MediaRow): MediaItem {
+	return {
+		id: row.tmdbId,
+		mediaType: row.mediaType,
+		title: row.title,
+		posterPath: row.posterPath,
+		backdropPath: row.backdropPath,
+		releaseDate: row.releaseDate,
+		voteAverage: row.voteAverage ?? undefined,
+	};
+}
+
+export async function addToWatchlist(userId: string, ref: MediaRef) {
 	return await db
 		.insert(watchlist)
-		.values({ userId, movieId })
+		.values({ userId, tmdbId: ref.id, mediaType: ref.mediaType })
 		.onConflictDoNothing()
 		.returning();
 }
 
-export async function deleteFromWatchlist({
-	userId,
-	movieId,
-}: {
-	userId: string;
-	movieId: number;
-}) {
+export async function deleteFromWatchlist(userId: string, ref: MediaRef) {
 	const [deleted] = await db
 		.delete(watchlist)
-		.where(and(eq(watchlist.userId, userId), eq(watchlist.movieId, movieId)))
+		.where(isWatchlistEntry(userId, ref))
 		.returning();
 
 	return deleted ?? null;
@@ -49,19 +79,25 @@ export async function deleteFromWatchlist({
 
 export async function updateWatchlistStatus({
 	userId,
-	movieId,
+	ref,
 	status,
 }: {
 	userId: string;
-	movieId: number;
+	ref: MediaRef;
 	status: WatchlistStatusInsert;
 }) {
 	const watchedAt = status === "watched" ? new Date() : null;
 	const [upserted] = await db
 		.insert(watchlist)
-		.values({ userId, movieId, status, watchedAt })
+		.values({
+			userId,
+			tmdbId: ref.id,
+			mediaType: ref.mediaType,
+			status,
+			watchedAt,
+		})
 		.onConflictDoUpdate({
-			target: [watchlist.userId, watchlist.movieId],
+			target: [watchlist.userId, watchlist.tmdbId, watchlist.mediaType],
 			set: { status, watchedAt, updatedAt: new Date() },
 		})
 		.returning();
@@ -69,69 +105,73 @@ export async function updateWatchlistStatus({
 	return upserted ?? null;
 }
 
-export async function addMovieWithGenres({
-	newMovie,
+export async function addMediaWithGenres({
+	newMedia,
 	genres,
 }: {
-	newMovie: Movie;
+	newMedia: NewMediaRow;
 	genres: { id: number; name: string }[];
 }) {
-	const [insertedMovie] = await db
-		.insert(movie)
-		.values(newMovie)
+	const [inserted] = await db
+		.insert(media)
+		.values(newMedia)
 		.onConflictDoUpdate({
-			target: movie.id,
+			target: [media.tmdbId, media.mediaType],
 			set: {
-				title: newMovie.title,
-				posterPath: newMovie.posterPath,
-				backdropPath: newMovie.backdropPath,
-				releaseDate: newMovie.releaseDate,
-				runtime: newMovie.runtime,
-				voteAverage: newMovie.voteAverage,
+				title: newMedia.title,
+				posterPath: newMedia.posterPath,
+				backdropPath: newMedia.backdropPath,
+				releaseDate: newMedia.releaseDate,
+				runtime: newMedia.runtime,
+				voteAverage: newMedia.voteAverage,
 			},
 		})
 		.returning();
 
-	if (genres && genres.length > 0) {
+	if (genres.length > 0) {
 		await db.insert(genre).values(genres).onConflictDoNothing();
 
 		const junctionRows = genres.map((g) => ({
-			movieId: newMovie.id,
+			tmdbId: newMedia.tmdbId,
+			mediaType: newMedia.mediaType,
 			genreId: g.id,
 		}));
 
-		await db.insert(movieToGenre).values(junctionRows).onConflictDoNothing();
+		await db.insert(mediaToGenre).values(junctionRows).onConflictDoNothing();
 	}
 
-	return insertedMovie;
+	return inserted;
 }
 
-export async function findOrCreateMovie(movieId: number) {
-	const [existingMovie] = await db
-		.select()
-		.from(movie)
-		.where(eq(movie.id, movieId));
+export async function findOrCreateMedia(ref: MediaRef) {
+	const [existing] = await db.select().from(media).where(isMedia(ref));
 
-	if (existingMovie) {
+	if (existing) {
 		const [{ genreCount }] = await db
-			.select({ genreCount: count(movieToGenre.genreId) })
-			.from(movieToGenre)
-			.where(eq(movieToGenre.movieId, movieId));
+			.select({ genreCount: count(mediaToGenre.genreId) })
+			.from(mediaToGenre)
+			.where(
+				and(
+					eq(mediaToGenre.tmdbId, ref.id),
+					eq(mediaToGenre.mediaType, ref.mediaType),
+				),
+			);
 
 		if (Number(genreCount) > 0) {
-			return existingMovie;
+			return existing;
 		}
 	}
 
-	const details = await getMovieDetails({ data: { movie_id: movieId } });
+	const details = await getMediaDetails({ data: ref });
 
-	return await addMovieWithGenres({
-		newMovie: {
-			id: movieId,
+	return await addMediaWithGenres({
+		newMedia: {
+			tmdbId: ref.id,
+			mediaType: ref.mediaType,
 			title: details.title,
-			posterPath: details.poster_path,
-			backdropPath: details.backdrop_path,
-			releaseDate: details.release_date,
+			posterPath: details.posterPath,
+			backdropPath: details.backdropPath,
+			releaseDate: details.releaseDate,
 			...detailsStats(details),
 		},
 		genres: details.genres ?? [],
@@ -139,31 +179,31 @@ export async function findOrCreateMovie(movieId: number) {
 }
 
 // Null means "not fetched yet"; TMDB's zeros are stored so they aren't refetched.
-function detailsStats(details: { runtime?: number; vote_average?: number }) {
+function detailsStats(details: Parameters<typeof totalRuntime>[0]) {
 	return {
-		runtime: details.runtime ?? 0,
-		voteAverage: details.vote_average ?? 0,
+		runtime: totalRuntime(details),
+		voteAverage: details.voteAverage ?? 0,
 	};
 }
 
 /**
- * Movies saved before runtime and score were stored. Filled a few at a time so
+ * Titles saved before runtime and score were stored. Filled a few at a time so
  * one profile visit stays well under the Workers subrequest limit.
  */
-export async function backfillMovieDetails(userId: string, limit = 10) {
+export async function backfillMediaDetails(userId: string, limit = 10) {
 	const missing = await db
-		.select({ id: movie.id })
+		.select({ id: media.tmdbId, mediaType: media.mediaType })
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
-		.where(and(eq(watchlist.userId, userId), isNull(movie.runtime)))
-		// Watched movies first, they feed the watch time total.
+		.innerJoin(media, joinMedia)
+		.where(and(eq(watchlist.userId, userId), isNull(media.runtime)))
+		// Watched titles first, they feed the watch time total.
 		.orderBy(desc(watchlist.status), desc(watchlist.updatedAt))
 		.limit(limit);
 
 	await Promise.allSettled(
-		missing.map(async ({ id }) => {
-			const details = await getMovieDetails({ data: { movie_id: id } });
-			await db.update(movie).set(detailsStats(details)).where(eq(movie.id, id));
+		missing.map(async (ref) => {
+			const details = await getMediaDetails({ data: ref });
+			await db.update(media).set(detailsStats(details)).where(isMedia(ref));
 		}),
 	);
 }
@@ -171,60 +211,43 @@ export async function backfillMovieDetails(userId: string, limit = 10) {
 export async function selectStatsEntries(userId: string) {
 	return await db
 		.select({
-			movieId: movie.id,
-			title: movie.title,
-			posterPath: movie.posterPath,
-			releaseDate: movie.releaseDate,
-			runtime: movie.runtime,
-			voteAverage: movie.voteAverage,
+			id: media.tmdbId,
+			mediaType: media.mediaType,
+			title: media.title,
+			posterPath: media.posterPath,
+			releaseDate: media.releaseDate,
+			runtime: media.runtime,
+			voteAverage: media.voteAverage,
 			status: watchlist.status,
 			addedAt: watchlist.addedAt,
 			watchedAt: watchlist.watchedAt,
 		})
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.innerJoin(media, joinMedia)
 		.where(eq(watchlist.userId, userId));
 }
 
 export async function selectWatchlistGenreLinks(userId: string) {
 	return await db
 		.select({
-			movieId: movieToGenre.movieId,
+			id: mediaToGenre.tmdbId,
+			mediaType: mediaToGenre.mediaType,
 			genreId: genre.id,
 			name: genre.name,
 		})
 		.from(watchlist)
-		.innerJoin(movieToGenre, eq(watchlist.movieId, movieToGenre.movieId))
-		.innerJoin(genre, eq(movieToGenre.genreId, genre.id))
+		.innerJoin(mediaToGenre, joinMediaGenres)
+		.innerJoin(genre, eq(mediaToGenre.genreId, genre.id))
 		.where(eq(watchlist.userId, userId));
 }
 
-export async function findMovieById(movieId: number) {
-	const [existingMovie] = await db
-		.select()
-		.from(movie)
-		.where(eq(movie.id, movieId));
-
-	return existingMovie ?? null;
-}
-
-export async function getWatchlistStatus(userId: string, movieId: number) {
+export async function getWatchlistStatus(userId: string, ref: MediaRef) {
 	const [existing] = await db
 		.select({ status: watchlist.status })
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
-		.where(and(eq(watchlist.userId, userId), eq(movie.id, movieId)));
+		.where(isWatchlistEntry(userId, ref));
 
 	return existing?.status ?? null;
-}
-
-export async function selectUserWatchlist(userId: string) {
-	return await db
-		.select()
-		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
-		.where(eq(watchlist.userId, userId))
-		.orderBy(desc(watchlist.addedAt));
 }
 
 function watchlistFilterConditions(
@@ -233,16 +256,18 @@ function watchlistFilterConditions(
 ): SQL[] {
 	const conditions = [eq(watchlist.userId, userId)];
 	if (filters.status) conditions.push(eq(watchlist.status, filters.status));
+	if (filters.type) conditions.push(eq(watchlist.mediaType, filters.type));
 	if (filters.genre) {
 		conditions.push(
 			exists(
 				db
 					.select()
-					.from(movieToGenre)
+					.from(mediaToGenre)
 					.where(
 						and(
-							eq(movieToGenre.movieId, movie.id),
-							eq(movieToGenre.genreId, filters.genre),
+							eq(mediaToGenre.tmdbId, media.tmdbId),
+							eq(mediaToGenre.mediaType, media.mediaType),
+							eq(mediaToGenre.genreId, filters.genre),
 						),
 					),
 			),
@@ -250,19 +275,19 @@ function watchlistFilterConditions(
 	}
 	// Release dates are stored as YYYY-MM-DD text, so string bounds compare correctly.
 	const { from, to } = normalizeYearRange(filters.from, filters.to);
-	if (from) conditions.push(gte(movie.releaseDate, `${from}-01-01`));
-	if (to) conditions.push(lte(movie.releaseDate, `${to}-12-31`));
+	if (from) conditions.push(gte(media.releaseDate, `${from}-01-01`));
+	if (to) conditions.push(lte(media.releaseDate, `${to}-12-31`));
 	return conditions;
 }
 
 function watchlistOrder(sort: WatchlistFilters["sort"]): SQL[] {
 	switch (sort) {
 		case "title":
-			return [asc(movie.title)];
+			return [asc(media.title)];
 		case "newest":
-			return [sql`${movie.releaseDate} desc nulls last`];
+			return [sql`${media.releaseDate} desc nulls last`];
 		case "oldest":
-			return [sql`${movie.releaseDate} asc nulls last`];
+			return [sql`${media.releaseDate} asc nulls last`];
 		default:
 			return [desc(watchlist.addedAt)];
 	}
@@ -276,50 +301,71 @@ export async function selectUserWatchlistPage(
 		filters = {},
 	}: { limit: number; offset: number; filters?: WatchlistFilters },
 ) {
-	return await db
+	const rows = await db
 		.select()
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
+		.innerJoin(media, joinMedia)
 		.where(and(...watchlistFilterConditions(userId, filters)))
 		// The id tiebreak keeps pages stable when sort values repeat.
 		.orderBy(...watchlistOrder(filters.sort), asc(watchlist.id))
 		.limit(limit)
 		.offset(offset);
+
+	return rows.map((row) => ({
+		status: row.watchlist.status,
+		media: toMediaItem(row.media),
+	}));
 }
 
+/** Every saved title's status, keyed by mediaKey ("movie:550"). */
 export async function selectUserWatchlistStatuses(
 	userId: string,
-): Promise<Record<number, WatchlistStatus>> {
+): Promise<Record<string, WatchlistStatus>> {
 	const rows = await db
-		.select({ id: movie.id, status: watchlist.status })
+		.select({
+			id: watchlist.tmdbId,
+			mediaType: watchlist.mediaType,
+			status: watchlist.status,
+		})
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
 		.where(eq(watchlist.userId, userId));
 
-	return rows.reduce<Record<number, WatchlistStatus>>((acc, r) => {
-		acc[r.id] = r.status;
-		return acc;
-	}, {});
+	return Object.fromEntries(rows.map((row) => [mediaKey(row), row.status]));
 }
 
-export async function selectWatchlistMoviesByGenreId(
+export async function selectWatchlistMediaByGenreId(
 	userId: string,
 	genreId: number,
 ) {
-	const movies = await db
-		.select({
-			id: movie.id,
-			title: movie.title,
-			posterPath: movie.posterPath,
-			backdropPath: movie.backdropPath,
-			releaseDate: movie.releaseDate,
-			addedAt: watchlist.addedAt,
-		})
+	const rows = await db
+		.select({ media })
 		.from(watchlist)
-		.innerJoin(movie, eq(watchlist.movieId, movie.id))
-		.innerJoin(movieToGenre, eq(movie.id, movieToGenre.movieId))
-		.where(and(eq(watchlist.userId, userId), eq(movieToGenre.genreId, genreId)))
+		.innerJoin(media, joinMedia)
+		.innerJoin(mediaToGenre, joinMediaGenres)
+		.where(and(eq(watchlist.userId, userId), eq(mediaToGenre.genreId, genreId)))
 		.orderBy(desc(watchlist.addedAt));
 
-	return movies;
+	return rows.map((row) => toMediaItem(row.media));
+}
+
+export async function selectUserWatchlist(
+	userId: string,
+	mediaType?: MediaType,
+) {
+	const rows = await db
+		.select()
+		.from(watchlist)
+		.innerJoin(media, joinMedia)
+		.where(
+			and(
+				eq(watchlist.userId, userId),
+				mediaType ? eq(watchlist.mediaType, mediaType) : undefined,
+			),
+		)
+		.orderBy(desc(watchlist.addedAt));
+
+	return rows.map((row) => ({
+		status: row.watchlist.status,
+		media: toMediaItem(row.media),
+	}));
 }

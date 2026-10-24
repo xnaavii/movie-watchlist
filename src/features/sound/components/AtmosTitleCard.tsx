@@ -1,8 +1,7 @@
-import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AspectRatio } from "#/components/ui/aspect-ratio";
-import { formatReleaseYear } from "#/features/movies/utils";
-import { toMovieSlug } from "#/features/movies/utils/slug";
+import { MediaLink } from "#/features/media/components/MediaLink";
+import { formatReleaseYear } from "#/features/media/utils";
 import type { AtmosShowcaseItem } from "../types";
 import { formatScore } from "../utils/sound";
 
@@ -58,7 +57,6 @@ export function AtmosTitleCard({ item }: AtmosTitleCardProps) {
 	);
 }
 
-/** Movies open their details page; series have no page yet. */
 function TitleLink({
 	item,
 	children,
@@ -66,17 +64,12 @@ function TitleLink({
 	item: AtmosShowcaseItem;
 	children: ReactNode;
 }) {
-	if (item.mediaType !== "movie") return children;
-
 	return (
-		<Link
-			to="/movies/$movieSlug"
-			params={{
-				movieSlug: toMovieSlug({ id: item.tmdbId, title: item.title }),
-			}}
+		<MediaLink
+			media={{ mediaType: item.mediaType, id: item.tmdbId, title: item.title }}
 			className="block focus:outline-none"
 		>
 			{children}
-		</Link>
+		</MediaLink>
 	);
 }

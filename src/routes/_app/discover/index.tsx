@@ -4,18 +4,20 @@ import { AudioLines } from "lucide-react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
-import { DiscoverMovieSection } from "#/features/movies/components/DiscoverMovieSection";
-import { FeaturedMoviesCarousel } from "#/features/movies/components/FeaturedMoviesCarousel";
-import { GenreRow } from "#/features/movies/components/GenreRow";
-import { MovieRow } from "#/features/movies/components/MovieRow";
-import { SectionHeader } from "#/features/movies/components/SectionHeader";
-import { useMovieLogos } from "#/features/movies/hooks/useMovieLogos";
-import { movieQueries } from "#/features/movies/queries";
-import { normalizeMovie } from "#/features/movies/utils";
+import { DiscoverMediaSection } from "#/features/media/components/DiscoverMediaSection";
+import { FeaturedMediaCarousel } from "#/features/media/components/FeaturedMediaCarousel";
+import { GenreRow } from "#/features/media/components/GenreRow";
+import { MediaRow } from "#/features/media/components/MediaRow";
+import { SectionHeader } from "#/features/media/components/SectionHeader";
+import { useMediaLogos } from "#/features/media/hooks/useMediaLogos";
+import { mediaQueries } from "#/features/media/queries";
+import { toTmdbImageUrl } from "#/features/media/utils/tmdb";
 import { WatchlistMoviesView } from "#/features/watchlist/components/WatchlistMoviesView";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { getErrorMessage } from "#/lib/utils";
 import { seo } from "#/utils/seo";
+
+const POPULAR_MOVIES = { mediaType: "movie", list: "popular" } as const;
 
 export const Route = createFileRoute("/_app/discover/")({
 	component: DiscoverPage,
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/_app/discover/")({
 	loader: async ({ context }) => {
 		const [genres, , movies] = await Promise.all([
 			context.queryClient.query({
-				...movieQueries.genres({}),
+				...mediaQueries.genres("movie"),
 				staleTime: "static",
 			}),
 			context.queryClient.query({
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/_app/discover/")({
 				staleTime: "static",
 			}),
 			context.queryClient.query({
-				...movieQueries.list("popular"),
+				...mediaQueries.list(POPULAR_MOVIES),
 				staleTime: "static",
 			}),
 			context.queryClient.query({
@@ -44,15 +46,13 @@ export const Route = createFileRoute("/_app/discover/")({
 	},
 	head: ({ loaderData }) => {
 		const firstMovie = loaderData?.movies.results[0];
-		const posterImage = firstMovie?.poster_path
-			? `https://image.tmdb.org/t/p/w500${firstMovie.poster_path}`
-			: undefined;
+		const posterImage = toTmdbImageUrl(firstMovie?.posterPath, "w500");
 
 		return {
 			meta: seo({
-				title: `Discover Movies | ${SITE_CONFIG.name}`,
+				title: `Discover Movies and TV Shows | ${SITE_CONFIG.name}`,
 				description:
-					"Discover trending, new, top rated and hidden gem movies, or browse by genre.",
+					"Discover trending, new, top rated and hidden gem movies and TV shows, or browse by genre.",
 				image: posterImage,
 				url: `${getSiteUrl()}/discover`,
 			}),
@@ -64,22 +64,22 @@ function DiscoverPage() {
 	const { data: watchlistStatuses } = useSuspenseQuery(
 		watchlistQueries.watchlistStatuses(),
 	);
-	const { data: genres } = useSuspenseQuery(movieQueries.genres({}));
+	const { data: genres } = useSuspenseQuery(mediaQueries.genres("movie"));
 	const { data: popularMovies } = useSuspenseQuery(
-		movieQueries.list("popular"),
+		mediaQueries.list(POPULAR_MOVIES),
 	);
 
-	const popularMoviesLogos = useMovieLogos(popularMovies.results);
+	const popularMoviesLogos = useMediaLogos(popularMovies.results);
 
 	return (
 		<>
 			<section className="flex flex-col gap-6">
 				<BrandedTitle>Your Next Watch</BrandedTitle>
-				<FeaturedMoviesCarousel
-					movies={popularMovies.results}
+				<FeaturedMediaCarousel
+					items={popularMovies.results}
 					genres={genres.genres}
 					watchlistStatuses={watchlistStatuses}
-					movieLogos={popularMoviesLogos}
+					logos={popularMoviesLogos}
 				/>
 			</section>
 			<section className="flex flex-col gap-4">
@@ -91,40 +91,56 @@ function DiscoverPage() {
 			<AtmosShowcaseLink />
 			<section className="flex flex-col gap-4">
 				<SectionHeader title="Popular Movies" section="popular" />
-				<MovieRow
-					movies={popularMovies.results.map((movie) => normalizeMovie(movie))}
-					movieLogos={popularMoviesLogos}
+				<MediaRow
+					items={popularMovies.results}
+					logos={popularMoviesLogos}
 					watchlistStatuses={watchlistStatuses}
 					variant="backdrop"
 					showRanks
 				/>
 			</section>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
 				section="trending"
 				watchlistStatuses={watchlistStatuses}
 			/>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
 				section="now-in-theaters"
 				watchlistStatuses={watchlistStatuses}
 			/>
 			<WatchlistMoviesView />
-			<DiscoverMovieSection
+			<DiscoverMediaSection
+				section="trending-tv-shows"
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMediaSection
+				section="on-the-air"
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMediaSection
 				section="coming-soon"
 				watchlistStatuses={watchlistStatuses}
 			/>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
 				section="top-rated"
 				watchlistStatuses={watchlistStatuses}
 			/>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
+				section="top-rated-tv-shows"
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMediaSection
 				section="hidden-gems"
 				watchlistStatuses={watchlistStatuses}
 			/>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
+				section="popular-tv-shows"
+				watchlistStatuses={watchlistStatuses}
+			/>
+			<DiscoverMediaSection
 				section="quick-watches"
 				watchlistStatuses={watchlistStatuses}
 			/>
-			<DiscoverMovieSection
+			<DiscoverMediaSection
 				section="timeless-classics"
 				watchlistStatuses={watchlistStatuses}
 			/>

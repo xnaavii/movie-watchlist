@@ -1,5 +1,9 @@
+import type { MediaType } from "#/features/media/types";
+import { mediaKey } from "#/features/media/utils";
+
 export type StatsEntry = {
-	movieId: number;
+	id: number;
+	mediaType: MediaType;
 	title: string;
 	posterPath: string | null;
 	releaseDate: string | null;
@@ -11,7 +15,8 @@ export type StatsEntry = {
 };
 
 export type StatsGenreLink = {
-	movieId: number;
+	id: number;
+	mediaType: MediaType;
 	genreId: number;
 	name: string;
 };
@@ -24,7 +29,8 @@ export type GenreCount = {
 };
 
 export type ActivityItem = {
-	movieId: number;
+	id: number;
+	mediaType: MediaType;
 	title: string;
 	posterPath: string | null;
 	releaseDate: string | null;
@@ -38,7 +44,7 @@ export type ProfileStats = {
 	wantToWatch: number;
 	watchedMinutes: number;
 	remainingMinutes: number;
-	/** Watched movies whose runtime is still unknown, so the total is a floor. */
+	/** Watched titles whose runtime is still unknown, so the total is a floor. */
 	watchedMissingRuntime: number;
 	averageScore: number | null;
 	genres: GenreCount[];
@@ -61,10 +67,10 @@ export function buildProfileStats(
 		.map((e) => e.voteAverage)
 		.filter((score): score is number => score != null && score > 0);
 
-	const statusById = new Map(entries.map((e) => [e.movieId, e.status]));
+	const statusByKey = new Map(entries.map((e) => [mediaKey(e), e.status]));
 	const genresById = new Map<number, GenreCount>();
 	for (const link of genreLinks) {
-		const status = statusById.get(link.movieId);
+		const status = statusByKey.get(mediaKey(link));
 		if (!status) continue;
 		const count = genresById.get(link.genreId) ?? {
 			id: link.genreId,
@@ -79,7 +85,8 @@ export function buildProfileStats(
 
 	const recent: ActivityItem[] = entries
 		.map((e) => ({
-			movieId: e.movieId,
+			id: e.id,
+			mediaType: e.mediaType,
 			title: e.title,
 			posterPath: e.posterPath,
 			releaseDate: e.releaseDate,

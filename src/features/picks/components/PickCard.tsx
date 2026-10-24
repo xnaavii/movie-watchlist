@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { Badge } from "#/components/ui/badge";
-import { MovieCard } from "#/features/movies/components/MovieCard";
-import { normalizeMovie } from "#/features/movies/utils";
+import { MediaCard } from "#/features/media/components/MediaCard";
+import { normalizeMovie } from "#/features/media/utils";
 import type { Pick } from "../types";
 
 type PickCardProps = {
@@ -14,8 +14,8 @@ export function PickCard({ pick, rank }: PickCardProps) {
 	return (
 		<li className="flex flex-col gap-2 min-w-0">
 			<div className="relative">
-				<MovieCard
-					movie={normalizeMovie(pick.movie)}
+				<MediaCard
+					media={normalizeMovie(pick.movie)}
 					watchlistStatus={pick.onWatchlist ? "want_to_watch" : undefined}
 				/>
 				<Badge

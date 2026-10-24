@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-export const MEDIA_TYPES = ["movie", "tv"] as const;
-export type MediaType = (typeof MEDIA_TYPES)[number];
+import { MEDIA_TYPES } from "#/features/media/types";
+
+export { MEDIA_TYPES, type MediaType } from "#/features/media/types";
 
 export const LISTENING_SETUPS = [
 	{ value: "tv_speakers", label: "TV speakers" },
