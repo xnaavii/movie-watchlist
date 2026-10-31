@@ -6,6 +6,10 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 import { cn } from "#/lib/utils.ts"
 import { Button } from "#/components/ui/button.tsx"
 import { XIcon } from "lucide-react"
+import { useSwipeToDismiss } from "#/hooks/useSwipeToDismiss"
+
+/** Below sm, where DialogContent is a bottom sheet. */
+const SHEET_MEDIA = "(width < 40rem)"
 
 function Dialog({
   ...props
@@ -47,23 +51,40 @@ function DialogOverlay({
   )
 }
 
+function composeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+  return (node: T | null) => {
+    for (const ref of refs) {
+      if (typeof ref === "function") ref(node)
+      else if (ref) (ref as React.RefObject<T | null>).current = node
+    }
+  }
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  ref,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
+  const closeRef = React.useRef<HTMLButtonElement>(null)
+  // Swiping the sheet down closes it, through Radix so focus and
+  // onOpenChange behave as with any other close.
+  const dismiss = React.useCallback(() => closeRef.current?.click(), [])
+  const swipeRef = useSwipeToDismiss({ media: SHEET_MEDIA, onDismiss: dismiss })
+
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={composeRefs<HTMLDivElement>(swipeRef, ref)}
         data-slot="dialog-content"
         className={cn(
           // Phones get a bottom sheet that slides up, like a native app.
           // From sm up it's a centred dialog.
-          "fixed inset-x-0 bottom-0 z-50 grid max-h-[90svh] w-full gap-6 overflow-y-auto overscroll-contain rounded-t-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-300 ease-out outline-none dark:ring-foreground/10 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom data-closed:duration-200",
+          "fixed inset-x-0 bottom-0 z-50 grid max-h-[90svh] w-full gap-6 overflow-y-auto overscroll-contain rounded-t-4xl bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-300 ease-out outline-none dark:ring-foreground/10 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom data-closed:duration-200 motion-reduce:animate-none",
           "sm:inset-x-auto sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-4xl sm:duration-100 sm:data-open:fade-in-0 sm:data-open:zoom-in-95 sm:data-open:slide-in-from-bottom-0 sm:data-closed:fade-out-0 sm:data-closed:zoom-out-95 sm:data-closed:slide-out-to-bottom-0",
           className
         )}
@@ -75,6 +96,12 @@ function DialogContent({
           className="pointer-events-none absolute top-2 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-muted-foreground/40 sm:hidden"
         />
         {children}
+        <DialogPrimitive.Close
+          ref={closeRef}
+          hidden
+          tabIndex={-1}
+          aria-hidden="true"
+        />
         {/* Keeps the last row clear of the home indicator. */}
         <div aria-hidden="true" className="-mt-6 h-[env(safe-area-inset-bottom)] sm:hidden" />
         {showCloseButton && (
