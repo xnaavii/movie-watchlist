@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import { MediaRow } from "#/features/media/components/MediaRow";
 import type { MediaType } from "#/features/media/types";
-import { watchlistQueries } from "@/features/watchlist/queries";
+import { watchlistQueries } from "#/features/watchlist/queries";
 
 interface WatchlistRowViewProps {
 	/** Only show saved titles of this type. */

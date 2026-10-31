@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { mediaQueries } from "@/features/media/queries";
+import { mediaQueries } from "#/features/media/queries";
 import type { MediaPerson, MediaRef } from "../types";
 import { MediaCredits } from "./MediaCredits";
 

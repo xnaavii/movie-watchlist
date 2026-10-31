@@ -9,12 +9,12 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Button } from "#/components/ui/button";
+import { Toaster } from "#/components/ui/sonner";
 import { SITE_CONFIG } from "#/config/site";
 import { AppShellSetup } from "#/features/pwa/AppShellSetup";
 import { OfflineBanner } from "#/features/pwa/OfflineBanner";
 import { ServiceWorkerSetup } from "#/features/pwa/ServiceWorkerSetup";
 import { HOME_TITLE, pageHead } from "#/utils/seo";
-import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 

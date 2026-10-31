@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildDiscoverParams, isReleased, normalizeReview } from "./utils";
-import { formatReviewDate, stripMarkdown } from "./utils/format";
+import { buildDiscoverParams, isReleased, normalizeReview } from ".";
+import { formatReviewDate, stripMarkdown } from "./format";
 
 describe("buildDiscoverParams", () => {
 	it("defaults to popularity sort with no filters", () => {

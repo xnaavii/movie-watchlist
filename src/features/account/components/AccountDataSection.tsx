@@ -9,6 +9,7 @@ import { LegalLinks } from "#/features/legal/components/LegalLinks";
 import { clearCachedUserData } from "#/features/pwa/serviceWorker";
 import { authClient } from "#/lib/auth-client";
 import { exportFileName } from "../exportData";
+import { accountQueries } from "../queries";
 import { exportAccountDataFn } from "../server/account.functions";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 
@@ -47,15 +48,7 @@ export function AccountDataSection() {
 	const router = useRouter();
 	const exportAccountData = useServerFn(exportAccountDataFn);
 	const [exporting, setExporting] = useState(false);
-	const { data: accounts } = useQuery({
-		queryKey: ["auth", "accounts"],
-		queryFn: async () => {
-			const { data, error } = await authClient.listAccounts();
-			if (error) throw new Error(error.message);
-			return data;
-		},
-		staleTime: 5 * 60 * 1000,
-	});
+	const { data: accounts } = useQuery(accountQueries.linkedAccounts());
 	const hasPassword =
 		accounts?.some((account) => account.providerId === "credential") ?? false;
 
