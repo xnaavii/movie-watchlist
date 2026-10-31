@@ -14,6 +14,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import { db } from "#/db";
 import { imdbRating, streamingSource } from "#/db/schema";
+import { DAY, edgeCached, HOUR } from "#/lib/edgeCache";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
 import type {
@@ -61,9 +62,13 @@ const PERSON_CREDIT_LIMIT = 20;
 async function fromTmdb<T>(
 	request: () => Promise<T>,
 	fallbackMessage: string,
+	/** Shares the result between visitors for this long. Failures aren't kept. */
+	cache?: { key: string; ttl: number },
 ): Promise<T> {
 	try {
-		return await request();
+		return cache
+			? await edgeCached(cache.key, cache.ttl, request)
+			: await request();
 	} catch (error) {
 		throw new Error(
 			error instanceof TMDBError ? error.message : fallbackMessage,
@@ -107,6 +112,7 @@ export const getMediaDetails = createServerFn({ method: "GET" })
 					return normalizeTVDetails(show, externalIds?.imdb_id);
 				},
 				`Failed to get the ${label(data.mediaType)} details`,
+				{ key: `getMediaDetails:${JSON.stringify(data)}`, ttl: DAY },
 			),
 	);
 
@@ -114,37 +120,41 @@ export const getMediaList = createServerFn({ method: "GET" })
 	.validator((data: MediaListRequest & WithPage) => data)
 	.handler(
 		({ data }): Promise<MediaPage> =>
-			fromTmdb(async () => {
-				const params = { page: data.page };
-				if (data.mediaType === "tv") {
+			fromTmdb(
+				async () => {
+					const params = { page: data.page };
+					if (data.mediaType === "tv") {
+						switch (data.list) {
+							case "popular":
+								return toTVPage(await tmdb.tv_lists.popular(params));
+							case "airing_today":
+								return toTVPage(await tmdb.tv_lists.airing_today(params));
+							case "on_the_air":
+								return toTVPage(await tmdb.tv_lists.on_the_air(params));
+							case "top_rated":
+								return toTVPage(await tmdb.tv_lists.top_rated(params));
+							default:
+								data satisfies never;
+								throw new Error("Unknown TV list type");
+						}
+					}
 					switch (data.list) {
 						case "popular":
-							return toTVPage(await tmdb.tv_lists.popular(params));
-						case "airing_today":
-							return toTVPage(await tmdb.tv_lists.airing_today(params));
-						case "on_the_air":
-							return toTVPage(await tmdb.tv_lists.on_the_air(params));
+							return toMoviePage(await tmdb.movie_lists.popular(params));
+						case "now_playing":
+							return toMoviePage(await tmdb.movie_lists.now_playing(params));
+						case "upcoming":
+							return toMoviePage(await tmdb.movie_lists.upcoming(params));
 						case "top_rated":
-							return toTVPage(await tmdb.tv_lists.top_rated(params));
+							return toMoviePage(await tmdb.movie_lists.top_rated(params));
 						default:
 							data satisfies never;
-							throw new Error("Unknown TV list type");
+							throw new Error("Unknown movie list type");
 					}
-				}
-				switch (data.list) {
-					case "popular":
-						return toMoviePage(await tmdb.movie_lists.popular(params));
-					case "now_playing":
-						return toMoviePage(await tmdb.movie_lists.now_playing(params));
-					case "upcoming":
-						return toMoviePage(await tmdb.movie_lists.upcoming(params));
-					case "top_rated":
-						return toMoviePage(await tmdb.movie_lists.top_rated(params));
-					default:
-						data satisfies never;
-						throw new Error("Unknown movie list type");
-				}
-			}, "Failed to get the list"),
+				},
+				"Failed to get the list",
+				{ key: `getMediaList:${JSON.stringify(data)}`, ttl: 3 * HOUR },
+			),
 	);
 
 export const getMediaRecommendations = createServerFn({ method: "GET" })
@@ -167,6 +177,7 @@ export const getMediaRecommendations = createServerFn({ method: "GET" })
 								}),
 							),
 				"Failed to get recommendations",
+				{ key: `getMediaRecommendations:${JSON.stringify(data)}`, ttl: DAY },
 			),
 	);
 
@@ -180,6 +191,7 @@ export const getMediaReviews = createServerFn({ method: "GET" })
 						? tmdb.movies.reviews({ movie_id: data.id, page: data.page })
 						: tmdb.tv_series.reviews({ series_id: data.id, page: data.page }),
 				"Failed to get reviews",
+				{ key: `getMediaReviews:${JSON.stringify(data)}`, ttl: DAY },
 			),
 	);
 
@@ -192,6 +204,7 @@ export const getMediaCredits = createServerFn({ method: "GET" })
 					? tmdb.movies.credits({ movie_id: data.id })
 					: tmdb.tv_series.credits({ series_id: data.id }),
 			"Failed to get the credits",
+			{ key: `getMediaCredits:${JSON.stringify(data)}`, ttl: DAY },
 		),
 	);
 
@@ -205,6 +218,7 @@ export const getMediaVideos = createServerFn({ method: "GET" })
 						? tmdb.movies.videos({ movie_id: data.id })
 						: tmdb.tv_series.videos({ series_id: data.id }),
 				"Failed to get the videos",
+				{ key: `getMediaVideos:${JSON.stringify(data)}`, ttl: DAY },
 			),
 	);
 
@@ -255,15 +269,19 @@ export const getMediaImages = createServerFn({ method: "GET" })
 	)
 	.handler(
 		({ data }): Promise<MovieImages> =>
-			fromTmdb(() => {
-				const { mediaType, id, ...params } = data;
-				return mediaType === "movie"
-					? tmdb.movies.images({ movie_id: id, ...params })
-					: tmdb.tv_series.images({
-							series_id: id,
-							include_image_language: params.include_image_language,
-						});
-			}, "Failed to get images"),
+			fromTmdb(
+				() => {
+					const { mediaType, id, ...params } = data;
+					return mediaType === "movie"
+						? tmdb.movies.images({ movie_id: id, ...params })
+						: tmdb.tv_series.images({
+								series_id: id,
+								include_image_language: params.include_image_language,
+							});
+				},
+				"Failed to get images",
+				{ key: `getMediaImages:${JSON.stringify(data)}`, ttl: DAY },
+			),
 	);
 
 export const getMediaWatchProviders = createServerFn({ method: "GET" })
@@ -276,6 +294,10 @@ export const getMediaWatchProviders = createServerFn({ method: "GET" })
 						? tmdb.movies.watch_providers({ movie_id: data.id })
 						: tmdb.tv_series.watch_providers({ series_id: data.id }),
 				`Failed to get where to watch the ${label(data.mediaType)}`,
+				{
+					key: `getMediaWatchProviders:${JSON.stringify(data)}`,
+					ttl: 6 * HOUR,
+				},
 			),
 	);
 
@@ -288,11 +310,15 @@ export const getMediaGenres = createServerFn({ method: "GET" })
 					? tmdb.genres.movie_list({})
 					: tmdb.genres.tv_list({}),
 			"Failed to get genres",
+			{ key: `getMediaGenres:${JSON.stringify(data)}`, ttl: 7 * DAY },
 		),
 	);
 
 export const getLanguages = createServerFn({ method: "GET" }).handler(() =>
-	fromTmdb(() => tmdb.configuration.languages(), "Failed to get languages"),
+	fromTmdb(() => tmdb.configuration.languages(), "Failed to get languages", {
+		key: "getLanguages",
+		ttl: 7 * DAY,
+	}),
 );
 
 export type MediaDiscoverRequest =
@@ -309,6 +335,7 @@ export const discoverMedia = createServerFn({ method: "GET" })
 						? toMoviePage(await tmdb.discover.movie(data.params))
 						: toTVPage(await tmdb.discover.tv(data.params)),
 				"Failed to get results",
+				{ key: `discoverMedia:${JSON.stringify(data)}`, ttl: 3 * HOUR },
 			),
 	);
 
@@ -322,12 +349,16 @@ export const getTrendingMedia = createServerFn({ method: "GET" })
 	)
 	.handler(
 		({ data }): Promise<MediaPage> =>
-			fromTmdb(async () => {
-				const { mediaType, ...params } = data;
-				return mediaType === "movie"
-					? toMoviePage(await tmdb.trending.movies(params))
-					: toTVPage(await tmdb.trending.tv(params));
-			}, "Failed to get what's trending"),
+			fromTmdb(
+				async () => {
+					const { mediaType, ...params } = data;
+					return mediaType === "movie"
+						? toMoviePage(await tmdb.trending.movies(params))
+						: toTVPage(await tmdb.trending.tv(params));
+				},
+				"Failed to get what's trending",
+				{ key: `getTrendingMedia:${JSON.stringify(data)}`, ttl: HOUR },
+			),
 	);
 
 /**
