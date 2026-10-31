@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { AudioLines } from "lucide-react";
 import { useState } from "react";
-import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
@@ -40,7 +39,6 @@ export const Route = createFileRoute("/_app/discover/atmos")({
 function AtmosHeader() {
 	return (
 		<header className="flex flex-col gap-3">
-			<BackButtonView fallbackTo="/discover" />
 			<BrandedTitle>
 				<span className="inline-flex items-center gap-3">
 					<AudioLines className="size-7" aria-hidden="true" />

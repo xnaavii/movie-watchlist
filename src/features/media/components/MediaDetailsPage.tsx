@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
 import { LazySection } from "#/components/LazySection";
 import { Button } from "#/components/ui/button";
@@ -41,10 +40,6 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 				<div className="md:absolute md:inset-0">
 					<MediaBackdropImageView media={media} title={media.title} />
 				</div>
-				<BackButtonView
-					fallbackTo="/discover"
-					className="absolute top-16 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-30"
-				/>
 				<div className="relative z-20 -mt-12 md:mt-0 px-4 md:px-6 lg:px-8 md:pt-28 md:pb-10 lg:pb-14">
 					<div className="flex flex-col items-center md:items-start gap-6 md:gap-8 text-center md:text-left max-w-2xl mx-auto md:mx-0">
 						<MediaLogoView
