@@ -51,7 +51,7 @@ export function SocialSignInButtons({
 						variant="outline"
 						disabled={pending !== null}
 						onClick={() => signIn("google")}
-						className="border-[#747775] bg-white text-[#1F1F1F] hover:bg-[#F2F2F2] hover:text-[#1F1F1F] dark:border-[#8E918F] dark:bg-[#131314] dark:text-[#E3E3E3] dark:hover:bg-[#1F1F20] dark:hover:text-[#E3E3E3]"
+						className="border-[#8E918F] bg-[#131314] text-[#E3E3E3] hover:bg-[#1F1F20] hover:text-[#E3E3E3]"
 					>
 						<GoogleLogo className="size-4" />
 						{pending === "google" ? "Redirecting..." : "Continue with Google"}

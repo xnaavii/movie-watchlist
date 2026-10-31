@@ -64,7 +64,7 @@ export function AtmosFeedback(ref: TitleRef) {
 		<Dialog>
 			<Item
 				variant="outline"
-				className="rounded-3xl border-primary/20 bg-primary/5 p-4 md:p-5 dark:bg-primary/10"
+				className="rounded-3xl border-primary/20 bg-primary/10 p-4 md:p-5"
 			>
 				<ItemMedia className="size-10 rounded-full bg-primary text-primary-foreground">
 					<AudioLines className="size-5" aria-hidden="true" />

@@ -8,7 +8,6 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { ThemeProvider } from "#/components/ThemeProvider";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
 import { OfflineBanner } from "#/features/pwa/OfflineBanner";
@@ -55,30 +54,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="en" className="dark">
 			<head>
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider defaultTheme="dark" storageKey="theme">
-					{children}
-					<Toaster />
-					<OfflineBanner />
-					<ServiceWorkerSetup />
-					<TanStackDevtools
-						config={{
-							position: "bottom-right",
-						}}
-						plugins={[
-							{
-								name: "Tanstack Router",
-								render: <TanStackRouterDevtoolsPanel />,
-							},
-							{ name: "Tanstack Form", render: <FormDevtoolsPanel /> },
-							TanStackQueryDevtools,
-						]}
-					/>
-				</ThemeProvider>
+				{children}
+				<Toaster />
+				<OfflineBanner />
+				<ServiceWorkerSetup />
+				<TanStackDevtools
+					config={{
+						position: "bottom-right",
+					}}
+					plugins={[
+						{
+							name: "Tanstack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+						{ name: "Tanstack Form", render: <FormDevtoolsPanel /> },
+						TanStackQueryDevtools,
+					]}
+				/>
 				<Scripts />
 			</body>
 		</html>

@@ -13,13 +13,6 @@
 				--muted: #a1a1aa;
 				--accent: #7c86ff;
 			}
-			:root.light {
-				color-scheme: light;
-				--bg: #fafafa;
-				--fg: #0a0a0a;
-				--muted: #52525b;
-				--accent: #4f39f6;
-			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -56,14 +49,6 @@
 			a { color: var(--fg); border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent); }
 			a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 		</style>
-		<script>
-			try {
-				var t = localStorage.getItem("theme");
-				if (t === "light" || (t === "system" && !matchMedia("(prefers-color-scheme: dark)").matches)) {
-					document.documentElement.classList.add("light");
-				}
-			} catch (e) {}
-		</script>
 	</head>
 	<body>
 		<main>

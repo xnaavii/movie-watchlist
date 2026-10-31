@@ -30,7 +30,7 @@ export function MediaReviewDialog({
 						{formatReviewDate(review.createdAt)}
 					</DialogDescription>
 				</DialogHeader>
-				<div className="prose prose-sm dark:prose-invert mx-2 min-h-0 max-w-none overflow-y-auto overscroll-contain px-6 pb-4 leading-relaxed">
+				<div className="prose prose-sm prose-invert mx-2 min-h-0 max-w-none overflow-y-auto overscroll-contain px-6 pb-4 leading-relaxed">
 					<Markdown>{review.content}</Markdown>
 				</div>
 			</DialogContent>
