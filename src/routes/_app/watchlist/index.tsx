@@ -22,9 +22,17 @@ import { GuestSyncCallout } from "#/features/watchlist/guest/GuestSyncCallout";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getErrorMessage } from "#/lib/utils";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/watchlist/")({
 	component: WatchlistPage,
+	head: () =>
+		pageHead({
+			title: pageTitle("Your watchlist"),
+			description:
+				"What you're watching, what's next, and what you've finished. Movies and TV in one list.",
+			noindex: true,
+		}),
 	validateSearch: watchlistFilterSearchSchema,
 	loaderDeps: ({ search }) => search,
 	pendingComponent: WatchlistPending,

@@ -6,9 +6,17 @@ import { ProfileDashboard } from "#/features/profile/components/ProfileDashboard
 import { ProfileHeader } from "#/features/profile/components/ProfileHeader";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { authClient } from "#/lib/auth-client";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/_protected/profile")({
 	component: ProfilePage,
+	head: () =>
+		pageHead({
+			title: pageTitle("Your profile"),
+			description:
+				"Your watching stats, and where to download or delete your data.",
+			noindex: true,
+		}),
 	pendingComponent: ProfilePending,
 	loader: async ({ context }) => {
 		await context.queryClient.query({

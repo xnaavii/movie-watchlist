@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 /** Keys only need to be unique; this host is never requested. */
 const CACHE_ORIGIN = "https://edge-cache.watchlist.internal";
 

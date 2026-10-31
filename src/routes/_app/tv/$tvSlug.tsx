@@ -1,5 +1,4 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
-import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import {
 	MediaDetailsPage,
 	MediaDetailsPageNotFound,
@@ -8,11 +7,8 @@ import {
 import { loadMediaDetails } from "#/features/media/loaders";
 import type { MediaDetails } from "#/features/media/types";
 import { buildMediaHead } from "#/features/media/utils/meta";
-import {
-	parseMediaSlug,
-	toMediaPath,
-	toMediaSlug,
-} from "#/features/media/utils/slug";
+import { parseMediaSlug, toMediaSlug } from "#/features/media/utils/slug";
+import { pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/tv/$tvSlug")({
 	params: {
@@ -47,10 +43,14 @@ export const Route = createFileRoute("/_app/tv/$tvSlug")({
 	},
 	head: ({ loaderData }) => {
 		if (!loaderData) {
-			return { meta: [{ title: `TV show not found | ${SITE_CONFIG.name}` }] };
+			return {
+				meta: [
+					{ title: pageTitle("TV show not found") },
+					{ name: "robots", content: "noindex" },
+				],
+			};
 		}
-		const show = loaderData.show;
-		return buildMediaHead(show, `${getSiteUrl()}${toMediaPath(show)}`);
+		return buildMediaHead(loaderData.show);
 	},
 	component: TVShowDetailsPage,
 	pendingComponent: MediaDetailsPagePending,
