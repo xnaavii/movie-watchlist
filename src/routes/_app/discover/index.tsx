@@ -15,7 +15,10 @@ import {
 	DiscoverPageError,
 	DiscoverPagePending,
 } from "#/features/media/components/DiscoverPageStates";
-import { FeaturedMediaCarousel } from "#/features/media/components/FeaturedMediaCarousel";
+import {
+	FeaturedMediaCarousel,
+	MAX_HERO_SLIDES,
+} from "#/features/media/components/FeaturedMediaCarousel";
 import { GenreRow } from "#/features/media/components/GenreRow";
 import { listDiscoverGenres } from "#/features/media/genres";
 import { useMediaLogos } from "#/features/media/hooks/useMediaLogos";
@@ -83,7 +86,7 @@ function DiscoverPage() {
 			interleave(
 				movies.slice(0, HERO_ITEMS_PER_TYPE),
 				shows.slice(0, HERO_ITEMS_PER_TYPE),
-			),
+			).slice(0, MAX_HERO_SLIDES),
 		[movies, shows],
 	);
 	const featuredLogos = useMediaLogos(featured);
