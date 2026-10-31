@@ -10,6 +10,7 @@ import {
 	getMediaGenres,
 	getMediaImages,
 	getMediaList,
+	getMediaLogos,
 	getMediaRecommendations,
 	getMediaReviews,
 	getMediaVideos,
@@ -60,6 +61,17 @@ export const mediaQueries = {
 						include_image_language: ["en", "null"],
 					},
 				}),
+		}),
+	/** Logo URLs for a row of titles, fetched in one request. */
+	logos: (refs: MediaRef[]) =>
+		queryOptions({
+			queryKey: [
+				"media",
+				"logos",
+				refs.map(({ mediaType, id }) => `${mediaType}:${id}`),
+			],
+			queryFn: () => getMediaLogos({ data: refs }),
+			enabled: refs.length > 0,
 		}),
 	gallery: (ref: MediaRef) =>
 		queryOptions({

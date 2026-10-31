@@ -11,7 +11,9 @@ export function getRouter() {
 		routeTree,
 		context,
 		scrollRestoration: true,
-		defaultPreload: "intent",
+		// Preloading runs a page's loader, which costs Worker requests and TMDB
+		// calls. Only the main nav links opt in, see NavIconButton.
+		defaultPreload: false,
 		defaultPreloadStaleTime: 0,
 		scrollToTopSelectors: ["#main-scrollable-area"],
 		defaultViewTransition: true,

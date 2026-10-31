@@ -31,10 +31,12 @@ import type {
 } from "../types";
 import {
 	interleave,
+	mediaKey,
 	normalizeMovie,
 	normalizeMovieDetails,
 	normalizeTVDetails,
 	normalizeTVShow,
+	toLogoUrl,
 } from "../utils";
 import {
 	buildFallbackQueries,
@@ -205,6 +207,42 @@ export const getMediaVideos = createServerFn({ method: "GET" })
 				"Failed to get the videos",
 			),
 	);
+
+/** Most titles a row or carousel shows at once. */
+const MAX_LOGO_TITLES = 24;
+
+/**
+ * Logo URLs for a whole row in one request, keyed by mediaKey. Sends only the
+ * paths, not every poster and backdrop TMDB lists. A missing logo is undefined.
+ */
+export const getMediaLogos = createServerFn({ method: "GET" })
+	.validator((refs: MediaRef[]) =>
+		refs
+			.slice(0, MAX_LOGO_TITLES)
+			.map(({ mediaType, id }): MediaRef => ({ mediaType, id })),
+	)
+	.handler(async ({ data }) => {
+		const entries = await Promise.all(
+			data.map(async (ref) => {
+				try {
+					const images =
+						ref.mediaType === "movie"
+							? await tmdb.movies.images({
+									movie_id: ref.id,
+									include_image_language: ["en", "null"],
+								})
+							: await tmdb.tv_series.images({
+									series_id: ref.id,
+									include_image_language: ["en", "null"],
+								});
+					return [mediaKey(ref), toLogoUrl(images)] as const;
+				} catch {
+					return [mediaKey(ref), undefined] as const;
+				}
+			}),
+		);
+		return Object.fromEntries(entries) as Record<string, string | undefined>;
+	});
 
 export const getMediaImages = createServerFn({ method: "GET" })
 	.validator(

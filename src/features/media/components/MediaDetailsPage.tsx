@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { BackButtonView } from "#/components/BackButtonView";
 import { Container } from "#/components/Container";
+import { LazySection } from "#/components/LazySection";
 import { Button } from "#/components/ui/button";
 import { AtmosFeedback } from "#/features/sound/components/AtmosFeedback";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
@@ -16,8 +17,10 @@ import { MediaDetailsView } from "./MediaDetailsView";
 import { MediaFacts } from "./MediaFacts";
 import { MediaGalleryView } from "./MediaGalleryView";
 import { MediaLogoView } from "./MediaLogoView";
+import { MediaReviewsSkeleton } from "./MediaReviewsSkeleton";
 import { MediaReviewsView } from "./MediaReviewsView";
 import { MediaRowSkeleton } from "./MediaRowSkeleton";
+import { MediaTrailerSkeleton } from "./MediaTrailerSkeleton";
 import { MediaTrailerView } from "./MediaTrailerView";
 import { MediaWhereToWatchView } from "./MediaWhereToWatchView";
 import { RecommendedMediaView } from "./RecommendedMediaView";
@@ -64,14 +67,23 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 				{isReleased(media) && (
 					<AtmosFeedback tmdbId={media.id} mediaType={media.mediaType} />
 				)}
-				<MediaTrailerView media={media} title={media.title} />
-				<MediaGalleryView media={media} title={media.title} />
+				{/* Sections below the fold fetch only once they scroll into view. */}
+				<LazySection fallback={<MediaTrailerSkeleton />}>
+					<MediaTrailerView media={media} title={media.title} />
+				</LazySection>
+				<LazySection fallback={null}>
+					<MediaGalleryView media={media} title={media.title} />
+				</LazySection>
 				<MediaCastView media={media} />
 				<MediaFacts media={media} />
-				<MediaReviewsView media={media} />
-				<Suspense fallback={<MediaRowSkeleton />}>
-					<RecommendedMediaView media={media} />
-				</Suspense>
+				<LazySection fallback={<MediaReviewsSkeleton />}>
+					<MediaReviewsView media={media} />
+				</LazySection>
+				<LazySection fallback={<MediaRowSkeleton />}>
+					<Suspense fallback={<MediaRowSkeleton />}>
+						<RecommendedMediaView media={media} />
+					</Suspense>
+				</LazySection>
 			</Container>
 		</div>
 	);

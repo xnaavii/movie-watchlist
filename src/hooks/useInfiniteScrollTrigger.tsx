@@ -15,7 +15,7 @@ type InfiniteScrollOptions = {
 	rootMargin?: string;
 };
 
-function getScrollParent(el: HTMLElement): HTMLElement | null {
+export function getScrollParent(el: HTMLElement): HTMLElement | null {
 	let parent = el.parentElement;
 	while (parent) {
 		const { overflowY } = getComputedStyle(parent);
