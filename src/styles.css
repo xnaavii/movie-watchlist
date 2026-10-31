@@ -17,6 +17,9 @@
 @custom-variant standalone (@media (display-mode: standalone));
 @custom-variant browser (@media not (display-mode: standalone));
 
+/* A phone on its side: wide enough for the tablet layout, but short. */
+@custom-variant short (@media (orientation: landscape) and (max-height: 32rem));
+
 :root {
   color-scheme: dark;
   --background: oklch(0.145 0 0);

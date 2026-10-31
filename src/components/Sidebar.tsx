@@ -35,7 +35,7 @@ export function Sidebar({ className }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				"app-chrome sticky top-0 h-svh py-4 px-2 hidden md:flex flex-col justify-between items-center bg-sidebar/30 backdrop-blur-3xl [view-transition-name:nav-rail]",
+				"app-chrome sticky top-0 h-svh py-4 short:py-2 px-2 hidden md:flex flex-col justify-between items-center bg-sidebar/30 backdrop-blur-3xl [view-transition-name:nav-rail]",
 				className,
 			)}
 		>
@@ -47,7 +47,7 @@ export function Sidebar({ className }: SidebarProps) {
 				<BrandMark className="size-5" />
 			</Link>
 			<nav aria-label="Main">
-				<ul className="flex flex-col items-center gap-5">
+				<ul className="flex flex-col items-center gap-5 short:gap-1">
 					{navItems.map((item) => (
 						<RailItem key={item.to} {...item} />
 					))}

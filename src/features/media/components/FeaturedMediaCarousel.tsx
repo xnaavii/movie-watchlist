@@ -260,7 +260,7 @@ export function FeaturedMediaCarousel({
 							>
 								<div
 									inert={!isSelected}
-									className="group relative aspect-[4/5] max-h-[68svh] w-full sm:aspect-[16/11] sm:min-h-[22rem] xl:aspect-video overflow-hidden rounded-xl bg-muted shadow-2xl shadow-black/60 will-change-transform sm:max-h-[78svh]"
+									className="group relative aspect-[4/5] max-h-[68svh] w-full sm:aspect-[16/11] sm:min-h-[22rem] xl:aspect-video overflow-hidden rounded-xl bg-muted shadow-2xl shadow-black/60 will-change-transform sm:max-h-[78svh] short:min-h-0 short:max-h-[calc(100svh-4.5rem)]"
 								>
 									<MediaLink
 										media={media}
@@ -292,20 +292,20 @@ export function FeaturedMediaCarousel({
 
 									<div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-transparent via-25% to-background" />
 
-									<div className="pointer-events-none absolute inset-0 z-10 p-4 opacity-[var(--hero-focus,1)] md:p-6 lg:p-8">
+									<div className="pointer-events-none absolute inset-0 z-10 p-4 opacity-[var(--hero-focus,1)] md:p-6 lg:p-8 short:p-4">
 										<div className="flex h-full flex-col justify-between gap-4">
 											<div className="flex items-start justify-between gap-4">
 												<MediaLogo
 													logoSrc={logos?.[key]}
 													title={media.title}
-													imageClassName="w-[clamp(8rem,14vw,20rem)] max-h-20 md:max-h-28 object-left"
+													imageClassName="w-[clamp(8rem,14vw,20rem)] max-h-20 md:max-h-28 object-left short:max-h-12"
 												/>
 												{watchlistStatus && (
 													<WatchlistBadge status={watchlistStatus} />
 												)}
 											</div>
 											<div className="flex max-w-xl min-w-0 flex-col gap-2 text-sm md:text-base">
-												<h2 className="line-clamp-2 text-2xl font-medium tracking-tighter text-balance md:text-4xl">
+												<h2 className="line-clamp-2 text-2xl font-medium tracking-tighter text-balance md:text-4xl short:text-2xl">
 													{media.title}
 												</h2>
 												<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground">
@@ -320,7 +320,7 @@ export function FeaturedMediaCarousel({
 													)}
 												</div>
 												{media.overview && (
-													<p className="hidden text-muted-foreground line-clamp-2 sm:block">
+													<p className="hidden text-muted-foreground line-clamp-2 sm:block short:hidden">
 														{media.overview}
 													</p>
 												)}
