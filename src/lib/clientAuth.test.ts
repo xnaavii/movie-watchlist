@@ -43,3 +43,16 @@ describe("forUserOrGuest", () => {
 		expect(await result).toBe("server");
 	});
 });
+
+describe("offline", () => {
+	it("uses the device list when offline and the session is unknown", async () => {
+		const onLine = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+		expect(
+			await forUserOrGuest(
+				async () => "server",
+				() => "guest",
+			),
+		).toBe("guest");
+		onLine.mockRestore();
+	});
+});
