@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Navbar } from "#/components/Navbar";
 import { Sidebar } from "#/components/Sidebar";
+import { AuthStateSync } from "#/features/watchlist/guest/AuthStateSync";
 
 export const Route = createFileRoute("/_app")({
 	component: AppLayout,
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] h-svh overflow-hidden">
+			<AuthStateSync />
 			<Navbar />
 			<Sidebar />
 			<main

@@ -1,11 +1,12 @@
 import { BookmarkPlus } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import type { MediaRef } from "#/features/media/types";
 import { cn } from "#/lib/utils";
+import type { GuestMediaInput } from "../guest/guestWatchlist";
 import { useAddToWatchlist } from "../hooks/useAddToWatchlist";
 
 type AddToWatchlistButtonProps = {
-	media: MediaRef;
+	/** Card data is kept so a guest's list can show it offline. */
+	media: GuestMediaInput;
 	className?: string;
 	showLabel?: boolean;
 };

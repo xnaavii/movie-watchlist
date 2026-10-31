@@ -12,7 +12,6 @@ import {
 import { Clapperboard, Tv } from "lucide-react";
 import { useMemo } from "react";
 import { z } from "zod";
-import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { PillNav, PillNavItem } from "#/components/PillNav";
@@ -40,7 +39,6 @@ import { toTmdbImageUrl } from "#/features/media/utils/tmdb";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
-import { getSession } from "#/lib/auth.functions";
 import { seo } from "#/utils/seo";
 
 const genreSearchSchema = z.object({
@@ -85,7 +83,6 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 	},
 	loader: async ({ context }) => {
 		const { genre, queryClient } = context;
-		const session = await getSession();
 
 		const [pages] = await Promise.all([
 			Promise.all(
@@ -96,22 +93,17 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 					}),
 				),
 			),
-			session
-				? queryClient.query({
-						...watchlistQueries.mediaByGenre(genre.slug),
-						staleTime: "static",
-					})
-				: null,
-			session
-				? queryClient.query({
-						...watchlistQueries.watchlistStatuses(),
-						staleTime: "static",
-					})
-				: null,
+			queryClient.query({
+				...watchlistQueries.mediaByGenre(genre.slug),
+				staleTime: "static",
+			}),
+			queryClient.query({
+				...watchlistQueries.watchlistStatuses(),
+				staleTime: "static",
+			}),
 		]);
 
 		return {
-			isAuthenticated: !!session,
 			poster: pages[0]?.pages[0]?.results[0]?.posterPath,
 		};
 	},
@@ -143,7 +135,6 @@ function genreTagline(genre: DiscoverGenre) {
 }
 
 function DiscoverGenrePage() {
-	const { isAuthenticated } = Route.useLoaderData();
 	const { genre } = Route.useRouteContext();
 	const search = Route.useSearch();
 	const mediaTypes = genreMediaTypes(genre);
@@ -152,20 +143,19 @@ function DiscoverGenrePage() {
 			? search.type
 			: mediaTypes[0];
 
-	const { data: watchlistStatuses } = useQuery({
-		...watchlistQueries.watchlistStatuses(),
-		enabled: isAuthenticated,
-	});
-	const { data: watchlistItems } = useQuery({
-		...watchlistQueries.mediaByGenre(genre.slug),
-		enabled: isAuthenticated,
-	});
+	// Guests read these from their device, so they run signed out too.
+	const { data: watchlistStatuses } = useQuery(
+		watchlistQueries.watchlistStatuses(),
+	);
+	const { data: watchlistItems } = useQuery(
+		watchlistQueries.mediaByGenre(genre.slug),
+	);
 
 	return (
 		<>
 			<GenreHero genre={genre} mediaTypes={mediaTypes} />
 
-			{isAuthenticated && watchlistItems && watchlistItems.length > 0 && (
+			{watchlistItems && watchlistItems.length > 0 && (
 				<section className="flex flex-col gap-4">
 					<div className="flex justify-between">
 						<h2 className="text-xl lg:text-2xl tracking-tighter">
@@ -216,7 +206,6 @@ function GenreHero({ genre, mediaTypes }: GenreHeroProps) {
 
 	return (
 		<div className="relative isolate flex items-center justify-center">
-			<BackButtonView fallbackTo="/discover" className="self-start z-20" />
 			<div className="absolute flex flex-col items-center gap-3 z-20 px-4 text-center">
 				<div className="flex gap-1.5">
 					{mediaTypes.map((mediaType) => (

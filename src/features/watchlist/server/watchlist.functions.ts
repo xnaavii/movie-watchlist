@@ -121,9 +121,9 @@ export const getUserWatchlistStatusesFn = createServerFn({
 export const getWatchlistMediaByGenreFn = createServerFn({ method: "GET" })
 	.validator((data: { genreSlug: string }) => data)
 	.handler(async ({ data }) => {
-		const session = await ensureSession();
+		const session = await getSession();
 		const genre = findDiscoverGenre(data.genreSlug);
-		if (!genre) return [];
+		if (!session || !genre) return [];
 		return await selectWatchlistMediaByGenre(session.user.id, genre.ids);
 	});
 

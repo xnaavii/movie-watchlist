@@ -4,7 +4,6 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { BackButtonView } from "#/components/BackButtonView";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
@@ -107,15 +106,6 @@ function DiscoverSectionPage() {
 	return (
 		<>
 			<header className="flex flex-col gap-6">
-				<BackButtonView
-					fallbackTo={
-						genre
-							? `/discover/${genreSlug}`
-							: section.mediaType === "tv"
-								? "/discover/tv-shows"
-								: "/discover/movies"
-					}
-				/>
 				<div className="flex flex-col gap-2">
 					{genre && (
 						<Link
