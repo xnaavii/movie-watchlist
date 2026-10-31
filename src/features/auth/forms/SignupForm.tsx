@@ -201,6 +201,11 @@ export function SignupForm({
 							</Button>
 						)}
 					</form.Subscribe>
+					<FieldDescription className="text-center text-xs">
+						By creating an account you agree to the{" "}
+						<Link to="/terms">Terms of use</Link> and{" "}
+						<Link to="/privacy">Privacy policy</Link>.
+					</FieldDescription>
 				</Field>
 				<FieldSeparator></FieldSeparator>
 				<Field>

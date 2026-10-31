@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Container } from "#/components/Container";
+import { AccountDataSection } from "#/features/account/components/AccountDataSection";
 import { ProfileDashboard } from "#/features/profile/components/ProfileDashboard";
 import { ProfileHeader } from "#/features/profile/components/ProfileHeader";
 import { watchlistQueries } from "#/features/watchlist/queries";
@@ -31,6 +32,7 @@ function ProfilePage() {
 		<Container className="gap-6 md:gap-8 lg:gap-10">
 			<ProfileHeader user={user} onLogout={logout} />
 			<ProfileDashboard stats={stats} />
+			<AccountDataSection />
 		</Container>
 	);
 }

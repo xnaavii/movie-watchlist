@@ -5,6 +5,7 @@ import { Sidebar } from "#/components/Sidebar";
 import { SkipLink } from "#/components/SkipLink";
 import { TabBar } from "#/components/TabBar";
 import { TopBar } from "#/components/TopBar";
+import { SiteFooter } from "#/features/legal/components/SiteFooter";
 import { AuthStateSync } from "#/features/watchlist/guest/AuthStateSync";
 import { useRouteFocus } from "#/hooks/useRouteFocus";
 
@@ -38,6 +39,7 @@ function AppLayout() {
 				tabIndex={-1}
 			>
 				<Outlet />
+				<SiteFooter />
 			</main>
 		</div>
 	);

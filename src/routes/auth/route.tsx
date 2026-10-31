@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { BrandMark } from "#/components/BrandMark";
 import { SITE_CONFIG } from "#/config/site";
+import { LegalLinks } from "#/features/legal/components/LegalLinks";
 import { AuthMediaShowcase } from "#/features/media/components/AuthMediaShowcase";
 import { getSocialProviders } from "#/lib/auth.functions";
 
@@ -27,6 +28,7 @@ function AuthLayout() {
 						<Outlet />
 					</div>
 				</div>
+				<LegalLinks className="flex justify-center md:justify-start" />
 			</div>
 			<AuthMediaShowcase />
 		</div>
