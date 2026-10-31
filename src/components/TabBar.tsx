@@ -29,12 +29,15 @@ function TabBarItem({ to, label, icon: Icon }: NavItem) {
 	);
 }
 
-/** Bottom tab bar on phones, like a native app. Desktop uses the rail. */
+/**
+ * Bottom tab bar for the installed app on phones. In a phone browser the
+ * browser's own toolbar is already at the bottom, so the TopBar is used.
+ */
 export function TabBar() {
 	return (
 		<nav
 			aria-label="Main"
-			className="app-chrome fixed inset-x-0 bottom-0 z-40 border-t bg-background/80 px-[max(0.5rem,env(safe-area-inset-left))] pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150 md:hidden [view-transition-name:tab-bar]"
+			className="app-chrome fixed inset-x-0 bottom-0 z-40 border-t bg-background/80 px-[max(0.5rem,env(safe-area-inset-left))] pb-[env(safe-area-inset-bottom)] backdrop-blur-xl backdrop-saturate-150 hidden max-md:standalone:block [view-transition-name:tab-bar]"
 		>
 			<ul className="mx-auto flex max-w-md items-stretch gap-1 py-1">
 				{navItems.map((item) => (
