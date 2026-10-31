@@ -99,6 +99,10 @@ pnpm db:push
 pnpm dev
 ```
 
+## Architecture
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the code is organised and the patterns to follow when adding features, and [docs/DESIGN.md](docs/DESIGN.md) for the design system.
+
 ## Testing
 
 ```bash
