@@ -48,6 +48,15 @@ export const auth = betterAuth({
 		},
 	},
 	socialProviders: { google },
+	session: {
+		// Keeps the session in a signed cookie for a few minutes, so most
+		// requests skip the session lookup in Postgres. Revoking a session
+		// elsewhere takes up to this long to reach other devices.
+		cookieCache: {
+			enabled: true,
+			maxAge: 5 * 60,
+		},
+	},
 	account: {
 		accountLinking: {
 			// Let Google sign in to an existing account with the same email even

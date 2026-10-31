@@ -68,22 +68,37 @@ async function searchSeed(seed: AtmosSeed) {
 		: null;
 }
 
+/** How long a Worker skips the seed check after finding nothing to do. */
+const SEED_CHECK_INTERVAL_MS = 60 * 60 * 1000;
+let seedsSettledAt = 0;
+/** Seeds TMDB had no match for, so they aren't searched on every request. */
+const unmatchedSeeds = new Set<string>();
+
 /** Turns a few not-yet-stored seed entries into atmos_title rows. */
 export async function resolvePendingSeeds() {
+	if (Date.now() - seedsSettledAt < SEED_CHECK_INTERVAL_MS) return;
+
 	const stored = await db
 		.select({ seedKey: atmosTitle.seedKey })
 		.from(atmosTitle)
 		.where(isNotNull(atmosTitle.seedKey));
 	const storedKeys = new Set(stored.map((row) => row.seedKey));
 
-	const pending = ATMOS_SEED.filter(
-		(seed) => !storedKeys.has(toSeedKey(seed)),
-	).slice(0, SEED_RESOLVE_BATCH);
+	const pending = ATMOS_SEED.filter((seed) => {
+		const key = toSeedKey(seed);
+		return !storedKeys.has(key) && !unmatchedSeeds.has(key);
+	}).slice(0, SEED_RESOLVE_BATCH);
+
+	if (pending.length === 0) {
+		seedsSettledAt = Date.now();
+		return;
+	}
 
 	const resolved = await Promise.allSettled(
 		pending.map(async (seed) => {
 			const match = await searchSeed(seed);
 			if (!match) {
+				unmatchedSeeds.add(toSeedKey(seed));
 				console.warn(`Atmos seed not found on TMDB: ${toSeedKey(seed)}`);
 				return;
 			}
