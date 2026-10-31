@@ -8,6 +8,11 @@
 A discovery and watchlist app for movies and TV shows built with TanStack Start, deployed on Cloudflare Workers.
 Check out the [live site](https://watchlist.xnaavii.com/discover).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.webp">
+  <img src="docs/screenshots/hero-light.webp" alt="Watchlist on a laptop and a phone: the discover page and a movie details page">
+</picture>
+
 ## Stack
 
 - **Framework:** TanStack Start + TanStack Router
@@ -23,12 +28,47 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 
 ## Features
 
-- Discover movies with filters (genre, year, language, rating, sort)
-- Full-text search with debounced infinite scroll
-- AI picks: describe a mood ("cozy 90s mystery under 2 hours") on the Pick page or in search, and get a short list with a reason for each, optionally drawn from your watchlist
-- Personal watchlist with watch status (want to watch / watched)
+- Discover movies and TV shows together, by genre, trend or mood, with filters (genre, year, language, rating, sort)
+- Search across titles and people, with debounced infinite scroll
+- AI picks: describe a mood ("cozy 90s mystery under 2 hours") in search and get a short list with a reason for each, optionally drawn from your watchlist
+- Personal watchlist with watch status (want to watch / watched) and a profile stats dashboard
+- Dolby Atmos showcase with community votes and sound ratings
 - Sign in with email or Google
-- Movie details: cast & crew, trailers, similar movies, IMDb ratings, streaming availability
+- Title details: cast & crew, trailers, gallery, reviews, similar titles, IMDb ratings, streaming availability
+- Light and dark themes
+
+## Screenshots
+
+Images follow your GitHub theme.
+
+### Title details
+
+Where to stream it, trailer, gallery, cast, reviews and similar titles on one page.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/browser-movie-dark.webp">
+  <img src="docs/screenshots/browser-movie-light.webp" alt="The Dune: Part Two details page">
+</picture>
+
+### AI picks
+
+Describe a mood and get a short list with a reason for each pick.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/browser-picks-dark.webp">
+  <img src="docs/screenshots/browser-picks-light.webp" alt="AI picks for a cozy 90s mystery under 2 hours">
+</picture>
+
+### On your phone
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/phones-dark.webp">
+  <img src="docs/screenshots/phones-light.webp" alt="Watchlist on three phones: discover, a movie and a TV show">
+</picture>
+
+### Light and dark
+
+<img src="docs/screenshots/light-and-dark.webp" alt="The same page in the light and dark themes, side by side">
 
 ## Getting started
 
