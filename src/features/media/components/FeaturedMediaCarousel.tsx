@@ -2,7 +2,7 @@ import type { Genre } from "@lorenzopant/tmdb";
 import AutoPlay from "embla-carousel-autoplay";
 import { ImageOff, Info } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "#/components/ui/button";
+import { Button, ButtonLabel } from "#/components/ui/button";
 import {
 	Carousel,
 	type CarouselApi,
@@ -312,10 +312,14 @@ export function FeaturedMediaCarousel({
 													{!watchlistStatus && (
 														<AddToWatchlistButton media={media} showLabel />
 													)}
-													<Button asChild size="lg" variant="secondary">
+													<Button
+														asChild
+														size="responsive-lg"
+														variant="secondary"
+													>
 														<MediaLink media={media}>
-															Details
-															<Info />
+															<ButtonLabel>Details</ButtonLabel>
+															<Info data-icon="inline-end" />
 														</MediaLink>
 													</Button>
 												</div>
