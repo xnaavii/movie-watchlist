@@ -35,12 +35,12 @@ const mocks = vi.hoisted(() => {
 			},
 		})),
 	};
-	return { state, db, getMediaDetails: vi.fn() };
+	return { state, db, fetchMediaDetails: vi.fn() };
 });
 
 vi.mock("#/db", () => ({ db: mocks.db }));
-vi.mock("#/features/media/server/media.functions", () => ({
-	getMediaDetails: mocks.getMediaDetails,
+vi.mock("#/features/media/server/media.server", () => ({
+	fetchMediaDetails: mocks.fetchMediaDetails,
 }));
 vi.mock("#/lib/auth.functions", () => ({ ensureSession: vi.fn() }));
 
@@ -59,7 +59,7 @@ beforeEach(() => {
 	mocks.state.inserted = [];
 	mocks.state.returningCount = undefined;
 	mocks.db.insert.mockClear();
-	mocks.getMediaDetails.mockReset();
+	mocks.fetchMediaDetails.mockReset();
 });
 
 describe("parseEntries", () => {
@@ -145,7 +145,7 @@ describe("importWatchlistEntries", () => {
 				watchedAt: new Date("2026-03-05T00:00:00.000Z"),
 			}),
 		]);
-		expect(mocks.getMediaDetails).not.toHaveBeenCalled();
+		expect(mocks.fetchMediaDetails).not.toHaveBeenCalled();
 	});
 
 	it("replaces unreadable dates instead of storing Invalid Date", async () => {
@@ -170,7 +170,7 @@ describe("importWatchlistEntries", () => {
 	it("skips titles TMDB can't find and still imports the rest", async () => {
 		storedTitle(1);
 		// Title 2 isn't stored yet and TMDB doesn't know it.
-		mocks.getMediaDetails.mockRejectedValue(new Error("Not found"));
+		mocks.fetchMediaDetails.mockRejectedValue(new Error("Not found"));
 		await expect(
 			importWatchlistEntries("user-1", [entry(1), entry(2)]),
 		).resolves.toEqual({ imported: 1, failed: 1 });
@@ -180,7 +180,7 @@ describe("importWatchlistEntries", () => {
 	});
 
 	it("writes nothing when no title can be found", async () => {
-		mocks.getMediaDetails.mockRejectedValue(new Error("Not found"));
+		mocks.fetchMediaDetails.mockRejectedValue(new Error("Not found"));
 		await expect(
 			importWatchlistEntries("user-1", [entry(1), entry(2)]),
 		).resolves.toEqual({ imported: 0, failed: 2 });

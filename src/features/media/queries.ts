@@ -16,7 +16,6 @@ import {
 	getMediaReviews,
 	getMediaVideos,
 	getMediaWatchProviders,
-	getStreamingSources,
 	getTrendingMedia,
 	searchMedia,
 } from "./server/media.functions";
@@ -183,11 +182,6 @@ export const mediaQueries = {
 			queryKey: ["media", "authShowcase"],
 			queryFn: () => getAuthShowcase(),
 			staleTime: 1000 * 60 * 60,
-		}),
-	streamingSources: (imdbId: string) =>
-		queryOptions({
-			queryKey: ["media", "streamingSources", imdbId],
-			queryFn: () => getStreamingSources({ data: { imdbId } }),
 		}),
 };
 
