@@ -26,7 +26,7 @@ const SESSION_WAIT_MS = 5000;
  * undefined if the check hasn't finished in time.
  */
 export async function getClientUser(): Promise<ClientUser | undefined> {
-	if (!known) {
+	if (!known && !isOffline()) {
 		await Promise.race([
 			new Promise<void>((resolve) => waiters.push(resolve)),
 			new Promise<void>((resolve) => setTimeout(resolve, SESSION_WAIT_MS)),
@@ -36,6 +36,8 @@ export async function getClientUser(): Promise<ClientUser | undefined> {
 }
 
 export const isServer = () => typeof window === "undefined";
+const isOffline = () =>
+	typeof navigator !== "undefined" && navigator.onLine === false;
 
 /**
  * Runs the server version on the server and for signed-in users, and the
@@ -46,8 +48,19 @@ export async function forUserOrGuest<T>(
 	guest: () => T | Promise<T>,
 ): Promise<T> {
 	if (isServer()) return server();
-	// Unknown falls back to the server, which checks the session itself.
-	return (await getClientUser()) === null ? guest() : server();
+	const user = await getClientUser();
+	if (user === null) return guest();
+	// Unknown asks the server, which checks the session itself. Offline the
+	// server can't answer, so the list on this device is the best there is.
+	if (user === undefined && isOffline()) return guest();
+	return server();
+}
+
+/** Account changes need the server; guests' changes work offline. */
+export function assertOnline() {
+	if (isOffline()) {
+		throw new Error("You're offline. Connect to save changes to your account.");
+	}
 }
 
 /** For tests. */

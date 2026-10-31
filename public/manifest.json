@@ -34,9 +34,11 @@
       "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "/discover",
   "display": "standalone",
   "theme_color": "#0a0a0a",
   "background_color": "#0a0a0a",
-  "description": "Find what to watch next, build your watchlist, and track what you've watched."
+  "description": "Find what to watch next, build your watchlist, and track what you've watched.",
+  "id": "/",
+  "scope": "/"
 }

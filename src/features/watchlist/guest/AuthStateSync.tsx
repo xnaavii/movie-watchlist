@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { clearCachedUserData } from "#/features/pwa/serviceWorker";
 import { authClient } from "#/lib/auth-client";
 import { setClientUser } from "#/lib/clientAuth";
 import { watchlistQueries } from "../queries";
@@ -19,7 +20,7 @@ let importing = false;
  * signing in. Renders nothing.
  */
 export function AuthStateSync() {
-	const { data: session, isPending } = authClient.useSession();
+	const { data: session, isPending, error } = authClient.useSession();
 	const queryClient = useQueryClient();
 	const importGuestWatchlist = useServerFn(importGuestWatchlistFn);
 	const userId = session?.user.id ?? null;
@@ -27,6 +28,15 @@ export function AuthStateSync() {
 
 	useEffect(() => {
 		if (isPending) return;
+		// A failed check (e.g. offline) says nothing about who is signed in.
+		// Offline, refetch anyway: queries then fall back to the device list
+		// instead of the empty one the cached page was rendered with.
+		if (error) {
+			if (!navigator.onLine) {
+				queryClient.invalidateQueries({ queryKey: watchlistQueries.allKey });
+			}
+			return;
+		}
 		setClientUser(userId ? { id: userId } : null);
 
 		const changed =
@@ -36,6 +46,7 @@ export function AuthStateSync() {
 
 		// The server rendered the page without the guest list, so a signed-out
 		// browser reloads it from this device on the first check too.
+		if (changed) clearCachedUserData();
 		if (changed || (firstCheck && !userId)) {
 			queryClient.invalidateQueries({ queryKey: watchlistQueries.allKey });
 		}
@@ -76,7 +87,7 @@ export function AuthStateSync() {
 				queryClient.invalidateQueries({ queryKey: watchlistQueries.allKey });
 			}
 		})();
-	}, [isPending, userId, queryClient, importGuestWatchlist]);
+	}, [isPending, error, userId, queryClient, importGuestWatchlist]);
 
 	return null;
 }

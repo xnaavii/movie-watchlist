@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { getClientUser } from "#/lib/clientAuth";
+import { assertOnline, getClientUser } from "#/lib/clientAuth";
 import { toastGuestSave } from "../guest/guestToast";
 import { type GuestMediaInput, saveGuestEntry } from "../guest/guestWatchlist";
 import { updateWatchlistStatusFn } from "../server/watchlist.functions";
@@ -21,6 +21,7 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	const mutation = useMutation({
 		mutationFn: async (status: WatchlistStatusInsert) => {
 			if ((await getClientUser()) !== null) {
+				assertOnline();
 				await updateWatchlistStatus({
 					data: { mediaType: media.mediaType, id: media.id, status },
 				});

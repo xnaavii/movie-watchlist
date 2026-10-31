@@ -11,6 +11,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "#/components/ThemeProvider";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { OfflineBanner } from "#/features/pwa/OfflineBanner";
+import { ServiceWorkerSetup } from "#/features/pwa/ServiceWorkerSetup";
 import { seo } from "#/utils/seo";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -30,6 +32,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				name: "viewport",
 				content: "width=device-width, initial-scale=1",
 			},
+			{ name: "theme-color", content: "#0a0a0a" },
+			{ name: "mobile-web-app-capable", content: "yes" },
+			{ name: "apple-mobile-web-app-capable", content: "yes" },
+			{ name: "apple-mobile-web-app-title", content: SITE_CONFIG.name },
 			...seo({
 				title: SITE_CONFIG.name,
 				description: SITE_CONFIG.description,
@@ -40,6 +46,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			{ rel: "icon", href: "/favicon.ico", sizes: "any" },
 			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 			{ rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+			{ rel: "manifest", href: "/manifest.json" },
 		],
 	}),
 	shellComponent: RootDocument,
@@ -56,6 +63,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<ThemeProvider defaultTheme="dark" storageKey="theme">
 					{children}
 					<Toaster />
+					<OfflineBanner />
+					<ServiceWorkerSetup />
 					<TanStackDevtools
 						config={{
 							position: "bottom-right",
