@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { RefreshCw, Sparkles } from "lucide-react";
-import { Button } from "#/components/ui/button";
+import { Button, ButtonLabel } from "#/components/ui/button";
 import {
 	Empty,
 	EmptyDescription,
@@ -50,12 +50,15 @@ export function PickResults({
 				</div>
 				<Button
 					variant="outline"
-					size="sm"
+					size="responsive-sm"
 					onClick={onPickAgain}
 					disabled={isFetching}
 				>
-					<RefreshCw className={isFetching ? "animate-spin" : undefined} />
-					Pick again
+					<RefreshCw
+						data-icon="inline-start"
+						className={isFetching ? "animate-spin" : undefined}
+					/>
+					<ButtonLabel>Pick again</ButtonLabel>
 				</Button>
 			</div>
 

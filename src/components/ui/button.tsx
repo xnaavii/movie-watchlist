@@ -31,6 +31,13 @@ const buttonVariants = cva(
         "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+        // Icon-only below md, icon + label from md. Pair with <ButtonLabel>.
+        "responsive-sm":
+          "size-8 md:w-auto md:gap-1 md:px-3 md:has-data-[icon=inline-end]:pr-2 md:has-data-[icon=inline-start]:pl-2",
+        responsive:
+          "size-9 md:w-auto md:gap-1.5 md:px-3 md:has-data-[icon=inline-end]:pr-2.5 md:has-data-[icon=inline-start]:pl-2.5",
+        "responsive-lg":
+          "size-10 md:w-auto md:gap-1.5 md:px-4 md:has-data-[icon=inline-end]:pr-3 md:has-data-[icon=inline-start]:pl-3",
       },
     },
     defaultVariants: {
@@ -63,4 +70,19 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+/**
+ * A button's text label for the responsive sizes: visually hidden below md
+ * (the button shows only its icon) but always read by screen readers, so the
+ * button keeps its accessible name without an aria-label.
+ */
+function ButtonLabel({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="button-label"
+      className={cn("sr-only md:not-sr-only", className)}
+      {...props}
+    />
+  )
+}
+
+export { Button, ButtonLabel, buttonVariants }
