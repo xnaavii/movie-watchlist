@@ -38,6 +38,7 @@ import { PickResults } from "#/features/picks/components/PickResults";
 import type { PickRequest } from "#/features/picks/types";
 import { looksLikeDescription } from "#/features/picks/utils/picks";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
+import { pageHead, pageTitle, truncateTitle } from "#/utils/seo";
 
 const searchParamsSchema = searchFilterSearchSchema
 	.extend(pickSearchSchema.shape)
@@ -78,6 +79,20 @@ export const Route = createFileRoute("/_app/search")({
 		}
 	},
 	pendingComponent: () => <MediaGridPagePending withSearchField />,
+	head: ({ match: { search } }) =>
+		pageHead({
+			title: pageTitle(
+				search.ai
+					? "AI picks"
+					: search.q
+						? `Search: ${truncateTitle(search.q)}`
+						: "Search",
+			),
+			description: search.ai
+				? "Describe what you're in the mood for and get a short list of movies and shows, each with a reason to watch."
+				: "Search movies, TV shows and people, or describe a mood and get AI picks.",
+			noindex: true,
+		}),
 });
 
 function SearchPage() {

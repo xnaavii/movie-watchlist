@@ -2,16 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE_CONFIG } from "#/config/site";
 import { LegalPage } from "#/features/legal/components/LegalPage";
 import { LEGAL_CONFIG } from "#/features/legal/config";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/terms")({
 	component: TermsPage,
-	head: () => ({
-		meta: seo({
-			title: `Terms of use · ${SITE_CONFIG.name}`,
+	head: () =>
+		pageHead({
+			title: pageTitle("Terms of use"),
 			description: `The rules for using ${SITE_CONFIG.name}.`,
+			path: "/terms",
 		}),
-	}),
 });
 
 function TermsPage() {

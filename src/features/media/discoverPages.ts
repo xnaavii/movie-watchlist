@@ -65,5 +65,5 @@ export async function loadDiscoverTypePage(
 		queryClient.query({ ...mediaQueries.list(popular), staleTime: "static" }),
 		queryClient.query({ ...watchlistQueries.list(), staleTime: "static" }),
 	]);
-	return { poster: popularPage.results[0]?.posterPath };
+	return { backdrop: popularPage.results[0]?.backdropPath };
 }

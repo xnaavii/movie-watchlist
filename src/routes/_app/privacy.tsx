@@ -2,16 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE_CONFIG } from "#/config/site";
 import { LegalPage } from "#/features/legal/components/LegalPage";
 import { LEGAL_CONFIG } from "#/features/legal/config";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/privacy")({
 	component: PrivacyPage,
-	head: () => ({
-		meta: seo({
-			title: `Privacy policy · ${SITE_CONFIG.name}`,
+	head: () =>
+		pageHead({
+			title: pageTitle("Privacy policy"),
 			description: `What ${SITE_CONFIG.name} collects, why, and how to download or delete your data.`,
+			path: "/privacy",
 		}),
-	}),
 });
 
 function PrivacyPage() {

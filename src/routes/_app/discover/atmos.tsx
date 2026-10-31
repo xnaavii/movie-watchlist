@@ -4,12 +4,11 @@ import { AudioLines } from "lucide-react";
 import { useState } from "react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
-import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { PickPill } from "#/features/picks/components/PickPill";
 import { AtmosTitleCard } from "#/features/sound/components/AtmosTitleCard";
 import { soundQueries } from "#/features/sound/queries";
 import type { MediaType } from "#/features/sound/types";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 const FILTERS: { value: MediaType | "all"; label: string }[] = [
 	{ value: "all", label: "All" },
@@ -23,14 +22,13 @@ export const Route = createFileRoute("/_app/discover/atmos")({
 			...soundQueries.showcase(),
 			staleTime: "static",
 		}),
-	head: () => ({
-		meta: seo({
-			title: `Dolby Atmos showcase | ${SITE_CONFIG.name}`,
+	head: () =>
+		pageHead({
+			title: pageTitle("Dolby Atmos showcase"),
 			description:
 				"Movies and series with a Dolby Atmos mix, ranked by how they sound at home. Find something to test your speakers.",
-			url: `${getSiteUrl()}/discover/atmos`,
+			path: "/discover/atmos",
 		}),
-	}),
 	component: AtmosPage,
 	pendingComponent: AtmosPagePending,
 	errorComponent: AtmosPageError,

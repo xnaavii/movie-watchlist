@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { absoluteUrl } from "#/config/site";
 import type { MediaDetails } from "../types";
 import { buildMediaHead } from "./meta";
 
@@ -32,7 +33,7 @@ const show: MediaDetails = {
 	voteCount: 25000,
 };
 
-const url = "https://watchlist.example.com/movies/550";
+const url = absoluteUrl("/movies/550-fight-club");
 
 const content = (head: ReturnType<typeof buildMediaHead>, key: string) =>
 	head.meta.find(
@@ -43,7 +44,7 @@ const content = (head: ReturnType<typeof buildMediaHead>, key: string) =>
 
 describe("buildMediaHead", () => {
 	it("builds an absolute, sized preview image from the backdrop", () => {
-		const head = buildMediaHead(movie, url);
+		const head = buildMediaHead(movie);
 		expect(content(head, "og:image")).toBe(
 			"https://image.tmdb.org/t/p/w1280/backdrop.jpg",
 		);
@@ -51,15 +52,37 @@ describe("buildMediaHead", () => {
 	});
 
 	it("falls back to the poster with a small card when there is no backdrop", () => {
-		const head = buildMediaHead({ ...movie, backdropPath: undefined }, url);
+		const head = buildMediaHead({ ...movie, backdropPath: undefined });
 		expect(content(head, "og:image")).toBe(
 			"https://image.tmdb.org/t/p/w780/poster.jpg",
 		);
 		expect(content(head, "twitter:card")).toBe("summary");
+		expect(content(head, "og:image:width")).toBe("780");
+		expect(content(head, "og:image:height")).toBe("1170");
+	});
+
+	it("sizes the backdrop preview and names the site", () => {
+		const head = buildMediaHead(movie);
+		expect(content(head, "og:image:width")).toBe("1280");
+		expect(content(head, "og:image:height")).toBe("720");
+		expect(content(head, "og:image:alt")).toBe("Fight Club");
+		expect(content(head, "og:site_name")).toBe("Watchlist");
+		expect(content(head, "robots")).toBeUndefined();
+	});
+
+	it("describes a title with no overview instead of leaving it blank", () => {
+		const head = buildMediaHead({
+			...movie,
+			overview: undefined,
+			tagline: undefined,
+		});
+		expect(content(head, "description")).toBe(
+			"Where to stream Fight Club, plus the trailer, cast and reviews. Save it to your Watchlist.",
+		);
 	});
 
 	it("includes the year in the title and points og:url and canonical at the page", () => {
-		const head = buildMediaHead(movie, url);
+		const head = buildMediaHead(movie);
 		expect(head.meta[0]).toEqual({
 			title: "Fight Club (1999) | Watchlist",
 		});
@@ -69,7 +92,7 @@ describe("buildMediaHead", () => {
 	});
 
 	it("emits Movie JSON-LD that cannot break out of its script tag", () => {
-		const [script] = buildMediaHead(movie, url).scripts;
+		const [script] = buildMediaHead(movie).scripts;
 		expect(script.children).not.toContain("</script>");
 		const data = JSON.parse(script.children);
 		expect(data).toMatchObject({
@@ -83,8 +106,11 @@ describe("buildMediaHead", () => {
 	});
 
 	it("emits TVSeries JSON-LD and a TV og:type for shows", () => {
-		const head = buildMediaHead(show, "https://watchlist.example.com/tv/1399");
+		const head = buildMediaHead(show);
 		expect(content(head, "og:type")).toBe("video.tv_show");
+		expect(head.links).toEqual([
+			{ rel: "canonical", href: absoluteUrl("/tv/1399-game-of-thrones") },
+		]);
 		expect(content(head, "video:duration")).toBeUndefined();
 		const data = JSON.parse(head.scripts[0].children);
 		expect(data).toMatchObject({

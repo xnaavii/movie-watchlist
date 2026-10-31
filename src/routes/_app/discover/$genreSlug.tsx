@@ -16,7 +16,6 @@ import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { PillNav, PillNavItem } from "#/components/PillNav";
 import { Button } from "#/components/ui/button";
-import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { GenreDiscoverSections } from "#/features/media/components/GenreDiscoverSections";
 import { MediaBackdropMarquee } from "#/features/media/components/MediaBackdropMarquee";
@@ -36,11 +35,11 @@ import {
 	type MediaType,
 } from "#/features/media/types";
 import { interleave, mediaKey } from "#/features/media/utils";
-import { toTmdbImageUrl } from "#/features/media/utils/tmdb";
+import { backdropPreview } from "#/features/media/utils/meta";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 const genreSearchSchema = z.object({
 	/** Which type the popular grid at the bottom shows. */
@@ -106,24 +105,29 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 		]);
 
 		return {
-			poster: pages[0]?.pages[0]?.results[0]?.posterPath,
+			backdrop: pages[0]?.pages[0]?.results[0]?.backdropPath,
 		};
 	},
 	head: ({ loaderData, params }) => {
 		const genre = findDiscoverGenre(params.genreSlug);
 		if (!genre) return {};
-		return {
-			meta: seo({
-				title: `${genre.name} Movies and TV Shows | ${SITE_CONFIG.name}`,
-				description: genreTagline(genre),
-				image: toTmdbImageUrl(loaderData?.poster, "w500"),
-				url: `${getSiteUrl()}/discover/${genre.slug}`,
-			}),
-		};
+		return pageHead({
+			title: pageTitle(`${genre.name} ${genreMediaLabel(genre)}`),
+			description: `${genreTagline(genre)}.`,
+			path: `/discover/${genre.slug}`,
+			image: backdropPreview(loaderData?.backdrop),
+		});
 	},
 	component: DiscoverGenrePage,
 	notFoundComponent: DiscoverGenrePageNotFound,
 });
+
+/** "movies and TV shows", "movies" or "TV shows", by what the genre has. */
+function genreMediaLabel(genre: DiscoverGenre) {
+	const types = genreMediaTypes(genre);
+	if (types.length === 2) return "movies and TV shows";
+	return types[0] === "tv" ? "TV shows" : "movies";
+}
 
 function genreTagline(genre: DiscoverGenre) {
 	const types = genreMediaTypes(genre);

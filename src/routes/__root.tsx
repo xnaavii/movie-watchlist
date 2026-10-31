@@ -13,7 +13,7 @@ import { SITE_CONFIG } from "#/config/site";
 import { AppShellSetup } from "#/features/pwa/AppShellSetup";
 import { OfflineBanner } from "#/features/pwa/OfflineBanner";
 import { ServiceWorkerSetup } from "#/features/pwa/ServiceWorkerSetup";
-import { seo } from "#/utils/seo";
+import { HOME_TITLE, pageHead } from "#/utils/seo";
 import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -34,15 +34,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				// (notch, home indicator) when installed.
 				content: "width=device-width, initial-scale=1, viewport-fit=cover",
 			},
-			{ name: "theme-color", content: "#0a0a0a" },
+			{ name: "theme-color", content: SITE_CONFIG.themeColor },
+			{ name: "color-scheme", content: "dark" },
+			{ name: "application-name", content: SITE_CONFIG.name },
 			{ name: "mobile-web-app-capable", content: "yes" },
 			{ name: "apple-mobile-web-app-capable", content: "yes" },
 			{ name: "apple-mobile-web-app-status-bar-style", content: "black" },
 			{ name: "apple-mobile-web-app-title", content: SITE_CONFIG.name },
-			...seo({
-				title: SITE_CONFIG.name,
-				description: SITE_CONFIG.description,
-			}),
+			{ property: "og:locale", content: SITE_CONFIG.locale },
+			// Defaults for every page; a route's own head overrides them.
+			...pageHead({ title: HOME_TITLE }).meta,
 		],
 		links: [
 			{ rel: "stylesheet", href: appCss },

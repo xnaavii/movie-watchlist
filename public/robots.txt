@@ -1,4 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
+# Search, the watchlist, the profile and the auth pages are crawlable but
+# marked noindex, so search engines can see that and drop them.
 User-agent: *
-Disallow: /search
-Disallow: /watchlist
+Disallow: /api/
+
+Sitemap: https://watchlist.xnaavii.com/sitemap.xml
