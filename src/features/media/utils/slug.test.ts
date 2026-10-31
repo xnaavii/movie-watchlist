@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseMediaSlug, slugify, toMediaSlug } from "./slug";
+import { parseMediaSlug, slugify, toMediaPath, toMediaSlug } from "./slug";
 
 describe("slugify", () => {
 	it("lowercases and joins words with dashes", () => {
@@ -43,5 +43,27 @@ describe("parseMediaSlug", () => {
 	it("rejects slugs without a leading id", () => {
 		expect(parseMediaSlug("fight-club")).toBeNull();
 		expect(parseMediaSlug("550abc")).toBeNull();
+	});
+});
+
+describe("toMediaPath", () => {
+	it("builds movie and TV paths", () => {
+		expect(
+			toMediaPath({ mediaType: "movie", id: 550, title: "Fight Club" }),
+		).toBe("/movies/550-fight-club");
+		expect(
+			toMediaPath({ mediaType: "tv", id: 1399, title: "Game of Thrones" }),
+		).toBe("/tv/1399-game-of-thrones");
+	});
+
+	it("round-trips the id through the slug", () => {
+		for (const title of [
+			"Amélie",
+			"Tom & Jerry",
+			"千と千尋の神隠し",
+			"9-1-1",
+		]) {
+			expect(parseMediaSlug(toMediaSlug({ id: 42, title }))).toBe(42);
+		}
 	});
 });
