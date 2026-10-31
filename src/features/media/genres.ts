@@ -1,3 +1,4 @@
+import { joinPluralNouns } from "./mediaTypes";
 import { MEDIA_TYPES, type MediaType } from "./types";
 import { slugify } from "./utils/slug";
 
@@ -89,18 +90,9 @@ export const genreMediaTypes = (genre: DiscoverGenre) =>
 
 /** "movies and TV shows", "movies" or "TV shows", by what the genre has. */
 export function genreMediaLabel(genre: DiscoverGenre) {
-	const types = genreMediaTypes(genre);
-	if (types.length === 2) return "movies and TV shows";
-	return types[0] === "tv" ? "TV shows" : "movies";
+	return joinPluralNouns(genreMediaTypes(genre));
 }
 
 export function genreTagline(genre: DiscoverGenre) {
-	const types = genreMediaTypes(genre);
-	const what =
-		types.length === 2
-			? "movies and shows"
-			: types[0] === "tv"
-				? "shows"
-				: "films";
-	return `Handpicked ${genre.name} ${what} to add to your list`;
+	return `Handpicked ${genre.name} ${genreMediaLabel(genre)} to add to your list`;
 }

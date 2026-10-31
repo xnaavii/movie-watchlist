@@ -5,8 +5,9 @@ import {
 	NativeSelect,
 	NativeSelectOption,
 } from "#/components/ui/native-select";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 import { mediaQueries } from "../queries";
-import type { MediaType } from "../types";
+import { MEDIA_TYPES, type MediaType } from "../types";
 import {
 	hasActiveFilters,
 	type SearchSort,
@@ -25,11 +26,6 @@ const STATUS_LABELS = {
 	want_to_watch: "Want to watch",
 	watched: "Watched",
 } as const;
-
-const TYPE_LABELS: Record<MediaType, string> = {
-	movie: "Movies",
-	tv: "TV shows",
-};
 
 type Sort = SearchSort | WatchlistSort;
 type Status = keyof typeof STATUS_LABELS;
@@ -105,9 +101,9 @@ export function MediaFilterBar({
 				}}
 			>
 				<NativeSelectOption value={ANY}>Movies and TV</NativeSelectOption>
-				{Object.entries(TYPE_LABELS).map(([type, label]) => (
+				{MEDIA_TYPES.map((type) => (
 					<NativeSelectOption key={type} value={type}>
-						{label}
+						{MEDIA_TYPE_CONFIG[type].pluralLabel}
 					</NativeSelectOption>
 				))}
 			</NativeSelect>

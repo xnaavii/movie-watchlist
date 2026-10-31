@@ -6,6 +6,7 @@ import { LazySection } from "#/components/LazySection";
 import { Button } from "#/components/ui/button";
 import { AtmosFeedback } from "#/features/sound/components/AtmosFeedback";
 import { WatchlistStatusButtonView } from "#/features/watchlist/components/WatchlistStatusButton";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 import { mediaQueries } from "../queries";
 import type { MediaRef, MediaType } from "../types";
 import { isReleased } from "../utils";
@@ -92,17 +93,12 @@ export function MediaDetailsPagePending() {
 	);
 }
 
-const NOT_FOUND_LABELS: Record<MediaType, string> = {
-	movie: "movie",
-	tv: "TV show",
-};
-
 export function MediaDetailsPageNotFound({
 	mediaType,
 }: {
 	mediaType: MediaType;
 }) {
-	const label = NOT_FOUND_LABELS[mediaType];
+	const label = MEDIA_TYPE_CONFIG[mediaType].noun;
 
 	return (
 		<div className="flex flex-col items-center justify-center gap-4 h-[60vh] text-center px-4">

@@ -2,8 +2,9 @@ import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
 import type { WatchlistStatus } from "#/features/watchlist/types";
 import { cn } from "#/lib/utils";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 import type { MediaItem } from "../types";
-import { formatReleaseYear, MEDIA_TYPE_LABELS } from "../utils";
+import { formatReleaseYear } from "../utils";
 import { MediaLink } from "./MediaLink";
 import { MediaLogo } from "./MediaLogo";
 
@@ -25,7 +26,7 @@ export function MediaCard({
 	const isBackdrop = variant === "backdrop";
 	const imageSrc = isBackdrop ? media.backdropPath : media.posterPath;
 	const aspectRatio = isBackdrop ? 16 / 9 : 2 / 3;
-	const meta = `${MEDIA_TYPE_LABELS[media.mediaType]} · ${formatReleaseYear(media.releaseDate)}`;
+	const meta = `${MEDIA_TYPE_CONFIG[media.mediaType].label} · ${formatReleaseYear(media.releaseDate)}`;
 
 	return (
 		<div className="flex flex-col gap-2 w-full">

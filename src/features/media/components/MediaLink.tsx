@@ -14,21 +14,17 @@ interface MediaLinkProps {
 
 /** Links to a movie's or a TV show's details page. */
 export function MediaLink({ media, ...props }: MediaLinkProps) {
-	if (media.mediaType === "tv") {
-		return (
-			<Link
-				to="/tv/$tvSlug"
-				params={{ tvSlug: toMediaSlug(media) }}
-				{...props}
-			/>
-		);
+	const slug = toMediaSlug(media);
+	switch (media.mediaType) {
+		case "movie":
+			return (
+				<Link to="/movies/$movieSlug" params={{ movieSlug: slug }} {...props} />
+			);
+		case "tv":
+			return <Link to="/tv/$tvSlug" params={{ tvSlug: slug }} {...props} />;
+		default:
+			// A new media type needs its details route here.
+			media.mediaType satisfies never;
+			return null;
 	}
-
-	return (
-		<Link
-			to="/movies/$movieSlug"
-			params={{ movieSlug: toMediaSlug(media) }}
-			{...props}
-		/>
-	);
 }

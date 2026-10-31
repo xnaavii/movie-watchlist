@@ -8,13 +8,7 @@ import type {
 	TVSeriesDetails,
 	TVSeriesResultItem,
 } from "@lorenzopant/tmdb";
-import type {
-	MediaDetails,
-	MediaItem,
-	MediaRef,
-	MediaReview,
-	MediaType,
-} from "../types";
+import type { MediaDetails, MediaItem, MediaRef, MediaReview } from "../types";
 import { resizeTmdbImage } from "./tmdb";
 
 type DiscoverFilters = {
@@ -96,11 +90,6 @@ export function interleave<T>(a: T[], b: T[]): T[] {
 	}
 	return merged;
 }
-
-export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
-	movie: "Movie",
-	tv: "TV show",
-};
 
 export function normalizeMovie(movie: MovieResultItem): MediaItem {
 	return {

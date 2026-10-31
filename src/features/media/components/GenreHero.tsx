@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Clapperboard, Tv } from "lucide-react";
 import { useMemo } from "react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { MediaBackdropMarquee } from "#/features/media/components/MediaBackdropMarquee";
@@ -7,6 +6,7 @@ import { type DiscoverGenre, genreTagline } from "#/features/media/genres";
 import { mediaQueries } from "#/features/media/queries";
 import type { MediaType } from "#/features/media/types";
 import { interleave } from "#/features/media/utils";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 
 export interface GenreHeroProps {
 	genre: DiscoverGenre;
@@ -30,19 +30,18 @@ export function GenreHero({ genre, mediaTypes }: GenreHeroProps) {
 		<div className="relative isolate flex items-center justify-center">
 			<div className="absolute flex flex-col items-center gap-3 z-20 px-4 text-center">
 				<div className="flex gap-1.5">
-					{mediaTypes.map((mediaType) => (
-						<span
-							key={mediaType}
-							className="flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground [&_svg]:size-3.5"
-						>
-							{mediaType === "movie" ? (
-								<Clapperboard aria-hidden="true" />
-							) : (
-								<Tv aria-hidden="true" />
-							)}
-							{mediaType === "movie" ? "Movies" : "TV shows"}
-						</span>
-					))}
+					{mediaTypes.map((mediaType) => {
+						const { icon: Icon, pluralLabel } = MEDIA_TYPE_CONFIG[mediaType];
+						return (
+							<span
+								key={mediaType}
+								className="flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground [&_svg]:size-3.5"
+							>
+								<Icon aria-hidden="true" />
+								{pluralLabel}
+							</span>
+						);
+					})}
 				</div>
 				<BrandedTitle>{genre.name}</BrandedTitle>
 				<p className="text-sm lg:text-base text-muted-foreground">

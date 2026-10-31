@@ -145,6 +145,14 @@ account on sign-in by `AuthStateSync`.
 Every title is a `MediaRef` (`{ mediaType, id }`), because TMDB movie and TV
 ids overlap. Build keys with `mediaKey(ref)`. Don't assume movies only.
 
+Per-type wording and icons live in `MEDIA_TYPE_CONFIG`
+(`features/media/mediaTypes.ts`); per-type discover pages in
+`DISCOVER_TYPE_PAGES` (`features/media/discoverPages.ts`). Use them instead of
+writing `mediaType === "movie" ? "Movies" : "TV shows"`. Where behaviour truly
+differs per type (TMDB endpoints, details routes), use a `switch` with a
+`satisfies never` default, so adding a media type makes TypeScript list every
+place that needs a new case.
+
 ## Adding a feature, step by step
 
 Say you want a "Collections" feature:
