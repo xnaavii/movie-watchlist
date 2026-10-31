@@ -40,5 +40,54 @@
   "background_color": "#0a0a0a",
   "description": "Find what to watch next, build your watchlist, and track what you've watched.",
   "id": "/",
-  "scope": "/"
+  "scope": "/",
+  "display_override": [
+    "standalone"
+  ],
+  "orientation": "any",
+  "categories": [
+    "entertainment",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search titles or ask for AI picks",
+      "url": "/search",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Watchlist",
+      "short_name": "Watchlist",
+      "description": "What you're watching and want to watch",
+      "url": "/watchlist",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Discover",
+      "short_name": "Discover",
+      "description": "Trending and popular right now",
+      "url": "/discover",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

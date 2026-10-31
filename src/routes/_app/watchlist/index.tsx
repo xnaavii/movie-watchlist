@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_app/watchlist/")({
 	loaderDeps: ({ search }) => search,
 	pendingComponent: WatchlistPending,
 	errorComponent: ({ error }) => (
-		<div className="p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
+		<div className="p-2 md:p-4 lg:p-8">
 			<p className="text-destructive">
 				Failed to load your watchlist: {getErrorMessage(error)}
 			</p>
@@ -137,7 +137,7 @@ function WatchlistPending() {
 		id: i,
 	}));
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-12 md:mt-0 animate-pulse">
+		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 animate-pulse">
 			<div className="h-8 w-48 bg-muted rounded" />
 			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
 				{skeletonItems.map((item) => (

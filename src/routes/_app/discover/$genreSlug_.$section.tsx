@@ -8,6 +8,7 @@ import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
+import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { MediaGrid } from "#/features/media/components/MediaGrid";
 import { type DiscoverGenre, findDiscoverGenre } from "#/features/media/genres";
 import {
@@ -56,6 +57,7 @@ export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 		};
 	},
 	component: DiscoverSectionPage,
+	pendingComponent: () => <MediaGridPagePending />,
 	notFoundComponent: DiscoverSectionNotFound,
 });
 

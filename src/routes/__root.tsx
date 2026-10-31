@@ -29,11 +29,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 			{
 				name: "viewport",
-				content: "width=device-width, initial-scale=1",
+				// viewport-fit=cover lets the layout use the safe-area insets
+				// (notch, home indicator) when installed.
+				content: "width=device-width, initial-scale=1, viewport-fit=cover",
 			},
 			{ name: "theme-color", content: "#0a0a0a" },
 			{ name: "mobile-web-app-capable", content: "yes" },
 			{ name: "apple-mobile-web-app-capable", content: "yes" },
+			{ name: "apple-mobile-web-app-status-bar-style", content: "black" },
 			{ name: "apple-mobile-web-app-title", content: SITE_CONFIG.name },
 			...seo({
 				title: SITE_CONFIG.name,
@@ -60,7 +63,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				{children}
-				<Toaster />
+				{/* On phones, toasts sit above the tab bar instead of behind it. */}
+				<Toaster
+					mobileOffset={{
+						bottom: "calc(4.5rem + env(safe-area-inset-bottom))",
+					}}
+				/>
 				<OfflineBanner />
 				<ServiceWorkerSetup />
 				<TanStackDevtools
