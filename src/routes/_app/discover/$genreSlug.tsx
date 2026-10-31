@@ -29,7 +29,7 @@ import {
 	toWithGenres,
 } from "#/features/media/genres";
 import { mediaQueries } from "#/features/media/queries";
-import type { MediaDiscoverRequest } from "#/features/media/server/media.functions";
+import type { MediaDiscoverRequest } from "#/features/media/schemas";
 import {
 	MEDIA_TYPES,
 	type MediaItem,

@@ -26,14 +26,14 @@ export const getAtmosShowcaseFn = createServerFn({ method: "GET" }).handler(
 );
 
 export const getTitleSoundFn = createServerFn({ method: "GET" })
-	.validator((data: unknown) => titleRefSchema.parse(data))
+	.validator(titleRefSchema)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 		return await selectTitleSound(data, session?.user.id ?? null);
 	});
 
 export const voteAtmosFn = createServerFn({ method: "POST" })
-	.validator((data: unknown) => atmosVoteInputSchema.parse(data))
+	.validator(atmosVoteInputSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 		const { hasAtmos, ...ref } = data;
@@ -45,14 +45,14 @@ export const voteAtmosFn = createServerFn({ method: "POST" })
 	});
 
 export const rateSoundFn = createServerFn({ method: "POST" })
-	.validator((data: unknown) => soundRatingInputSchema.parse(data))
+	.validator(soundRatingInputSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 		await upsertSoundRating(session.user.id, data);
 	});
 
 export const deleteSoundRatingFn = createServerFn({ method: "POST" })
-	.validator((data: unknown) => titleRefSchema.parse(data))
+	.validator(titleRefSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 		await deleteSoundRating(session.user.id, data);

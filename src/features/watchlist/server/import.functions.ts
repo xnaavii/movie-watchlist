@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { MEDIA_TYPES, type MediaRef } from "#/features/media/types";
+import { z } from "zod";
+import { mediaRefSchema } from "#/features/media/schemas";
+import { WATCHLIST_STATUSES } from "#/features/media/utils/filters";
 import { ensureSession } from "#/lib/auth.functions";
 import { importWatchlistEntries } from "./watchlist.server";
 
@@ -9,35 +11,27 @@ import { importWatchlistEntries } from "./watchlist.server";
  */
 export const IMPORT_BATCH_SIZE = 10;
 
-export type ImportEntry = MediaRef & {
-	status: "want_to_watch" | "watched";
-	addedAt: string;
-	watchedAt: string | null;
-};
+const importEntrySchema = mediaRefSchema.extend({
+	status: z.enum(WATCHLIST_STATUSES).catch("want_to_watch"),
+	addedAt: z.string().catch(() => new Date().toISOString()),
+	watchedAt: z.string().nullable().catch(null),
+});
 
-export function parseEntries(data: unknown): ImportEntry[] {
-	if (!Array.isArray(data)) throw new Error("Expected a list of titles");
-	return data.slice(0, IMPORT_BATCH_SIZE).map((entry) => {
-		const { mediaType, id, status, addedAt, watchedAt } = entry ?? {};
-		if (!MEDIA_TYPES.includes(mediaType) || !Number.isInteger(id)) {
-			throw new Error("Invalid title");
-		}
-		return {
-			mediaType,
-			id,
-			status: status === "watched" ? "watched" : "want_to_watch",
-			addedAt: typeof addedAt === "string" ? addedAt : new Date().toISOString(),
-			watchedAt: typeof watchedAt === "string" ? watchedAt : null,
-		};
-	});
-}
+export type ImportEntry = z.infer<typeof importEntrySchema>;
+
+/** One batch of guest titles. Bad statuses and dates fall back to defaults. */
+export const importEntriesSchema = z
+	.array(importEntrySchema)
+	.transform((entries) => entries.slice(0, IMPORT_BATCH_SIZE));
+
+export const parseEntries = (data: unknown) => importEntriesSchema.parse(data);
 
 /**
  * Moves titles saved on a device before signing in into the account. Titles
  * already in the account keep their status.
  */
 export const importGuestWatchlistFn = createServerFn({ method: "POST" })
-	.validator(parseEntries)
+	.validator(importEntriesSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 		return await importWatchlistEntries(session.user.id, data);

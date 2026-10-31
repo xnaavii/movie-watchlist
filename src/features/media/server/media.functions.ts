@@ -1,12 +1,9 @@
 import { env } from "cloudflare:workers";
 import type {
-	DiscoverMovieParams,
-	DiscoverTVParams,
 	MovieImages,
 	MovieVideos,
 	PaginatedResponse,
 	Review,
-	TrendingTimeWindow,
 	WatchProvider,
 } from "@lorenzopant/tmdb";
 import { TMDBError } from "@lorenzopant/tmdb";
@@ -17,17 +14,26 @@ import { imdbRating, streamingSource } from "#/db/schema";
 import { DAY, edgeCached, HOUR } from "#/lib/edgeCache";
 import { tmdb } from "#/lib/tmdb";
 import { watchmode } from "#/lib/watchmode";
+import {
+	imdbIdRequestSchema,
+	mediaDiscoverRequestSchema,
+	mediaImagesRequestSchema,
+	mediaListRequestSchema,
+	mediaLogosRequestSchema,
+	mediaPageRequestSchema,
+	mediaRefSchema,
+	mediaTypeRequestSchema,
+	searchRequestSchema,
+	trendingRequestSchema,
+} from "../schemas";
 import type {
 	MediaDetails,
 	MediaItem,
-	MediaListRequest,
 	MediaPage,
-	MediaRef,
 	MediaType,
 	OmdbResponse,
 	ResolvedSearch,
 	SearchPerson,
-	SmartSearchParams,
 	SmartSearchResponse,
 } from "../types";
 import {
@@ -91,10 +97,8 @@ function toTVPage(
 	return { ...page, results: page.results.map(normalizeTVShow) };
 }
 
-type WithPage = { page?: number };
-
 export const getMediaDetails = createServerFn({ method: "GET" })
-	.validator((data: MediaRef) => data)
+	.validator(mediaRefSchema)
 	.handler(
 		({ data }): Promise<MediaDetails> =>
 			fromTmdb(
@@ -117,7 +121,7 @@ export const getMediaDetails = createServerFn({ method: "GET" })
 	);
 
 export const getMediaList = createServerFn({ method: "GET" })
-	.validator((data: MediaListRequest & WithPage) => data)
+	.validator(mediaListRequestSchema)
 	.handler(
 		({ data }): Promise<MediaPage> =>
 			fromTmdb(
@@ -158,7 +162,7 @@ export const getMediaList = createServerFn({ method: "GET" })
 	);
 
 export const getMediaRecommendations = createServerFn({ method: "GET" })
-	.validator((data: MediaRef & WithPage) => data)
+	.validator(mediaPageRequestSchema)
 	.handler(
 		({ data }): Promise<MediaPage> =>
 			fromTmdb(
@@ -182,7 +186,7 @@ export const getMediaRecommendations = createServerFn({ method: "GET" })
 	);
 
 export const getMediaReviews = createServerFn({ method: "GET" })
-	.validator((data: MediaRef & WithPage) => data)
+	.validator(mediaPageRequestSchema)
 	.handler(
 		({ data }): Promise<PaginatedResponse<Review>> =>
 			fromTmdb(
@@ -196,7 +200,7 @@ export const getMediaReviews = createServerFn({ method: "GET" })
 	);
 
 export const getMediaCredits = createServerFn({ method: "GET" })
-	.validator((data: MediaRef) => data)
+	.validator(mediaRefSchema)
 	.handler(({ data }) =>
 		fromTmdb(
 			() =>
@@ -209,7 +213,7 @@ export const getMediaCredits = createServerFn({ method: "GET" })
 	);
 
 export const getMediaVideos = createServerFn({ method: "GET" })
-	.validator((data: MediaRef) => data)
+	.validator(mediaRefSchema)
 	.handler(
 		({ data }): Promise<MovieVideos> =>
 			fromTmdb(
@@ -222,19 +226,12 @@ export const getMediaVideos = createServerFn({ method: "GET" })
 			),
 	);
 
-/** Most titles a row or carousel shows at once. */
-const MAX_LOGO_TITLES = 24;
-
 /**
  * Logo URLs for a whole row in one request, keyed by mediaKey. Sends only the
  * paths, not every poster and backdrop TMDB lists. A missing logo is undefined.
  */
 export const getMediaLogos = createServerFn({ method: "GET" })
-	.validator((refs: MediaRef[]) =>
-		refs
-			.slice(0, MAX_LOGO_TITLES)
-			.map(({ mediaType, id }): MediaRef => ({ mediaType, id })),
-	)
+	.validator(mediaLogosRequestSchema)
 	.handler(async ({ data }) => {
 		const entries = await Promise.all(
 			data.map(async (ref) => {
@@ -267,14 +264,7 @@ export const getMediaLogos = createServerFn({ method: "GET" })
 	});
 
 export const getMediaImages = createServerFn({ method: "GET" })
-	.validator(
-		(
-			data: MediaRef & {
-				language?: "en";
-				include_image_language?: ("en" | "null")[];
-			},
-		) => data,
-	)
+	.validator(mediaImagesRequestSchema)
 	.handler(
 		({ data }): Promise<MovieImages> =>
 			fromTmdb(
@@ -293,7 +283,7 @@ export const getMediaImages = createServerFn({ method: "GET" })
 	);
 
 export const getMediaWatchProviders = createServerFn({ method: "GET" })
-	.validator((data: MediaRef) => data)
+	.validator(mediaRefSchema)
 	.handler(
 		({ data }): Promise<{ results: Record<string, WatchProvider> }> =>
 			fromTmdb(
@@ -310,7 +300,7 @@ export const getMediaWatchProviders = createServerFn({ method: "GET" })
 	);
 
 export const getMediaGenres = createServerFn({ method: "GET" })
-	.validator((data: { mediaType: MediaType }) => data)
+	.validator(mediaTypeRequestSchema)
 	.handler(({ data }) =>
 		fromTmdb(
 			() =>
@@ -329,12 +319,8 @@ export const getLanguages = createServerFn({ method: "GET" }).handler(() =>
 	}),
 );
 
-export type MediaDiscoverRequest =
-	| { mediaType: "movie"; params: DiscoverMovieParams }
-	| { mediaType: "tv"; params: DiscoverTVParams };
-
 export const discoverMedia = createServerFn({ method: "GET" })
-	.validator((data: MediaDiscoverRequest) => data)
+	.validator(mediaDiscoverRequestSchema)
 	.handler(
 		({ data }): Promise<MediaPage> =>
 			fromTmdb(
@@ -348,13 +334,7 @@ export const discoverMedia = createServerFn({ method: "GET" })
 	);
 
 export const getTrendingMedia = createServerFn({ method: "GET" })
-	.validator(
-		(data: {
-			mediaType: MediaType;
-			time_window: TrendingTimeWindow;
-			page?: number;
-		}) => data,
-	)
+	.validator(trendingRequestSchema)
 	.handler(
 		({ data }): Promise<MediaPage> =>
 			fromTmdb(
@@ -374,7 +354,7 @@ export const getTrendingMedia = createServerFn({ method: "GET" })
  * person the query names.
  */
 export const searchMedia = createServerFn({ method: "GET" })
-	.validator((data: SmartSearchParams) => data)
+	.validator(searchRequestSchema)
 	.handler(
 		({ data }): Promise<SmartSearchResponse> =>
 			fromTmdb(async () => {
@@ -548,7 +528,7 @@ export const getAuthShowcase = createServerFn({ method: "GET" }).handler(
 );
 
 export const getStreamingSources = createServerFn({ method: "GET" })
-	.validator((data: { imdbId: string }) => data)
+	.validator(imdbIdRequestSchema)
 	.handler(async ({ data }) => {
 		if (!data.imdbId) {
 			throw new Error("Please provide imdb id");
@@ -591,7 +571,7 @@ export const getStreamingSources = createServerFn({ method: "GET" })
 	});
 
 export const getImdbRating = createServerFn({ method: "GET" })
-	.validator((data: { imdbId: string }) => data)
+	.validator(imdbIdRequestSchema)
 	.handler(async ({ data }) => {
 		if (!data.imdbId) {
 			throw new Error("Please provide imdb id");

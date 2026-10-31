@@ -6,7 +6,7 @@ import { assertOnline, getClientUser } from "#/lib/clientAuth";
 import { toastGuestSave } from "../guest/guestToast";
 import { type GuestMediaInput, saveGuestEntry } from "../guest/guestWatchlist";
 import { updateWatchlistStatusFn } from "../server/watchlist.functions";
-import type { WatchlistStatusInsert } from "../server/watchlist.server";
+import type { WatchlistStatus } from "../types";
 import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
 interface UseUpdateWatchlistStatus {
@@ -19,7 +19,7 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	const navigate = useNavigate();
 
 	const mutation = useMutation({
-		mutationFn: async (status: WatchlistStatusInsert) => {
+		mutationFn: async (status: WatchlistStatus) => {
 			if ((await getClientUser()) !== null) {
 				assertOnline();
 				await updateWatchlistStatus({
@@ -27,7 +27,7 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 				});
 				return "account" as const;
 			}
-			saveGuestEntry(media, status ?? "want_to_watch");
+			saveGuestEntry(media, status);
 			return "guest" as const;
 		},
 		onSuccess: (savedTo, status) => {
@@ -50,7 +50,7 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	});
 
 	return {
-		updateStatus: (status: WatchlistStatusInsert) => mutation.mutate(status),
+		updateStatus: (status: WatchlistStatus) => mutation.mutate(status),
 		isPending: mutation.isPending,
 	};
 }
