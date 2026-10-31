@@ -16,7 +16,7 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 - **Data fetching:** TanStack Query
 - **Database:** Neon (PostgreSQL) + Drizzle ORM
 - **Auth:** Better Auth
-- **Styling:** Tailwind CSS v4 + shadcn/ui
+- **Styling:** Tailwind CSS v4 + shadcn/ui, dark-only monochrome theme (see [the design system](docs/DESIGN.md))
 - **Movie data:** [TMDB API](https://www.themoviedb.org/documentation/api) via `@lorenzopant/tmdb`
 - **Ratings:** OMDb API (IMDb ratings)
 - **Streaming availability:** Watchmode API

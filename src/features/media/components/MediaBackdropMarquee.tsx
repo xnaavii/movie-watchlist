@@ -51,7 +51,7 @@ export function MediaBackdropMarquee({
 									className="w-full object-cover rounded-md aspect-video object-top"
 								/>
 							) : (
-								<div className="bg-primary/40 aspect-video rounded-md flex items-center justify-center">
+								<div className="bg-muted aspect-video rounded-md flex items-center justify-center">
 									<p className="text-xs font-medium">{movie.title}</p>
 								</div>
 							)}
@@ -85,7 +85,7 @@ export function MediaBackdropMarquee({
 									className="w-full object-cover rounded-md aspect-video object-top"
 								/>
 							) : (
-								<div className="bg-primary/40 aspect-video rounded-md flex items-center justify-center">
+								<div className="bg-muted aspect-video rounded-md flex items-center justify-center">
 									<p className="text-xs font-medium">{movie.title}</p>
 								</div>
 							)}

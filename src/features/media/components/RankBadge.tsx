@@ -10,13 +10,7 @@ export function RankBadge({ rank, className }: RankBadgeProps) {
 		<div
 			className={cn(
 				"shrink-0 w-10 sm:w-12 lg:w-20 text-center tracking-tighter text-5xl md:text-6xl lg:text-8xl font-medium select-none",
-				rank === 1
-					? "text-amber-200"
-					: rank === 2
-						? "text-gray-500"
-						: rank === 3
-							? "text-orange-900"
-							: "text-muted-foreground",
+				rank <= 3 ? "text-foreground" : "text-muted-foreground",
 				className,
 			)}
 		>

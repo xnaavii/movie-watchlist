@@ -54,7 +54,7 @@ export function MediaTrailer({
 							})}
 						></iframe>
 					) : (
-						<div className="relative flex size-full flex-col items-center justify-center gap-4 bg-[radial-gradient(ellipse_at_center,color-mix(in_oklch,var(--primary)_28%,transparent),transparent_70%)] p-6 text-center">
+						<div className="relative flex size-full flex-col items-center justify-center gap-4 bg-card p-6 text-center">
 							<button
 								type="button"
 								onClick={() => setPlaying(true)}
