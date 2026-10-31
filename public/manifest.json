@@ -1,6 +1,9 @@
 {
   "short_name": "Watchlist",
   "name": "Watchlist",
+  "description": "Find something to watch, fast, and keep track of what you're watching. Movies and TV in one watchlist, with AI picks and where to stream.",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/favicon.svg",
@@ -38,7 +41,6 @@
   "display": "standalone",
   "theme_color": "#0a0a0a",
   "background_color": "#0a0a0a",
-  "description": "Find what to watch next, build your watchlist, and track what you've watched.",
   "id": "/",
   "scope": "/",
   "display_override": [

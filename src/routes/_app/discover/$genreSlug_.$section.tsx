@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
-import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { MediaGrid } from "#/features/media/components/MediaGrid";
 import { type DiscoverGenre, findDiscoverGenre } from "#/features/media/genres";
@@ -20,10 +19,11 @@ import {
 } from "#/features/media/sections";
 import type { MediaItem } from "#/features/media/types";
 import { mediaKey } from "#/features/media/utils";
+import { backdropPreview } from "#/features/media/utils/meta";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { cn } from "#/lib/utils";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 	loader: async ({ context, params }) => {
@@ -38,23 +38,24 @@ export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
 			context.queryClient.ensureQueryData(watchlistQueries.watchlistStatuses()),
 		]);
 
-		return { section, poster: movies.pages[0]?.results[0]?.posterPath };
+		return {
+			section,
+			backdrop: movies.pages[0]?.results[0]?.backdropPath,
+		};
 	},
 	head: ({ loaderData, params }) => {
 		if (!loaderData) return {};
-		const { section, poster } = loaderData;
+		const { section, backdrop } = loaderData;
 		const name = section.genre
 			? `${section.genre.name} ${section.title}`
 			: section.title;
 
-		return {
-			meta: seo({
-				title: `${name} | ${SITE_CONFIG.name}`,
-				description: section.description,
-				image: poster ? `https://image.tmdb.org/t/p/w500${poster}` : undefined,
-				url: `${getSiteUrl()}/discover/${params.genreSlug}/${params.section}`,
-			}),
-		};
+		return pageHead({
+			title: pageTitle(name),
+			description: `${section.description}.`,
+			path: `/discover/${params.genreSlug}/${params.section}`,
+			image: backdropPreview(backdrop),
+		});
 	},
 	component: DiscoverSectionPage,
 	pendingComponent: () => <MediaGridPagePending />,
