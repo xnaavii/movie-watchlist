@@ -239,17 +239,25 @@ export const getMediaLogos = createServerFn({ method: "GET" })
 		const entries = await Promise.all(
 			data.map(async (ref) => {
 				try {
-					const images =
-						ref.mediaType === "movie"
-							? await tmdb.movies.images({
-									movie_id: ref.id,
-									include_image_language: ["en", "null"],
-								})
-							: await tmdb.tv_series.images({
-									series_id: ref.id,
-									include_image_language: ["en", "null"],
-								});
-					return [mediaKey(ref), toLogoUrl(images)] as const;
+					// Null rather than undefined, so "no logo" can be cached too.
+					const logo = await edgeCached(
+						`mediaLogo:${mediaKey(ref)}`,
+						DAY,
+						async () => {
+							const images =
+								ref.mediaType === "movie"
+									? await tmdb.movies.images({
+											movie_id: ref.id,
+											include_image_language: ["en", "null"],
+										})
+									: await tmdb.tv_series.images({
+											series_id: ref.id,
+											include_image_language: ["en", "null"],
+										});
+							return toLogoUrl(images) ?? null;
+						},
+					);
+					return [mediaKey(ref), logo ?? undefined] as const;
 				} catch {
 					return [mediaKey(ref), undefined] as const;
 				}
