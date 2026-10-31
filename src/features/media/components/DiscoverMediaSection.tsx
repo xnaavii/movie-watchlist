@@ -57,14 +57,16 @@ function DiscoverMediaSectionContent({
 	if (!details || !firstPage || firstPage.results.length === 0) return null;
 
 	return (
-		<section className="flex flex-col gap-4">
-			<SectionHeader
-				title={details.title}
-				description={details.description}
-				section={firstPage.total_pages > 1 ? section : undefined}
-				genre={genre}
-			/>
+		<section>
 			<MediaRow
+				header={
+					<SectionHeader
+						title={details.title}
+						description={details.description}
+						section={firstPage.total_pages > 1 ? section : undefined}
+						genre={genre}
+					/>
+				}
 				items={firstPage.results}
 				watchlistStatuses={watchlistStatuses}
 			/>

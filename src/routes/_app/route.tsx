@@ -15,7 +15,9 @@ function AppLayout() {
 	useRouteFocus(mainRef);
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] h-svh overflow-hidden">
+		// The page scrolls the document, not an inner box, so tapping the
+		// status bar on iOS scrolls to the top.
+		<div className="grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)] min-h-svh">
 			<SkipLink targetId="main-scrollable-area" />
 			<AuthStateSync />
 			<Navbar />
@@ -24,7 +26,7 @@ function AppLayout() {
 			    also makes arrow keys and Space scroll it. */}
 			<main
 				ref={mainRef}
-				className="relative overflow-y-auto min-h-0 outline-none scroll-pt-16 md:scroll-pt-0"
+				className="relative min-w-0 outline-none"
 				id="main-scrollable-area"
 				tabIndex={-1}
 			>

@@ -21,18 +21,26 @@ export function WatchlistRowView({ mediaType }: WatchlistRowViewProps) {
 
 	return (
 		items.length > 0 && (
-			<section className="flex flex-col gap-4">
-				<div className="flex justify-between">
-					<h2 className="text-xl lg:text-2xl tracking-tighter">
-						In Your Watchlist
-					</h2>
-					<Button variant="link" asChild>
-						<Link to="/watchlist" search={mediaType ? { type: mediaType } : {}}>
-							See all
-						</Link>
-					</Button>
-				</div>
-				<MediaRow items={items} watchlistStatuses={watchlistStatuses} />
+			<section>
+				<MediaRow
+					header={
+						<div className="flex items-end justify-between gap-4">
+							<h2 className="text-xl lg:text-2xl tracking-tighter">
+								In Your Watchlist
+							</h2>
+							<Button variant="link" asChild className="shrink-0 px-0">
+								<Link
+									to="/watchlist"
+									search={mediaType ? { type: mediaType } : {}}
+								>
+									See all
+								</Link>
+							</Button>
+						</div>
+					}
+					items={items}
+					watchlistStatuses={watchlistStatuses}
+				/>
 			</section>
 		)
 	);

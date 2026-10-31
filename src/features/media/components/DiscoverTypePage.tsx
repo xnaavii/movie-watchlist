@@ -48,20 +48,26 @@ export function DiscoverTypePage({ mediaType }: DiscoverTypePageProps) {
 				watchlistStatuses={watchlistStatuses}
 				logos={logos}
 			/>
-			<section className="flex flex-col gap-4">
-				<h2 className="text-xl lg:text-2xl tracking-tighter">
-					Browse by genre
-				</h2>
-				<GenreRow genres={listDiscoverGenres(mediaType)} />
+			<section>
+				<GenreRow
+					header={
+						<h2 className="text-xl lg:text-2xl tracking-tighter">
+							Browse by genre
+						</h2>
+					}
+					genres={listDiscoverGenres(mediaType)}
+				/>
 			</section>
 			{popularSection && (
-				<section className="flex flex-col gap-4">
-					<SectionHeader
-						title={popularSection.title}
-						description={popularSection.description}
-						section={popularSection.slug}
-					/>
+				<section>
 					<MediaRow
+						header={
+							<SectionHeader
+								title={popularSection.title}
+								description={popularSection.description}
+								section={popularSection.slug}
+							/>
+						}
 						items={popular.results}
 						logos={logos}
 						watchlistStatuses={watchlistStatuses}

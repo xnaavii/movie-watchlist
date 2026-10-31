@@ -144,6 +144,13 @@ body,
 }
 
 @layer base {
+  /* Keeps focused or linked-to content clear of the fixed mobile header. */
+  html {
+    scroll-padding-top: 4rem;
+    @variant md {
+      scroll-padding-top: 0;
+    }
+  }
   * {
     @apply border-border outline-ring/50;
   }
