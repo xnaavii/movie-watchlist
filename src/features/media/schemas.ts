@@ -108,3 +108,10 @@ export const searchRequestSchema = z.object({
 export const imdbIdRequestSchema = z.object({
 	imdbId: z.string().regex(/^tt\d{5,10}$/),
 });
+
+export type MediaPageRequest = z.infer<typeof mediaPageRequestSchema>;
+export type MediaListPageRequest = z.infer<typeof mediaListRequestSchema>;
+export type MediaImagesRequest = z.infer<typeof mediaImagesRequestSchema>;
+export type TrendingRequest = z.infer<typeof trendingRequestSchema>;
+export type SearchRequest = z.infer<typeof searchRequestSchema>;
+export type ImdbIdRequest = z.infer<typeof imdbIdRequestSchema>;

@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import { env } from "cloudflare:workers";
 
 type SendEmailParams = {
