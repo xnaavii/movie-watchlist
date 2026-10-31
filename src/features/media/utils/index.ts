@@ -72,6 +72,22 @@ export const mediaKey = ({ mediaType, id }: MediaRef): string =>
 	`${mediaType}:${id}`;
 
 /** Alternates two lists, so movies and TV shows share a row evenly. */
+/**
+ * Every title across infinite query pages, once each. TMDB pages can overlap
+ * as rankings shift, so later repeats are dropped.
+ */
+export function uniqueMedia<T extends MediaRef>(
+	pages: { results: T[] }[] | undefined,
+): T[] {
+	const byKey = new Map<string, T>();
+	for (const page of pages ?? []) {
+		for (const item of page.results) {
+			if (!byKey.has(mediaKey(item))) byKey.set(mediaKey(item), item);
+		}
+	}
+	return [...byKey.values()];
+}
+
 export function interleave<T>(a: T[], b: T[]): T[] {
 	const merged: T[] = [];
 	for (let i = 0; i < Math.max(a.length, b.length); i++) {

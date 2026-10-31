@@ -1,61 +1,34 @@
-import {
-	useQuery,
-	useQueryClient,
-	useSuspenseInfiniteQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
 	createFileRoute,
 	Link,
 	notFound,
 	redirect,
 } from "@tanstack/react-router";
-import { Clapperboard, Tv } from "lucide-react";
-import { useMemo } from "react";
 import { z } from "zod";
 import { BrandedTitle } from "#/components/BrandedTitle";
-import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
-import { PillNav, PillNavItem } from "#/components/PillNav";
 import { Button } from "#/components/ui/button";
 import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { GenreDiscoverSections } from "#/features/media/components/GenreDiscoverSections";
-import { MediaBackdropMarquee } from "#/features/media/components/MediaBackdropMarquee";
-import { MediaGrid } from "#/features/media/components/MediaGrid";
+import { GenreHero } from "#/features/media/components/GenreHero";
 import { MediaRow } from "#/features/media/components/MediaRow";
+import { PopularInGenre } from "#/features/media/components/PopularInGenre";
 import {
-	type DiscoverGenre,
 	findDiscoverGenre,
-	hasMediaType,
-	toWithGenres,
+	genreMediaLabel,
+	genreMediaTypes,
+	genreTagline,
 } from "#/features/media/genres";
 import { mediaQueries } from "#/features/media/queries";
-import type { MediaDiscoverRequest } from "#/features/media/schemas";
-import {
-	MEDIA_TYPES,
-	type MediaItem,
-	type MediaType,
-} from "#/features/media/types";
-import { interleave, mediaKey } from "#/features/media/utils";
+import { MEDIA_TYPES } from "#/features/media/types";
 import { backdropPreview } from "#/features/media/utils/meta";
 import { watchlistQueries } from "#/features/watchlist/queries";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
-import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { pageHead, pageTitle } from "#/utils/seo";
 
 const genreSearchSchema = z.object({
 	/** Which type the popular grid at the bottom shows. */
 	type: z.enum(MEDIA_TYPES).optional().catch(undefined),
 });
-
-/** The popular titles of one type in a genre. */
-const popularInGenre = (genre: DiscoverGenre, mediaType: MediaType) =>
-	mediaQueries.infiniteDiscover({
-		mediaType,
-		params: { with_genres: toWithGenres(genre, mediaType) },
-	} as MediaDiscoverRequest);
-
-/** The types a genre has titles for, movies first. */
-const genreMediaTypes = (genre: DiscoverGenre) =>
-	MEDIA_TYPES.filter((mediaType) => hasMediaType(genre, mediaType));
 
 export const Route = createFileRoute("/_app/discover/$genreSlug")({
 	params: {
@@ -89,7 +62,7 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 			Promise.all(
 				genreMediaTypes(genre).map((mediaType) =>
 					queryClient.infiniteQuery({
-						...popularInGenre(genre, mediaType),
+						...mediaQueries.popularInGenre(genre, mediaType),
 						staleTime: "static",
 					}),
 				),
@@ -121,24 +94,6 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 	component: DiscoverGenrePage,
 	notFoundComponent: DiscoverGenrePageNotFound,
 });
-
-/** "movies and TV shows", "movies" or "TV shows", by what the genre has. */
-function genreMediaLabel(genre: DiscoverGenre) {
-	const types = genreMediaTypes(genre);
-	if (types.length === 2) return "movies and TV shows";
-	return types[0] === "tv" ? "TV shows" : "movies";
-}
-
-function genreTagline(genre: DiscoverGenre) {
-	const types = genreMediaTypes(genre);
-	const what =
-		types.length === 2
-			? "movies and shows"
-			: types[0] === "tv"
-				? "shows"
-				: "films";
-	return `Handpicked ${genre.name} ${what} to add to your list`;
-}
 
 function DiscoverGenrePage() {
 	const { genre } = Route.useRouteContext();
@@ -192,128 +147,6 @@ function DiscoverGenrePage() {
 				watchlistStatuses={watchlistStatuses}
 			/>
 		</>
-	);
-}
-
-interface GenreHeroProps {
-	genre: DiscoverGenre;
-	mediaTypes: MediaType[];
-}
-
-function GenreHero({ genre, mediaTypes }: GenreHeroProps) {
-	const queryClient = useQueryClient();
-	// The loader fetched the first page of each type for the grid below.
-	const backdrops = useMemo(() => {
-		const [first = [], second = []] = mediaTypes.map(
-			(mediaType) =>
-				queryClient.getQueryData(popularInGenre(genre, mediaType).queryKey)
-					?.pages[0]?.results ?? [],
-		);
-		return interleave(first, second);
-	}, [queryClient, genre, mediaTypes]);
-
-	return (
-		<div className="relative isolate flex items-center justify-center">
-			<div className="absolute flex flex-col items-center gap-3 z-20 px-4 text-center">
-				<div className="flex gap-1.5">
-					{mediaTypes.map((mediaType) => (
-						<span
-							key={mediaType}
-							className="flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground [&_svg]:size-3.5"
-						>
-							{mediaType === "movie" ? (
-								<Clapperboard aria-hidden="true" />
-							) : (
-								<Tv aria-hidden="true" />
-							)}
-							{mediaType === "movie" ? "Movies" : "TV shows"}
-						</span>
-					))}
-				</div>
-				<BrandedTitle>{genre.name}</BrandedTitle>
-				<p className="text-sm lg:text-base text-muted-foreground">
-					{genreTagline(genre)}
-				</p>
-			</div>
-			<div className="pointer-events-none absolute inset-0 size-full bg-background/60 z-10"></div>
-			<MediaBackdropMarquee items={backdrops} />
-		</div>
-	);
-}
-
-interface PopularInGenreProps {
-	genre: DiscoverGenre;
-	mediaType: MediaType;
-	mediaTypes: MediaType[];
-	watchlistStatuses?: Record<string, WatchlistStatus>;
-}
-
-/** An endless grid of the genre's popular titles, one type at a time. */
-function PopularInGenre({
-	genre,
-	mediaType,
-	mediaTypes,
-	watchlistStatuses,
-}: PopularInGenreProps) {
-	const {
-		data,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isFetchNextPageError,
-	} = useSuspenseInfiniteQuery(popularInGenre(genre, mediaType));
-
-	// TMDB pages can overlap as rankings shift, so drop repeats.
-	const items = useMemo(() => {
-		const byKey = new Map<string, MediaItem>();
-		for (const page of data.pages) {
-			for (const item of page.results) {
-				if (!byKey.has(mediaKey(item))) byKey.set(mediaKey(item), item);
-			}
-		}
-		return [...byKey.values()];
-	}, [data]);
-
-	const sentinelRef = useInfiniteScrollTrigger({
-		hasNextPage,
-		isFetchingNextPage,
-		fetchNextPage,
-		itemCount: items.length,
-		disabled: isFetchNextPageError,
-	});
-
-	return (
-		<section className="flex flex-col gap-4">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-				<h2 className="text-xl lg:text-2xl tracking-tighter">
-					Popular {genre.name}
-				</h2>
-				{mediaTypes.length > 1 && (
-					<PillNav aria-label={`Popular ${genre.name} type`}>
-						{mediaTypes.map((type) => (
-							<PillNavItem key={type} asChild active={type === mediaType}>
-								<Link
-									to="/discover/$genreSlug"
-									params={{ genreSlug: genre.slug }}
-									search={{ type }}
-									replace
-									resetScroll={false}
-								>
-									{type === "movie" ? "Movies" : "TV shows"}
-								</Link>
-							</PillNavItem>
-						))}
-					</PillNav>
-				)}
-			</div>
-			<MediaGrid items={items} watchlistStatuses={watchlistStatuses} />
-			<InfiniteScrollFooter
-				ref={sentinelRef}
-				isFetchingNextPage={isFetchingNextPage}
-				isError={isFetchNextPageError}
-				onRetry={() => fetchNextPage()}
-			/>
-		</section>
 	);
 }
 

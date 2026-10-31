@@ -1,4 +1,4 @@
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/types";
 import type { DiscoverGenre } from "../genres";
 import { listDiscoverSections } from "../sections";
 import { DiscoverMediaSection } from "./DiscoverMediaSection";

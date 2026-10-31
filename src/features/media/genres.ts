@@ -1,4 +1,4 @@
-import type { MediaType } from "./types";
+import { MEDIA_TYPES, type MediaType } from "./types";
 import { slugify } from "./utils/slug";
 
 /**
@@ -82,3 +82,25 @@ export const findDiscoverGenreById = (id: number) =>
 /** TMDB's `with_genres` value: ids joined with "|" match any of them. */
 export const toWithGenres = (genre: DiscoverGenre, mediaType: MediaType) =>
 	genre.ids[mediaType].join("|");
+
+/** The types a genre has titles for, movies first. */
+export const genreMediaTypes = (genre: DiscoverGenre) =>
+	MEDIA_TYPES.filter((mediaType) => hasMediaType(genre, mediaType));
+
+/** "movies and TV shows", "movies" or "TV shows", by what the genre has. */
+export function genreMediaLabel(genre: DiscoverGenre) {
+	const types = genreMediaTypes(genre);
+	if (types.length === 2) return "movies and TV shows";
+	return types[0] === "tv" ? "TV shows" : "movies";
+}
+
+export function genreTagline(genre: DiscoverGenre) {
+	const types = genreMediaTypes(genre);
+	const what =
+		types.length === 2
+			? "movies and shows"
+			: types[0] === "tv"
+				? "shows"
+				: "films";
+	return `Handpicked ${genre.name} ${what} to add to your list`;
+}
