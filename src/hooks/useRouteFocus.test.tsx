@@ -19,7 +19,7 @@ function Layout() {
 	return (
 		<>
 			<nav>
-				<Link to="/search">Nav to search</Link>
+				<Link to="/profile">Nav to profile</Link>
 			</nav>
 			<main ref={mainRef} tabIndex={-1}>
 				<Outlet />
@@ -33,11 +33,11 @@ async function setup() {
 	const a = createRoute({
 		getParentRoute: () => rootRoute,
 		path: "/",
-		component: () => <Link to="/search">Open search</Link>,
+		component: () => <Link to="/profile">Open profile</Link>,
 	});
 	const b = createRoute({
 		getParentRoute: () => rootRoute,
-		path: "/search",
+		path: "/profile",
 		component: () => <Link to="/">Back home</Link>,
 	});
 	const router = createRouter({
@@ -56,7 +56,7 @@ describe("useRouteFocus", () => {
 		const user = userEvent.setup();
 		await setup();
 
-		await user.click(screen.getByRole("link", { name: "Open search" }));
+		await user.click(screen.getByRole("link", { name: "Open profile" }));
 		await screen.findByRole("link", { name: "Back home" });
 
 		expect(screen.getByRole("main")).toHaveFocus();
@@ -66,9 +66,9 @@ describe("useRouteFocus", () => {
 		const user = userEvent.setup();
 		await setup();
 
-		await user.click(screen.getByRole("link", { name: "Nav to search" }));
+		await user.click(screen.getByRole("link", { name: "Nav to profile" }));
 		await screen.findByRole("link", { name: "Back home" });
 
-		expect(screen.getByRole("link", { name: "Nav to search" })).toHaveFocus();
+		expect(screen.getByRole("link", { name: "Nav to profile" })).toHaveFocus();
 	});
 });
