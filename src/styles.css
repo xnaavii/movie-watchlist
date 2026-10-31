@@ -13,6 +13,11 @@
 /* Dark is the only theme. The class stays so shadcn's dark: variants apply. */
 @custom-variant dark (&:is(.dark *));
 
+/* The installed app (no browser chrome) and a browser tab get different
+   layouts: tab bar and app chrome when installed, a web header in a tab. */
+@custom-variant standalone (@media (display-mode: standalone));
+@custom-variant browser (@media not (display-mode: standalone));
+
 :root {
   color-scheme: dark;
   --background: oklch(0.145 0 0);
@@ -48,6 +53,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Room the bottom tab bar takes; only the installed app on phones has one. */
+  --tab-bar-space: 0px;
+}
+
+@media (display-mode: standalone) and (width < 48rem) {
+  :root {
+    --tab-bar-space: calc(4rem + env(safe-area-inset-bottom));
+  }
 }
 
 @theme inline {
@@ -121,11 +134,14 @@ body,
 }
 
 @layer base {
-  /* Keeps focused or linked-to content clear of the tab bar on phones. */
+  /* Keeps focused or linked-to content clear of the tab bar. */
   html {
-    scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom));
-    @variant md {
-      scroll-padding-bottom: 0;
+    scroll-padding-bottom: calc(1rem + var(--tab-bar-space));
+  }
+  /* ...and clear of the sticky top bar in a phone browser. */
+  @media not (display-mode: standalone) and (width < 48rem) {
+    html {
+      scroll-padding-top: 4rem;
     }
   }
   * {
@@ -161,7 +177,7 @@ body,
   }
 }
 
-/* Page transitions. The nav rail and tab bar have their own view-transition
+/* Page transitions. The rail, tab bar and top bar have their own view-transition
    names, so they stay still while only the page cross-fades. */
 @keyframes page-out {
   to {

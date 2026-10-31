@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Button } from "#/components/ui/button";
 import { SITE_CONFIG } from "#/config/site";
+import { AppShellSetup } from "#/features/pwa/AppShellSetup";
 import { OfflineBanner } from "#/features/pwa/OfflineBanner";
 import { ServiceWorkerSetup } from "#/features/pwa/ServiceWorkerSetup";
 import { seo } from "#/utils/seo";
@@ -63,7 +64,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				{children}
-				{/* On phones, toasts sit above the tab bar instead of behind it. */}
+				{/* Toasts sit above the tab bar instead of behind it. */}
 				<Toaster
 					mobileOffset={{
 						bottom: "calc(4.5rem + env(safe-area-inset-bottom))",
@@ -71,6 +72,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				/>
 				<OfflineBanner />
 				<ServiceWorkerSetup />
+				<AppShellSetup />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

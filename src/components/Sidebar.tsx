@@ -1,4 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
+import { InstallButton } from "#/features/pwa/InstallButton";
 import { cn } from "#/lib/utils";
 import { BrandMark } from "./BrandMark";
 import { type NavItem, navItems } from "./nav/navItems";
@@ -52,8 +53,11 @@ export function Sidebar({ className }: SidebarProps) {
 					))}
 				</ul>
 			</nav>
-			{/* Balances the logo so the nav stays centred. */}
-			<div aria-hidden="true" className="size-10" />
+			{/* Install in a browser tab; otherwise an empty slot that balances the
+			    logo so the nav stays centred. */}
+			<div className="flex size-10 items-center justify-center">
+				<InstallButton iconOnly />
+			</div>
 		</aside>
 	);
 }
