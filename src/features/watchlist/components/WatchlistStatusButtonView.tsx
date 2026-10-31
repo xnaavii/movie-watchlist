@@ -1,12 +1,12 @@
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { cn } from "#/lib/utils";
-import type { WatchlistStatusInsert } from "../server/watchlist.server";
+import type { WatchlistStatus } from "../types";
 
 type WatchlistStatusButtonProps = {
-	status: WatchlistStatusInsert | null | undefined;
+	status: WatchlistStatus | null | undefined;
 	isPending: boolean;
-	onSelect: (status: WatchlistStatusInsert) => void;
+	onSelect: (status: WatchlistStatus) => void;
 	className?: string;
 };
 

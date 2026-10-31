@@ -1,5 +1,6 @@
 import type { TrendingTimeWindow } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import type { MediaDiscoverRequest } from "./schemas";
 import {
 	discoverMedia,
 	getAuthShowcase,
@@ -17,7 +18,6 @@ import {
 	getMediaWatchProviders,
 	getStreamingSources,
 	getTrendingMedia,
-	type MediaDiscoverRequest,
 	searchMedia,
 } from "./server/media.functions";
 import type {

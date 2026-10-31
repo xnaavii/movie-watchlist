@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { findDiscoverGenre } from "#/features/media/genres";
-import type { MediaRef } from "#/features/media/types";
+import { mediaRefSchema, pageSchema } from "#/features/media/schemas";
 import {
-	type WatchlistFilters,
+	WATCHLIST_STATUSES,
 	watchlistFilterSearchSchema,
 } from "#/features/media/utils/filters";
 import { ensureSession, getSession } from "#/lib/auth.functions";
@@ -19,16 +20,23 @@ import {
 	selectWatchlistGenreLinks,
 	selectWatchlistMediaByGenre,
 	updateWatchlistStatus,
-	type WatchlistStatusInsert,
 } from "./watchlist.server";
 
 const WATCHLIST_PAGE_SIZE = 20;
 
-/** Keeps only the ref, so callers can pass a whole media item. */
-const toRef = ({ mediaType, id }: MediaRef): MediaRef => ({ mediaType, id });
+const updateStatusSchema = mediaRefSchema.extend({
+	status: z.enum(WATCHLIST_STATUSES),
+});
+
+const watchlistPageSchema = z.object({
+	page: pageSchema,
+	filters: watchlistFilterSearchSchema.optional().default({}),
+});
+
+const genreSlugSchema = z.object({ genreSlug: z.string().max(100) });
 
 export const addToWatchlistFn = createServerFn({ method: "POST" })
-	.validator(toRef)
+	.validator(mediaRefSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
@@ -44,7 +52,7 @@ export const addToWatchlistFn = createServerFn({ method: "POST" })
 	});
 
 export const removeFromWatchlist = createServerFn({ method: "POST" })
-	.validator(toRef)
+	.validator(mediaRefSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 
@@ -52,10 +60,7 @@ export const removeFromWatchlist = createServerFn({ method: "POST" })
 	});
 
 export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
-	.validator((data: MediaRef & { status: WatchlistStatusInsert }) => ({
-		...toRef(data),
-		status: data.status,
-	}))
+	.validator(updateStatusSchema)
 	.handler(async ({ data }) => {
 		const session = await ensureSession();
 		const { status, ...ref } = data;
@@ -76,7 +81,7 @@ export const updateWatchlistStatusFn = createServerFn({ method: "POST" })
 	});
 
 export const getWatchlistStatusFn = createServerFn({ method: "GET" })
-	.validator(toRef)
+	.validator(mediaRefSchema)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 
@@ -86,10 +91,7 @@ export const getWatchlistStatusFn = createServerFn({ method: "GET" })
 	});
 
 export const getUserWatchlistPageFn = createServerFn({ method: "GET" })
-	.validator((data: { page: number; filters?: WatchlistFilters }) => ({
-		page: data.page,
-		filters: watchlistFilterSearchSchema.parse(data.filters ?? {}),
-	}))
+	.validator(watchlistPageSchema)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 		if (!session) {
@@ -119,7 +121,7 @@ export const getUserWatchlistStatusesFn = createServerFn({
 });
 
 export const getWatchlistMediaByGenreFn = createServerFn({ method: "GET" })
-	.validator((data: { genreSlug: string }) => data)
+	.validator(genreSlugSchema)
 	.handler(async ({ data }) => {
 		const session = await getSession();
 		const genre = findDiscoverGenre(data.genreSlug);

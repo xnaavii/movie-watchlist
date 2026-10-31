@@ -225,7 +225,7 @@ function resultsOf(promise: Promise<PaginatedResponse<MovieResultItem>>) {
  * then the model ranks them and says why each one fits.
  */
 export const getPicks = createServerFn({ method: "POST" })
-	.validator((data: PickRequest) => pickRequestSchema.parse(data))
+	.validator(pickRequestSchema)
 	.handler(async ({ data }): Promise<PickResponse> => {
 		const session = await getSession();
 		const userId = session?.user.id;
