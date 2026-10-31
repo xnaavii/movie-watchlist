@@ -1,6 +1,6 @@
 import { Bookmark, Check } from "lucide-react";
 import { cn } from "#/lib/utils";
-import type { WatchlistStatus } from "../server/watchlist.server";
+import type { WatchlistStatus } from "../types";
 
 interface WatchlistBadgeProps {
 	status: WatchlistStatus;

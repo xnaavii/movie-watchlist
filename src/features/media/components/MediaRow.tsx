@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { RowCarousel } from "#/components/RowCarousel";
 import { CarouselItem } from "#/components/ui/carousel";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/types";
 import { cn } from "#/lib/utils";
 import type { MediaItem } from "../types";
 import { mediaKey } from "../utils";

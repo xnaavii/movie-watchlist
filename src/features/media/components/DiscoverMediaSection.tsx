@@ -5,7 +5,7 @@ import {
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { LazySection } from "#/components/LazySection";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/types";
 import type { DiscoverGenre } from "../genres";
 import {
 	type DiscoverSectionSlug,

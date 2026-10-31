@@ -12,7 +12,7 @@ import {
 } from "#/components/ui/carousel";
 import { AddToWatchlistButton } from "#/features/watchlist/components/AddToWatchlistButton";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/types";
 import { usePageVisible } from "#/hooks/usePageVisible";
 import { useReducedMotion } from "#/hooks/useReducedMotion";
 import { cn } from "#/lib/utils";

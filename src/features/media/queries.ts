@@ -1,5 +1,6 @@
 import type { TrendingTimeWindow } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { type DiscoverGenre, toWithGenres } from "./genres";
 import type { MediaDiscoverRequest } from "./schemas";
 import {
 	discoverMedia,
@@ -194,4 +195,16 @@ export const mediaQueries = {
 			staleTime: 1000 * 60 * 60 * 24,
 			enabled: imdbId.length > 0,
 		}),
+	/** The popular titles of one type in a genre, as an endless list. */
+	popularInGenre: (genre: DiscoverGenre, mediaType: MediaType) =>
+		mediaQueries.infiniteDiscover({
+			mediaType,
+			params: { with_genres: toWithGenres(genre, mediaType) },
+		} as MediaDiscoverRequest),
 };
+
+/** With no query, search shows what's popular in the picked type. */
+export const popularList = (type: MediaType | undefined): MediaListRequest =>
+	type === "tv"
+		? { mediaType: "tv", list: "popular" }
+		: { mediaType: "movie", list: "popular" };

@@ -9,20 +9,18 @@ import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { Button } from "#/components/ui/button";
 import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { MediaGrid } from "#/features/media/components/MediaGrid";
+import { SectionSwitcher } from "#/features/media/components/SectionSwitcher";
 import { type DiscoverGenre, findDiscoverGenre } from "#/features/media/genres";
 import {
 	ALL_GENRES_SLUG,
-	type DiscoverSection,
 	getDiscoverSection,
 	listDiscoverSections,
 	sectionQuery,
 } from "#/features/media/sections";
-import type { MediaItem } from "#/features/media/types";
-import { mediaKey } from "#/features/media/utils";
+import { uniqueMedia } from "#/features/media/utils";
 import { backdropPreview } from "#/features/media/utils/meta";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
-import { cn } from "#/lib/utils";
 import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/discover/$genreSlug_/$section")({
@@ -85,16 +83,7 @@ function DiscoverSectionPage() {
 		isFetchNextPageError,
 	} = useSuspenseInfiniteQuery(sectionQuery(section.slug, genre));
 
-	// TMDB pages can overlap as rankings shift, so drop repeats.
-	const movies = useMemo(() => {
-		const byKey = new Map<string, MediaItem>();
-		for (const page of moviePages.pages) {
-			for (const item of page.results) {
-				if (!byKey.has(mediaKey(item))) byKey.set(mediaKey(item), item);
-			}
-		}
-		return [...byKey.values()];
-	}, [moviePages]);
+	const movies = useMemo(() => uniqueMedia(moviePages.pages), [moviePages]);
 
 	const sentinelRef = useInfiniteScrollTrigger({
 		hasNextPage,
@@ -146,48 +135,6 @@ function DiscoverSectionPage() {
 				)}
 			</section>
 		</>
-	);
-}
-
-interface SectionSwitcherProps {
-	sections: DiscoverSection[];
-	active: DiscoverSection["slug"];
-	genreSlug: string;
-}
-
-/** Jumps between sibling sections without going back to the discover page. */
-function SectionSwitcher({
-	sections,
-	active,
-	genreSlug,
-}: SectionSwitcherProps) {
-	return (
-		<nav aria-label="More sections" className="-mx-4 overflow-x-auto px-4">
-			<ul className="flex w-max gap-2">
-				{sections.map((section) => {
-					const isActive = section.slug === active;
-					return (
-						<li key={section.slug}>
-							<Button
-								asChild
-								size="sm"
-								variant={isActive ? "default" : "secondary"}
-								className={cn(isActive && "pointer-events-none")}
-							>
-								<Link
-									to="/discover/$genreSlug/$section"
-									params={{ genreSlug, section: section.slug }}
-									aria-current={isActive ? "page" : undefined}
-									replace
-								>
-									{section.title}
-								</Link>
-							</Button>
-						</li>
-					);
-				})}
-			</ul>
-		</nav>
 	);
 }
 

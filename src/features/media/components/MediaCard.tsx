@@ -1,6 +1,6 @@
 import { AspectRatio } from "#/components/ui/aspect-ratio";
 import { WatchlistBadge } from "#/features/watchlist/components/WatchlistBadge";
-import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
+import type { WatchlistStatus } from "#/features/watchlist/types";
 import { cn } from "#/lib/utils";
 import type { MediaItem } from "../types";
 import { formatReleaseYear, MEDIA_TYPE_LABELS } from "../utils";

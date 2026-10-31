@@ -5,7 +5,7 @@ import {
 	releaseYear,
 	type WatchlistFilters,
 } from "#/features/media/utils/filters";
-import type { WatchlistStatus } from "../server/watchlist.server";
+import type { WatchlistStatus } from "../types";
 
 /**
  * A signed-out visitor's watchlist, kept in this browser's localStorage.
