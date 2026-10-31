@@ -6,10 +6,10 @@ import { oAuthProxy } from "better-auth/plugins/oauth-proxy";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { and, eq } from "drizzle-orm";
 import { PRODUCTION_URL } from "#/config/site";
-import { db } from "@/db";
-import { account, session, user } from "@/db/schema";
-import { sendResetPasswordEmail } from "@/features/auth/email/sendResetPasswordEmail";
-import { sendVerificationEmail } from "@/features/auth/email/sendVerificationEmail";
+import { db } from "#/db";
+import { account, session, user } from "#/db/schema";
+import { sendResetPasswordEmail } from "#/features/auth/email/sendResetPasswordEmail";
+import { sendVerificationEmail } from "#/features/auth/email/sendVerificationEmail";
 
 // Social providers are only registered when their credentials are set, so
 // the buttons stay hidden on environments that haven't been configured yet.

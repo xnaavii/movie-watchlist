@@ -14,8 +14,8 @@ import type {
 	MediaRef,
 	MediaReview,
 	MediaType,
-} from "./types";
-import { resizeTmdbImage } from "./utils/tmdb";
+} from "../types";
+import { resizeTmdbImage } from "./tmdb";
 
 type DiscoverFilters = {
 	genreId?: number;

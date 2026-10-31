@@ -27,11 +27,11 @@ const mocks = vi.hoisted(() => {
 });
 
 vi.mock("cloudflare:workers", () => ({ env: mocks.env }));
-vi.mock("@/db", () => ({ db: mocks.db }));
-vi.mock("@/features/auth/email/sendResetPasswordEmail", () => ({
+vi.mock("#/db", () => ({ db: mocks.db }));
+vi.mock("#/features/auth/email/sendResetPasswordEmail", () => ({
 	sendResetPasswordEmail: vi.fn(),
 }));
-vi.mock("@/features/auth/email/sendVerificationEmail", () => ({
+vi.mock("#/features/auth/email/sendVerificationEmail", () => ({
 	sendVerificationEmail: vi.fn(),
 }));
 

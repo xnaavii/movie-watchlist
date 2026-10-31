@@ -29,7 +29,11 @@ import type {
 const nextPage = (lastPage: { page: number; total_pages: number }) =>
 	lastPage.page >= lastPage.total_pages ? undefined : lastPage.page + 1;
 
-/** Queries for movies and TV shows. Keys start with the media type. */
+/**
+ * Queries for movies and TV shows. Every key starts with "media"; per-title
+ * keys follow it with the media type and id, so one title's data can be
+ * found or invalidated together.
+ */
 export const mediaQueries = {
 	list: (request: MediaListRequest) =>
 		queryOptions({
@@ -183,11 +187,11 @@ export const mediaQueries = {
 			queryFn: () => getAuthShowcase(),
 			staleTime: 1000 * 60 * 60,
 		}),
+	imdbRating: (imdbId: string) =>
+		queryOptions({
+			queryKey: ["media", "imdbRating", imdbId],
+			queryFn: () => getImdbRating({ data: { imdbId } }),
+			staleTime: 1000 * 60 * 60 * 24,
+			enabled: imdbId.length > 0,
+		}),
 };
-
-export const imdbRatingQueryOptions = (imdbId: string) =>
-	queryOptions({
-		queryKey: ["imdb-rating", imdbId],
-		queryFn: () => getImdbRating({ data: { imdbId } }),
-		staleTime: 1000 * 60 * 60 * 24,
-	});
