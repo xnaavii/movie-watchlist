@@ -3,7 +3,6 @@ import type { LucideIcon } from "lucide-react";
 import { Compass, ListVideo, Search, User } from "lucide-react";
 import { cn } from "#/lib/utils";
 import { BrandMark } from "./BrandMark";
-import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 
 type SidebarProps = {
@@ -64,9 +63,8 @@ export function Sidebar({ className }: SidebarProps) {
 					))}
 				</ul>
 			</nav>
-			<div className="flex flex-col gap-4 items-center">
-				<ModeToggle />
-			</div>
+			{/* Balances the logo so the nav stays centred. */}
+			<div aria-hidden="true" className="size-9" />
 		</aside>
 	);
 }

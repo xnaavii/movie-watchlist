@@ -6,10 +6,7 @@ interface MediaLogoProps {
 	isLoading?: boolean;
 	className?: string;
 	imageClassName?: string;
-	/**
-	 * Logos are mostly white. Over a photo they stay white; over the page
-	 * background they turn black in light mode so they stay visible.
-	 */
+	/** Softens the glow behind the logo when it sits on the page, not a photo. */
 	overBackground?: boolean;
 }
 
@@ -35,7 +32,6 @@ export function MediaLogo({
 						alt={title}
 						className={cn(
 							"relative w-[clamp(12rem,14vw,40rem)] object-contain drop-shadow-2xl",
-							overBackground && "brightness-0 dark:brightness-100",
 							imageClassName,
 						)}
 						loading="eager"

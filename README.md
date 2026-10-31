@@ -5,13 +5,10 @@
   </picture>
 </h1>
 
-A discovery and watchlist app for movies and TV shows built with TanStack Start, deployed on Cloudflare Workers.
+Find something to watch, fast, and keep track of what you're watching. A discovery and watchlist app for movies and TV shows, built with TanStack Start and deployed on Cloudflare Workers.
 Check out the [live site](https://watchlist.xnaavii.com/discover).
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.webp">
-  <img src="docs/screenshots/hero-light.webp" alt="Watchlist on a laptop and a phone: the discover page and a movie details page">
-</picture>
+<img src="docs/screenshots/hero-dark.webp" alt="Watchlist on a laptop and a phone: the discover page and a movie details page">
 
 ## Stack
 
@@ -35,40 +32,27 @@ Check out the [live site](https://watchlist.xnaavii.com/discover).
 - Dolby Atmos showcase with community votes and sound ratings
 - Sign in with email or Google
 - Title details: cast & crew, trailers, gallery, reviews, similar titles, IMDb ratings, streaming availability
-- Light and dark themes
+- Works without an account: guests keep their list on the device, and signing up syncs it across devices
+- Installable PWA that works offline for pages you have opened
+- A dark interface built around the posters
 
 ## Screenshots
-
-Images follow your GitHub theme.
 
 ### Title details
 
 Where to stream it, trailer, gallery, cast, reviews and similar titles on one page.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/browser-movie-dark.webp">
-  <img src="docs/screenshots/browser-movie-light.webp" alt="The Dune: Part Two details page">
-</picture>
+<img src="docs/screenshots/browser-movie-dark.webp" alt="The Dune: Part Two details page">
 
 ### AI picks
 
 Describe a mood and get a short list with a reason for each pick.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/browser-picks-dark.webp">
-  <img src="docs/screenshots/browser-picks-light.webp" alt="AI picks for a cozy 90s mystery under 2 hours">
-</picture>
+<img src="docs/screenshots/browser-picks-dark.webp" alt="AI picks for a cozy 90s mystery under 2 hours">
 
 ### On your phone
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/phones-dark.webp">
-  <img src="docs/screenshots/phones-light.webp" alt="Watchlist on three phones: discover, a movie and a TV show">
-</picture>
-
-### Light and dark
-
-<img src="docs/screenshots/light-and-dark.webp" alt="The same page in the light and dark themes, side by side">
+<img src="docs/screenshots/phones-dark.webp" alt="Watchlist on three phones: discover, a movie and a TV show">
 
 ## Getting started
 
