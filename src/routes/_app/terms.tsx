@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_app/terms")({
 });
 
 function TermsPage() {
-	const { operator, contactEmail } = LEGAL_CONFIG;
+	const { operator, country, contactEmail } = LEGAL_CONFIG;
 
 	return (
 		<LegalPage
@@ -30,9 +30,9 @@ function TermsPage() {
 		>
 			<h2>The service</h2>
 			<p>
-				{SITE_CONFIG.name} is provided by {operator} free of charge, as is. By
-				using it you agree to these terms. If you don't agree, please don't use
-				it.
+				{SITE_CONFIG.name} is provided by {operator} ({country}) free of charge,
+				as is. By using it you agree to these terms. If you don't agree, please
+				don't use it.
 			</p>
 			<p>
 				We may change, pause or stop any part of Watchlist at any time. If we
@@ -102,6 +102,14 @@ function TermsPage() {
 				allows, we aren't liable for indirect losses or for data lost through
 				the service. Nothing in these terms limits rights you have as a consumer
 				that can't be limited by law.
+			</p>
+
+			<h2>Governing law</h2>
+			<p>
+				These terms are governed by the laws of {country}, and its courts can
+				hear any dispute. If you live elsewhere in the EU, you keep the
+				protection of your own country's consumer law and can bring a claim
+				where you live.
 			</p>
 
 			<h2>Changes and contact</h2>

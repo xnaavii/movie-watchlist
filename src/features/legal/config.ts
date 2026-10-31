@@ -9,6 +9,8 @@
 export const LEGAL_CONFIG = {
 	/** The person or company responsible for the data (the "controller"). */
 	operator: "Ivan Petrović",
+	/** Where the operator is established; sets the lead data protection authority. */
+	country: "Ireland",
 	/** Where privacy requests and questions go. */
 	contactEmail: "xnaaviitech@gmail.com",
 	/** Shown at the top of every legal page. Bump it when the text changes. */

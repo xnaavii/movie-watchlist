@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_app/privacy")({
 });
 
 function PrivacyPage() {
-	const { operator, contactEmail } = LEGAL_CONFIG;
+	const { operator, country, contactEmail } = LEGAL_CONFIG;
 	const mailto = <a href={`mailto:${contactEmail}`}>{contactEmail}</a>;
 
 	return (
@@ -35,9 +35,10 @@ function PrivacyPage() {
 		>
 			<h2>Who is responsible</h2>
 			<p>
-				{SITE_CONFIG.name} is run by {operator}, who is the controller of your
-				personal data under the EU General Data Protection Regulation (GDPR).
-				For any privacy question or request, email {mailto}.
+				{SITE_CONFIG.name} is run by {operator}, based in {country}, who is the
+				controller of your personal data under the EU General Data Protection
+				Regulation (GDPR) and Ireland's Data Protection Act 2018. For any
+				privacy question or request, email {mailto}.
 			</p>
 
 			<h2>If you use Watchlist without an account</h2>
@@ -225,8 +226,16 @@ function PrivacyPage() {
 					playing trailers and clearing YouTube's data from your browser.
 				</li>
 				<li>
-					<strong>Complain</strong> to your local data protection authority.
-					We'd appreciate the chance to fix things first.
+					<strong>Complain</strong> to the Irish{" "}
+					<a
+						href="https://www.dataprotection.ie"
+						target="_blank"
+						rel="noreferrer"
+					>
+						Data Protection Commission
+					</a>
+					, our lead supervisory authority, or to the authority where you live
+					or work. We'd appreciate the chance to fix things first.
 				</li>
 			</ul>
 			<p>We answer requests within one month.</p>

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { renderWithRouter } from "#/__tests__/RenderWithRouter";
 import { LegalLinks } from "./components/LegalLinks";
 import { SiteFooter } from "./components/SiteFooter";
-import { formatLastUpdated, LEGAL_PAGES } from "./config";
+import { formatLastUpdated, LEGAL_CONFIG, LEGAL_PAGES } from "./config";
 import { STORAGE_ITEMS } from "./storageItems";
 
 describe("legal links", () => {
@@ -32,6 +32,8 @@ describe("legal links", () => {
 	it("formats the last updated date the same in every time zone", () => {
 		expect(formatLastUpdated("2026-10-31")).toBe("October 31, 2026");
 		expect(LEGAL_PAGES).toHaveLength(3);
+		// Sets the lead supervisory authority named on the privacy page.
+		expect(LEGAL_CONFIG.country).toBe("Ireland");
 	});
 });
 
