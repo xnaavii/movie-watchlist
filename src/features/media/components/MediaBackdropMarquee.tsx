@@ -18,8 +18,11 @@ export function MediaBackdropMarquee({
 	const firstRow = items.slice(0, items.length / 2);
 	const secondRow = items.slice(items.length / 2);
 
+	// Decorative backdrop: the same titles are listed below, so the moving,
+	// repeated copies stay out of the tab order and away from screen readers.
 	return (
 		<div
+			aria-hidden="true"
 			className={cn(
 				"relative flex w-full flex-col items-center justify-center overflow-hidden",
 				className,
@@ -32,6 +35,7 @@ export function MediaBackdropMarquee({
 						key={mediaKey(movie)}
 						title={movie.title}
 						className="group/card"
+						tabIndex={-1}
 					>
 						<div className="relative h-full w-40 md:48 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							{movie.backdropPath ? (
@@ -65,6 +69,7 @@ export function MediaBackdropMarquee({
 						key={mediaKey(movie)}
 						title={movie.title}
 						className="group/card"
+						tabIndex={-1}
 					>
 						<div className="relative h-full w-40 md:48 cursor-pointer overflow-hidden border-border bg-card shadow-none">
 							{movie.backdropPath ? (

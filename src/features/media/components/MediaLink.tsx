@@ -8,6 +8,7 @@ interface MediaLinkProps {
 	className?: string;
 	title?: string;
 	"aria-label"?: string;
+	tabIndex?: number;
 	children?: ReactNode;
 }
 

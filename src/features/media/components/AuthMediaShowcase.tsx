@@ -18,6 +18,8 @@ export function AuthMediaShowcase() {
 	const { data: movies = [] } = useQuery(mediaQueries.authShowcase());
 	const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
 	const [activeIndex, setActiveIndex] = useState(0);
+	// Keyboard users get time to act: rotation stops while focus is inside.
+	const [paused, setPaused] = useState(false);
 	// Read inside the timer so late image loads don't restart the countdown.
 	const loadedRef = useRef(loaded);
 	loadedRef.current = loaded;
@@ -26,7 +28,7 @@ export function AuthMediaShowcase() {
 	const isReady = active !== undefined && loaded.has(active.id);
 
 	useEffect(() => {
-		if (!isReady || movies.length < 2) return;
+		if (!isReady || paused || movies.length < 2) return;
 
 		const timeout = setTimeout(() => {
 			// Skip slides whose backdrop is still loading or failed.
@@ -40,13 +42,21 @@ export function AuthMediaShowcase() {
 		}, SLIDE_DURATION);
 
 		return () => clearTimeout(timeout);
-	}, [isReady, movies, activeIndex]);
+	}, [isReady, paused, movies, activeIndex]);
 
 	const markLoaded = (id: number) =>
 		setLoaded((current) => new Set(current).add(id));
 
 	return (
-		<div className="relative hidden overflow-hidden bg-muted lg:block">
+		<section
+			aria-label="Trending movies"
+			className="relative hidden overflow-hidden bg-muted lg:block"
+			onFocus={() => setPaused(true)}
+			onBlur={(event) => {
+				if (!event.currentTarget.contains(event.relatedTarget))
+					setPaused(false);
+			}}
+		>
 			<img
 				src="/discover-desktop.png"
 				alt="Showcase of the app"
@@ -99,17 +109,24 @@ export function AuthMediaShowcase() {
 									key={movie.id}
 									type="button"
 									aria-label={`Show ${movie.title}`}
+									aria-current={i === activeIndex ? "true" : undefined}
 									disabled={!loaded.has(movie.id)}
 									onClick={() => setActiveIndex(i)}
-									className="group h-4 flex-1 cursor-pointer disabled:cursor-default"
+									className="group h-4 flex-1 cursor-pointer rounded-full focus-visible:outline-white disabled:cursor-default"
 								>
 									<span className="block h-0.5 overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
 										<span
-											key={i === activeIndex ? `${movie.id}-active` : movie.id}
+											key={
+												i === activeIndex
+													? `${movie.id}-active-${paused}`
+													: movie.id
+											}
 											className={cn(
 												"block h-full origin-left bg-white",
 												i === activeIndex && isReady
-													? "animate-showcase-progress"
+													? paused
+														? "scale-x-100"
+														: "animate-showcase-progress"
 													: i < activeIndex
 														? "scale-x-100"
 														: "scale-x-0",
@@ -123,7 +140,7 @@ export function AuthMediaShowcase() {
 					)}
 				</div>
 			)}
-		</div>
+		</section>
 	);
 }
 

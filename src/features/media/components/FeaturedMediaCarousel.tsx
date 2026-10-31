@@ -37,6 +37,7 @@ export function FeaturedMediaCarousel({
 	watchlistStatuses,
 }: MediaCarouselProps) {
 	const [api, setApi] = useState<CarouselApi>();
+	const [selected, setSelected] = useState(0);
 	const autoplayPlugin = useRef(
 		AutoPlay({
 			delay: TIMER_INTERVAL,
@@ -62,6 +63,18 @@ export function FeaturedMediaCarousel({
 		api.scrollTo(0);
 	}, [api]);
 
+	// Slides fade over each other, so hidden ones would still sit in the tab
+	// order. Only the visible slide is reachable; arrows and buttons switch.
+	useEffect(() => {
+		if (!api) return;
+		const onSelect = () => setSelected(api.selectedScrollSnap());
+		onSelect();
+		api.on("select", onSelect);
+		return () => {
+			api.off("select", onSelect);
+		};
+	}, [api]);
+
 	if (items.length === 0) {
 		return null;
 	}
@@ -74,7 +87,7 @@ export function FeaturedMediaCarousel({
 			className="w-full"
 		>
 			<CarouselContent>
-				{items.map((movie) => {
+				{items.map((movie, index) => {
 					const key = mediaKey(movie);
 					const movieGenres = genres?.filter((genre) =>
 						movie.genreIds?.includes(genre.id),
@@ -82,9 +95,17 @@ export function FeaturedMediaCarousel({
 					const watchlistStatus = watchlistStatuses?.[key] ?? null;
 
 					return (
-						<CarouselItem key={key} title={movie.title}>
+						<CarouselItem
+							key={key}
+							title={movie.title}
+							inert={index !== selected}
+							aria-label={`${index + 1} of ${items.length}`}
+						>
 							<div className="group relative h-[clamp(30vh,60vh+20svh,90vh)] overflow-hidden rounded-xl">
-								<MediaLink media={movie} className="absolute inset-0">
+								<MediaLink
+									media={movie}
+									className="absolute inset-0 outline-none"
+								>
 									<span className="sr-only">View {movie.title}</span>
 								</MediaLink>
 
@@ -146,7 +167,7 @@ export function FeaturedMediaCarousel({
 								</div>
 
 								<div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-transparent via-30% to-background" />
-								<div className="pointer-events-none absolute inset-0 rounded-xl inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground group-focus-visible:inset-ring-foreground" />
+								<div className="pointer-events-none absolute inset-0 rounded-xl inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground group-has-focus-visible:inset-ring-foreground" />
 							</div>
 						</CarouselItem>
 					);

@@ -33,7 +33,7 @@ export function AtmosTitleCard({ item }: AtmosTitleCardProps) {
 					<div className="absolute top-3 right-3 rounded-full bg-background/85 backdrop-blur px-2.5 py-1 text-xs font-semibold tabular-nums">
 						{item.sound.count > 0 ? formatScore(item.sound.overall) : "New"}
 					</div>
-					<div className="pointer-events-none absolute inset-0 rounded-[inherit] inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground" />
+					<div className="pointer-events-none absolute inset-0 rounded-[inherit] inset-ring-2 inset-ring-muted transition-all duration-200 group-hover:inset-ring-foreground group-has-focus-visible:inset-ring-foreground" />
 				</div>
 			</TitleLink>
 			<div className="flex flex-col gap-1 px-1">

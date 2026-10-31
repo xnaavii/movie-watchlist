@@ -8,6 +8,7 @@ import {
 	Tooltip,
 	XAxis,
 	YAxis,
+	type YAxisTickContentProps,
 } from "recharts";
 import {
 	Card,
@@ -45,6 +46,15 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 		.filter((genre) => genre.count > 0)
 		.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 		.slice(0, MAX_GENRES);
+
+	const openGenre = (genre: GenreCount) => {
+		const discoverGenre = findDiscoverGenreById(genre.id);
+		if (!discoverGenre) return;
+		navigate({
+			to: "/discover/$genreSlug",
+			params: { genreSlug: discoverGenre.slug },
+		});
+	};
 
 	return (
 		<Card>
@@ -105,8 +115,15 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 									width={100}
 									tickLine={false}
 									axisLine={false}
-									tick={{ fill: "var(--foreground)", fontSize: 12 }}
-									className="sm:[&_.recharts-text]:text-[13px]"
+									tick={(props: YAxisTickContentProps) => (
+										<GenreTick
+											x={Number(props.x)}
+											y={Number(props.y)}
+											label={String(props.payload.value)}
+											genre={data.find((g) => g.name === props.payload.value)}
+											onOpen={openGenre}
+										/>
+									)}
 								/>
 								<Tooltip
 									cursor={{ fill: "var(--muted)", radius: 8 }}
@@ -132,15 +149,7 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 									radius={[0, 4, 4, 0]}
 									maxBarSize={20}
 									className="cursor-pointer"
-									onClick={(entry) => {
-										const { id } = entry.payload as GenreCount;
-										const genre = findDiscoverGenreById(id);
-										if (!genre) return;
-										navigate({
-											to: "/discover/$genreSlug",
-											params: { genreSlug: genre.slug },
-										});
-									}}
+									onClick={(entry) => openGenre(entry.payload as GenreCount)}
 								>
 									<LabelList
 										dataKey="count"
@@ -175,5 +184,50 @@ export function GenreChart({ genres, hasWatched }: GenreChartProps) {
 				)}
 			</CardContent>
 		</Card>
+	);
+}
+
+interface GenreTickProps {
+	x: number;
+	y: number;
+	label: string;
+	genre?: GenreCount;
+	onOpen: (genre: GenreCount) => void;
+}
+
+/**
+ * Genre label on the chart's axis. Bars only respond to the mouse, so the
+ * labels double as links to make each genre reachable by keyboard.
+ */
+function GenreTick({ x, y, label, genre, onOpen }: GenreTickProps) {
+	const discoverGenre = genre && findDiscoverGenreById(genre.id);
+	const text = (
+		<text
+			x={x}
+			y={y}
+			dy="0.355em"
+			textAnchor="end"
+			fill="var(--foreground)"
+			className="text-xs sm:text-[13px]"
+		>
+			{label}
+		</text>
+	);
+
+	if (!genre || !discoverGenre) return text;
+
+	return (
+		<a
+			href={`/discover/${discoverGenre.slug}`}
+			aria-label={`${genre.name}: ${genre.watched} watched, ${genre.saved} saved`}
+			className="cursor-pointer hover:underline"
+			onClick={(event) => {
+				if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+				event.preventDefault();
+				onOpen(genre);
+			}}
+		>
+			{text}
+		</a>
 	);
 }

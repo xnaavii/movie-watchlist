@@ -14,6 +14,7 @@ export function SearchBar({
 	return (
 		<Input
 			type="search"
+			aria-label="Search"
 			placeholder={placeholder}
 			value={value}
 			onChange={(e) => onChange(e.target.value)}
