@@ -1,26 +1,39 @@
-// features/watchlist/hooks/useAddToWatchlist.ts
-
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import type { MediaRef } from "#/features/media/types";
-import { authClient } from "#/lib/auth-client";
+import { getClientUser } from "#/lib/clientAuth";
+import { toastGuestSave } from "../guest/guestToast";
+import { type GuestMediaInput, saveGuestEntry } from "../guest/guestWatchlist";
 import { addToWatchlistFn } from "../server/watchlist.functions";
 import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
-export function useAddToWatchlist({ media }: { media: MediaRef }) {
+/** Saves a title: to the account when signed in, to this device otherwise. */
+export function useAddToWatchlist({ media }: { media: GuestMediaInput }) {
 	const addToWatchlist = useServerFn(addToWatchlistFn);
 	const revalidateWatchlist = useRevalidateWatchlist();
-	const { data: session } = authClient.useSession();
 	const navigate = useNavigate();
 
 	const mutation = useMutation({
-		mutationFn: () =>
-			addToWatchlist({ data: { mediaType: media.mediaType, id: media.id } }),
-		onSuccess: () => {
+		mutationFn: async () => {
+			if ((await getClientUser()) !== null) {
+				await addToWatchlist({
+					data: { mediaType: media.mediaType, id: media.id },
+				});
+				return "account" as const;
+			}
+			saveGuestEntry(media);
+			return "guest" as const;
+		},
+		onSuccess: (savedTo) => {
 			revalidateWatchlist();
-			toast.success("Added to watchlist");
+			if (savedTo === "guest") {
+				toastGuestSave("Added to watchlist", () =>
+					navigate({ to: "/auth/signup" }),
+				);
+			} else {
+				toast.success("Added to watchlist");
+			}
 		},
 		onError: (error) => {
 			toast.error(
@@ -31,17 +44,5 @@ export function useAddToWatchlist({ media }: { media: MediaRef }) {
 		},
 	});
 
-	function addToList() {
-		if (!session) {
-			navigate({
-				to: "/auth/login",
-				search: { redirect: window.location.pathname },
-			});
-			return;
-		}
-
-		mutation.mutate();
-	}
-
-	return { addToList, isPending: mutation.isPending };
+	return { addToList: () => mutation.mutate(), isPending: mutation.isPending };
 }

@@ -2,32 +2,42 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import type { MediaRef } from "#/features/media/types";
-import { authClient } from "#/lib/auth-client";
+import { getClientUser } from "#/lib/clientAuth";
+import { toastGuestSave } from "../guest/guestToast";
+import { type GuestMediaInput, saveGuestEntry } from "../guest/guestWatchlist";
 import { updateWatchlistStatusFn } from "../server/watchlist.functions";
 import type { WatchlistStatusInsert } from "../server/watchlist.server";
 import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
 interface UseUpdateWatchlistStatus {
-	media: MediaRef;
+	media: GuestMediaInput;
 }
 
 export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 	const updateWatchlistStatus = useServerFn(updateWatchlistStatusFn);
 	const revalidateWatchlist = useRevalidateWatchlist();
-	const { data: session } = authClient.useSession();
 	const navigate = useNavigate();
 
 	const mutation = useMutation({
-		mutationFn: (status: WatchlistStatusInsert) =>
-			updateWatchlistStatus({
-				data: { mediaType: media.mediaType, id: media.id, status },
-			}),
-		onSuccess: (_data, status) => {
+		mutationFn: async (status: WatchlistStatusInsert) => {
+			if ((await getClientUser()) !== null) {
+				await updateWatchlistStatus({
+					data: { mediaType: media.mediaType, id: media.id, status },
+				});
+				return "account" as const;
+			}
+			saveGuestEntry(media, status ?? "want_to_watch");
+			return "guest" as const;
+		},
+		onSuccess: (savedTo, status) => {
 			revalidateWatchlist();
-			toast.success(
-				status === "watched" ? "Marked as watched" : "Marked as want to watch",
-			);
+			const message =
+				status === "watched" ? "Marked as watched" : "Marked as want to watch";
+			if (savedTo === "guest") {
+				toastGuestSave(message, () => navigate({ to: "/auth/signup" }));
+			} else {
+				toast.success(message);
+			}
 		},
 		onError: (error) => {
 			toast.error(
@@ -38,17 +48,8 @@ export function useUpdateWatchlistStatus({ media }: UseUpdateWatchlistStatus) {
 		},
 	});
 
-	function updateStatus(status: WatchlistStatusInsert) {
-		if (!session) {
-			navigate({
-				to: "/auth/login",
-				search: { redirect: window.location.pathname },
-			});
-			return;
-		}
-
-		mutation.mutate(status);
-	}
-
-	return { updateStatus, isPending: mutation.isPending };
+	return {
+		updateStatus: (status: WatchlistStatusInsert) => mutation.mutate(status),
+		isPending: mutation.isPending,
+	};
 }

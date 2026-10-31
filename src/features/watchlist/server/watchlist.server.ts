@@ -386,3 +386,41 @@ export async function selectUserWatchlist(
 		media: toMediaItem(row.media),
 	}));
 }
+
+/** Adds titles saved as a guest. Existing account entries win. Returns how many were new. */
+export async function importWatchlistEntries(
+	userId: string,
+	entries: (MediaRef & {
+		status: WatchlistStatusInsert;
+		addedAt: string;
+		watchedAt: string | null;
+	})[],
+) {
+	const results = await Promise.allSettled(
+		entries.map((entry) => findOrCreateMedia(entry)),
+	);
+	const rows = entries
+		.filter((_, i) => results[i]?.status === "fulfilled")
+		.map((entry) => {
+			const addedAt = new Date(entry.addedAt);
+			const watchedAt = entry.watchedAt ? new Date(entry.watchedAt) : null;
+			return {
+				userId,
+				tmdbId: entry.id,
+				mediaType: entry.mediaType,
+				status: entry.status,
+				addedAt: Number.isNaN(addedAt.getTime()) ? new Date() : addedAt,
+				watchedAt:
+					watchedAt && !Number.isNaN(watchedAt.getTime()) ? watchedAt : null,
+			};
+		});
+	if (rows.length === 0) return { imported: 0, failed: entries.length };
+
+	const inserted = await db
+		.insert(watchlist)
+		.values(rows)
+		.onConflictDoNothing()
+		.returning({ id: watchlist.id });
+
+	return { imported: inserted.length, failed: entries.length - rows.length };
+}

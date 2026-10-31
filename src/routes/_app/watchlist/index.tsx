@@ -18,11 +18,12 @@ import {
 	type WatchlistFilters,
 	watchlistFilterSearchSchema,
 } from "#/features/media/utils/filters";
+import { GuestSyncCallout } from "#/features/watchlist/guest/GuestSyncCallout";
 import { watchlistQueries } from "#/features/watchlist/queries";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
 import { getErrorMessage } from "#/lib/utils";
 
-export const Route = createFileRoute("/_app/_protected/watchlist/")({
+export const Route = createFileRoute("/_app/watchlist/")({
 	component: WatchlistPage,
 	validateSearch: watchlistFilterSearchSchema,
 	loaderDeps: ({ search }) => search,
@@ -83,9 +84,14 @@ function WatchlistPage() {
 
 	if (items.length === 0 && !hasActiveFilters(filters)) {
 		return (
-			<div className="p-2 md:p-4 lg:p-8 mt-10 md:mt-0">
-				<p className="text-muted-foreground">Your watchlist is empty.</p>
-			</div>
+			<Container>
+				<BrandedTitle>My Watchlist</BrandedTitle>
+				<p className="text-muted-foreground">
+					Your watchlist is empty. Save movies and shows from Discover or Search
+					to keep track of them here.
+				</p>
+				<GuestSyncCallout />
+			</Container>
 		);
 	}
 
@@ -93,6 +99,7 @@ function WatchlistPage() {
 		<Container>
 			<div className="flex flex-col gap-4">
 				<BrandedTitle>My Watchlist</BrandedTitle>
+				<GuestSyncCallout />
 				<MediaFilterBar
 					values={filters}
 					sortOptions={WATCHLIST_SORTS}

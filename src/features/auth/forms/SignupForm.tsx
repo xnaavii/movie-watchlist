@@ -92,7 +92,8 @@ export function SignupForm({
 				<div className="flex flex-col items-center gap-1 text-center">
 					<h1 className="text-2xl font-bold">Create a new account</h1>
 					<p className="text-sm text-balance text-muted-foreground">
-						Become a member and sync your watchlist across all your devices
+						Sync your watchlist across all your devices. Anything you saved on
+						this one comes with you.
 					</p>
 				</div>
 				<SocialSignInButtons providers={socialProviders} redirect={redirect} />

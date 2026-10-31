@@ -27,8 +27,8 @@ import { Route as AppDiscoverMoviesRouteImport } from './routes/_app/discover/mo
 import { Route as AppDiscoverTvShowsRouteImport } from './routes/_app/discover/tv-shows'
 import { Route as AppMoviesMovieSlugRouteImport } from './routes/_app/movies/$movieSlug'
 import { Route as AppTvTvSlugRouteImport } from './routes/_app/tv/$tvSlug'
+import { Route as AppWatchlistIndexRouteImport } from './routes/_app/watchlist/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppProtectedWatchlistIndexRouteImport } from './routes/_app/_protected/watchlist/index'
 import { Route as AppDiscoverGenreSlugSectionRouteImport } from './routes/_app/discover/$genreSlug_.$section'
 
 const AppRouteRoute = AppRouteRouteImport.update({
@@ -119,17 +119,16 @@ const AppTvTvSlugRoute = AppTvTvSlugRouteImport.update({
   path: '/tv/$tvSlug',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppWatchlistIndexRoute = AppWatchlistIndexRouteImport.update({
+  id: '/watchlist/',
+  path: '/watchlist/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppProtectedWatchlistIndexRoute =
-  AppProtectedWatchlistIndexRouteImport.update({
-    id: '/watchlist/',
-    path: '/watchlist/',
-    getParentRoute: () => AppProtectedRoute,
-  } as any)
 const AppDiscoverGenreSlugSectionRoute =
   AppDiscoverGenreSlugSectionRouteImport.update({
     id: '/$genreSlug_/$section',
@@ -155,8 +154,8 @@ export interface FileRoutesByFullPath {
   '/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover/': typeof AppDiscoverIndexRoute
+  '/watchlist/': typeof AppWatchlistIndexRoute
   '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
-  '/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
@@ -175,8 +174,8 @@ export interface FileRoutesByTo {
   '/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/discover': typeof AppDiscoverIndexRoute
+  '/watchlist': typeof AppWatchlistIndexRoute
   '/discover/$genreSlug/$section': typeof AppDiscoverGenreSlugSectionRoute
-  '/watchlist': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -199,8 +198,8 @@ export interface FileRoutesById {
   '/_app/tv/$tvSlug': typeof AppTvTvSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/discover/': typeof AppDiscoverIndexRoute
+  '/_app/watchlist/': typeof AppWatchlistIndexRoute
   '/_app/discover/$genreSlug_/$section': typeof AppDiscoverGenreSlugSectionRoute
-  '/_app/_protected/watchlist/': typeof AppProtectedWatchlistIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,8 +221,8 @@ export interface FileRouteTypes {
     | '/tv/$tvSlug'
     | '/api/auth/$'
     | '/discover/'
-    | '/discover/$genreSlug/$section'
     | '/watchlist/'
+    | '/discover/$genreSlug/$section'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -242,8 +241,8 @@ export interface FileRouteTypes {
     | '/tv/$tvSlug'
     | '/api/auth/$'
     | '/discover'
-    | '/discover/$genreSlug/$section'
     | '/watchlist'
+    | '/discover/$genreSlug/$section'
   id:
     | '__root__'
     | '/_app'
@@ -265,8 +264,8 @@ export interface FileRouteTypes {
     | '/_app/tv/$tvSlug'
     | '/api/auth/$'
     | '/_app/discover/'
+    | '/_app/watchlist/'
     | '/_app/discover/$genreSlug_/$section'
-    | '/_app/_protected/watchlist/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -403,19 +402,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTvTvSlugRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/watchlist/': {
+      id: '/_app/watchlist/'
+      path: '/watchlist'
+      fullPath: '/watchlist/'
+      preLoaderRoute: typeof AppWatchlistIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_app/_protected/watchlist/': {
-      id: '/_app/_protected/watchlist/'
-      path: '/watchlist'
-      fullPath: '/watchlist/'
-      preLoaderRoute: typeof AppProtectedWatchlistIndexRouteImport
-      parentRoute: typeof AppProtectedRoute
     }
     '/_app/discover/$genreSlug_/$section': {
       id: '/_app/discover/$genreSlug_/$section'
@@ -450,12 +449,10 @@ const AppDiscoverRouteRouteWithChildren =
 
 interface AppProtectedRouteChildren {
   AppProtectedProfileRoute: typeof AppProtectedProfileRoute
-  AppProtectedWatchlistIndexRoute: typeof AppProtectedWatchlistIndexRoute
 }
 
 const AppProtectedRouteChildren: AppProtectedRouteChildren = {
   AppProtectedProfileRoute: AppProtectedProfileRoute,
-  AppProtectedWatchlistIndexRoute: AppProtectedWatchlistIndexRoute,
 }
 
 const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(
@@ -469,6 +466,7 @@ interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
   AppTvTvSlugRoute: typeof AppTvTvSlugRoute
+  AppWatchlistIndexRoute: typeof AppWatchlistIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -478,6 +476,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,
   AppTvTvSlugRoute: AppTvTvSlugRoute,
+  AppWatchlistIndexRoute: AppWatchlistIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
