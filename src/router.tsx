@@ -15,7 +15,12 @@ export function getRouter() {
 		// calls. Only the main nav links opt in, see NavIconButton.
 		defaultPreload: false,
 		defaultPreloadStaleTime: 0,
-		defaultViewTransition: true,
+		// Cross-fade between pages like a native app, but not when only the
+		// search params change (typing a search, switching a filter), which
+		// would flash the page on every keystroke.
+		defaultViewTransition: {
+			types: ({ pathChanged }) => (pathChanged ? ["page"] : false),
+		},
 		defaultErrorComponent: ErrorPage,
 	});
 

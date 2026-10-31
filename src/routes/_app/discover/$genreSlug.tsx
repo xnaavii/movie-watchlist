@@ -17,6 +17,7 @@ import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { PillNav, PillNavItem } from "#/components/PillNav";
 import { Button } from "#/components/ui/button";
 import { getSiteUrl, SITE_CONFIG } from "#/config/site";
+import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { GenreDiscoverSections } from "#/features/media/components/GenreDiscoverSections";
 import { MediaBackdropMarquee } from "#/features/media/components/MediaBackdropMarquee";
 import { MediaGrid } from "#/features/media/components/MediaGrid";
@@ -66,6 +67,7 @@ export const Route = createFileRoute("/_app/discover/$genreSlug")({
 		},
 	},
 	validateSearch: genreSearchSchema,
+	pendingComponent: () => <MediaGridPagePending />,
 	beforeLoad: ({ params }) => {
 		const genre = findDiscoverGenre(params.genreSlug);
 		if (!genre) throw notFound();

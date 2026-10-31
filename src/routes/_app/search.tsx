@@ -6,6 +6,7 @@ import { z } from "zod";
 import { InfiniteScrollFooter } from "#/components/InfiniteScrollFooter";
 import { SearchBar } from "#/components/SearchBar";
 import { Button } from "#/components/ui/button";
+import { MediaGridPagePending } from "#/features/media/components/DiscoverPageStates";
 import { MediaCard } from "#/features/media/components/MediaCard";
 import {
 	MediaFilterBar,
@@ -76,11 +77,7 @@ export const Route = createFileRoute("/_app/search")({
 			});
 		}
 	},
-	pendingComponent: () => (
-		<div className="p-2 md:p-6 mt-16 md:mt-0">
-			<p className="text-muted-foreground">Loading...</p>
-		</div>
-	),
+	pendingComponent: () => <MediaGridPagePending withSearchField />,
 });
 
 function SearchPage() {
@@ -203,7 +200,7 @@ function SearchPage() {
 	const isFuzzy = firstSearchPage?.resolved.fuzzy ?? false;
 
 	return (
-		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8 mt-12 md:mt-0">
+		<div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
 			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
 				<div className="flex flex-wrap items-center gap-2">
 					<PickPill selected={!ai} onClick={() => setMode(false)}>

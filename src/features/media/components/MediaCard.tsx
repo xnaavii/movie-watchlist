@@ -31,7 +31,7 @@ export function MediaCard({
 		<div className="flex flex-col gap-2 w-full">
 			<div
 				className={cn(
-					"relative mx-auto w-full group rounded-3xl overflow-hidden shrink-0",
+					"relative mx-auto w-full group rounded-3xl overflow-hidden shrink-0 transition-transform duration-150 active:scale-[0.97]",
 					className,
 				)}
 				title={media.title}
@@ -52,6 +52,7 @@ export function MediaCard({
 									watchlistStatus === "want_to_watch" ? "saturate-0" : "",
 								)}
 								loading="eager"
+								draggable={false}
 							/>
 						) : (
 							<div className="bg-muted size-full flex items-center justify-center text-xs text-muted-foreground">
