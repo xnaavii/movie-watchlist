@@ -1,6 +1,10 @@
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import {
+	useQueryClient,
+	useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { LazySection } from "#/components/LazySection";
 import type { WatchlistStatus } from "#/features/watchlist/server/watchlist.server";
 import type { DiscoverGenre } from "../genres";
 import {
@@ -21,13 +25,22 @@ interface DiscoverMediaSectionProps {
 /**
  * A titled row of movies or TV shows that loads on its own, so a slow or
  * failing TMDB request only affects its own section instead of the whole page.
+ * It fetches once it scrolls near the visible area, unless already cached.
  */
 export function DiscoverMediaSection(props: DiscoverMediaSectionProps) {
+	const queryClient = useQueryClient();
+	const isCached =
+		queryClient.getQueryData(
+			sectionQuery(props.section, props.genre).queryKey,
+		) !== undefined;
+
 	return (
 		<ErrorBoundary fallback={null}>
-			<Suspense fallback={<MediaRowSkeleton />}>
-				<DiscoverMediaSectionContent {...props} />
-			</Suspense>
+			<LazySection eager={isCached} fallback={<MediaRowSkeleton />}>
+				<Suspense fallback={<MediaRowSkeleton />}>
+					<DiscoverMediaSectionContent {...props} />
+				</Suspense>
+			</LazySection>
 		</ErrorBoundary>
 	);
 }

@@ -4,16 +4,10 @@ import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { useRevalidateWatchlist } from "./useRevalidateWatchlist";
 
-const invalidateRouter = vi.fn(() => Promise.resolve());
-
-vi.mock("@tanstack/react-router", () => ({
-	useRouter: () => ({ invalidate: invalidateRouter }),
-}));
-
 vi.mock("../server/watchlist.functions", () => ({}));
 
 describe("useRevalidateWatchlist", () => {
-	it("invalidates every watchlist query and the router, but nothing else", async () => {
+	it("invalidates every watchlist query, but nothing else", async () => {
 		const queryClient = new QueryClient();
 		const keys = [
 			["watchlist", "status", "movie", 1],
@@ -36,6 +30,5 @@ describe("useRevalidateWatchlist", () => {
 			queryClient.getQueryState(key)?.isInvalidated;
 		for (const key of keys.slice(0, -1)) expect(invalidated(key)).toBe(true);
 		expect(invalidated(["media", "movie", 1, "details"])).toBe(false);
-		expect(invalidateRouter).toHaveBeenCalledOnce();
 	});
 });

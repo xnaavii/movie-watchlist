@@ -5,10 +5,7 @@ import {
 	MediaDetailsPageNotFound,
 	MediaDetailsPagePending,
 } from "#/features/media/components/MediaDetailsPage";
-import {
-	loadMediaDetails,
-	preloadMediaDetailsPage,
-} from "#/features/media/loaders";
+import { loadMediaDetails } from "#/features/media/loaders";
 import type { MediaDetails } from "#/features/media/types";
 import { buildMediaHead } from "#/features/media/utils/meta";
 import {
@@ -45,8 +42,6 @@ export const Route = createFileRoute("/_app/movies/$movieSlug")({
 				replace: true,
 			});
 		}
-
-		await preloadMediaDetailsPage(queryClient, movie);
 
 		return { movie };
 	},

@@ -28,7 +28,7 @@ function NavIconButton({ to, icon: Icon }: NavItem) {
 
 	return (
 		<Button size="icon-lg" asChild variant={isActive ? "default" : "ghost"}>
-			<Link to={to}>
+			<Link to={to} preload="intent">
 				<Icon className="size-5" />
 			</Link>
 		</Button>

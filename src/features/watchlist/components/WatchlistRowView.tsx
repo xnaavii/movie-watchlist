@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import { MediaRow } from "#/features/media/components/MediaRow";
-import { useMediaLogos } from "#/features/media/hooks/useMediaLogos";
 import type { MediaType } from "#/features/media/types";
 import { watchlistQueries } from "@/features/watchlist/queries";
 
@@ -19,7 +18,6 @@ export function WatchlistRowView({ mediaType }: WatchlistRowViewProps) {
 	const items = userWatchlist.results
 		.map(({ media }) => media)
 		.filter((media) => !mediaType || media.mediaType === mediaType);
-	const logos = useMediaLogos(items);
 
 	return (
 		items.length > 0 && (
@@ -34,11 +32,7 @@ export function WatchlistRowView({ mediaType }: WatchlistRowViewProps) {
 						</Link>
 					</Button>
 				</div>
-				<MediaRow
-					items={items}
-					logos={logos}
-					watchlistStatuses={watchlistStatuses}
-				/>
+				<MediaRow items={items} watchlistStatuses={watchlistStatuses} />
 			</section>
 		)
 	);

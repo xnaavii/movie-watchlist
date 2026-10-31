@@ -8,7 +8,6 @@ import type {
 	TVSeriesDetails,
 	TVSeriesResultItem,
 } from "@lorenzopant/tmdb";
-import type { UseQueryResult } from "@tanstack/react-query";
 import type {
 	MediaDetails,
 	MediaItem,
@@ -226,19 +225,10 @@ export function normalizeReview(review: Review): MediaReview {
 	};
 }
 
-export function buildLogoMap(
-	items: MediaRef[],
-	imageResults: UseQueryResult<MovieImages>[],
-): Record<string, string | undefined> {
-	return Object.fromEntries(
-		items.map((item, i) => {
-			const logo = imageResults[i]?.data?.logos[0];
-			return [
-				mediaKey(item),
-				logo
-					? `https://image.tmdb.org/t/p/original${logo.file_path}`
-					: undefined,
-			];
-		}),
-	);
+/** The full-size URL of a title's first logo, if TMDB has one. */
+export function toLogoUrl(images: Pick<MovieImages, "logos">) {
+	const logo = images.logos[0];
+	return logo
+		? `https://image.tmdb.org/t/p/original${logo.file_path}`
+		: undefined;
 }
