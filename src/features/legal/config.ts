@@ -8,9 +8,9 @@
  */
 export const LEGAL_CONFIG = {
 	/** The person or company responsible for the data (the "controller"). */
-	operator: "TODO: operator name and country",
+	operator: "Ivan Petrović",
 	/** Where privacy requests and questions go. */
-	contactEmail: "TODO@example.com",
+	contactEmail: "xnaaviitech@gmail.com",
 	/** Shown at the top of every legal page. Bump it when the text changes. */
 	lastUpdated: "2026-10-31",
 } as const;
