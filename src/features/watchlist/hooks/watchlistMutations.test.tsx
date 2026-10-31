@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,6 +31,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 vi.mock("sonner", () => ({ toast: mocks.toast }));
 
+import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { useAddToWatchlist } from "./useAddToWatchlist";
 import { useRemoveFromWatchlist } from "./useRemoveFromWatchlist";
 import { useUpdateWatchlistStatus } from "./useUpdateWatchlistStatus";
@@ -51,7 +52,8 @@ function wrapper({ children }: { children: ReactNode }) {
 }
 
 beforeEach(() => {
-	queryClient = new QueryClient();
+	// The app's own client, so failed saves toast through its mutation cache.
+	queryClient = getContext().queryClient;
 	resetClientUser();
 	clearGuestEntries();
 	for (const fn of [

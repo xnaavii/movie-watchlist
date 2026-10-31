@@ -56,6 +56,24 @@ export async function forUserOrGuest<T>(
 	return server();
 }
 
+/**
+ * Saves a change to the account for signed-in users and to this device for
+ * guests, the write side of forUserOrGuest. Returns where it was saved, so
+ * the caller can word its toast.
+ */
+export async function saveForUserOrGuest(
+	account: () => Promise<unknown>,
+	guest: () => void,
+): Promise<"account" | "guest"> {
+	if ((await getClientUser()) === null) {
+		guest();
+		return "guest";
+	}
+	assertOnline();
+	await account();
+	return "account";
+}
+
 /** Account changes need the server; guests' changes work offline. */
 export function assertOnline() {
 	if (isOffline()) {

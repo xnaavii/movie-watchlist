@@ -52,6 +52,7 @@ const movie = (id: number) => ({
 function setup() {
 	const queryClient = new QueryClient();
 	const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+	const reset = vi.spyOn(queryClient, "resetQueries");
 	const view = render(
 		<QueryClientProvider client={queryClient}>
 			<AuthStateSync />
@@ -63,7 +64,7 @@ function setup() {
 				<AuthStateSync />
 			</QueryClientProvider>,
 		);
-	return { invalidate, rerender };
+	return { queryClient, invalidate, reset, rerender };
 }
 
 const signedIn = (id = "user-1"): Session => ({
@@ -115,13 +116,18 @@ describe("AuthStateSync", () => {
 
 	it("clears cached data and refetches when the account changes", async () => {
 		mocks.session = signedIn("user-1");
-		const { invalidate, rerender } = setup();
+		const { queryClient, reset, rerender } = setup();
+		queryClient.setQueryData(["watchlist", "statuses"], {
+			"movie:1": "watched",
+		});
 
 		mocks.session = signedIn("user-2");
 		rerender();
 
 		expect(mocks.clearCachedUserData).toHaveBeenCalledTimes(1);
-		expect(invalidate).toHaveBeenCalledWith({ queryKey: ["watchlist"] });
+		expect(reset).toHaveBeenCalledWith({ queryKey: ["watchlist"] });
+		// The first account's list is never shown to the second.
+		expect(queryClient.getQueryData(["watchlist", "statuses"])).toBeUndefined();
 		await expect(getClientUser()).resolves.toEqual({ id: "user-2" });
 
 		mocks.session = signedOut;

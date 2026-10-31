@@ -46,8 +46,12 @@ export function AuthStateSync() {
 
 		// The server rendered the page without the guest list, so a signed-out
 		// browser reloads it from this device on the first check too.
-		if (changed) clearCachedUserData();
-		if (changed || (firstCheck && !userId)) {
+		// A different person now: drop the last one's watchlist rather than
+		// showing it while the new one loads (resetQueries, not invalidate).
+		if (changed) {
+			clearCachedUserData();
+			queryClient.resetQueries({ queryKey: watchlistQueries.allKey });
+		} else if (firstCheck && !userId) {
 			queryClient.invalidateQueries({ queryKey: watchlistQueries.allKey });
 		}
 
