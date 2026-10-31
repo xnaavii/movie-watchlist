@@ -67,7 +67,7 @@
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.785 0.115 274.713);
   --chart-2: oklch(0.585 0.233 277.117);
   --chart-3: oklch(0.511 0.262 276.966);
@@ -146,6 +146,11 @@ body,
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  /* A visible focus ring for anything that doesn't draw its own (links, pills,
+     custom buttons). Components that style focus themselves use outline-none. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-foreground;
   }
   body {
     @apply bg-background text-foreground;

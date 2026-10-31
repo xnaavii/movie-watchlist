@@ -12,26 +12,35 @@ type SidebarProps = {
 
 type NavItem = {
 	to: string;
+	label: string;
 	icon: LucideIcon;
 };
 
 const navItems: NavItem[] = [
-	{ to: "/search", icon: Search },
-	{ to: "/discover", icon: Compass },
-	{ to: "/watchlist", icon: ListVideo },
-	{ to: "/profile", icon: User },
+	{ to: "/search", label: "Search", icon: Search },
+	{ to: "/discover", label: "Discover", icon: Compass },
+	{ to: "/watchlist", label: "Watchlist", icon: ListVideo },
+	{ to: "/profile", label: "Profile", icon: User },
 ];
 
-function NavIconButton({ to, icon: Icon }: NavItem) {
+function NavIconButton({ to, label, icon: Icon }: NavItem) {
 	const matchRoute = useMatchRoute();
 	const isActive = !!matchRoute({ to });
 
 	return (
-		<Button size="icon-lg" asChild variant={isActive ? "default" : "ghost"}>
-			<Link to={to} preload="intent">
-				<Icon className="size-5" />
-			</Link>
-		</Button>
+		<li>
+			<Button size="icon-lg" asChild variant={isActive ? "default" : "ghost"}>
+				<Link
+					to={to}
+					preload="intent"
+					aria-label={label}
+					title={label}
+					aria-current={isActive ? "page" : undefined}
+				>
+					<Icon className="size-5" aria-hidden="true" />
+				</Link>
+			</Button>
+		</li>
 	);
 }
 
@@ -44,11 +53,11 @@ export function Sidebar({ className }: SidebarProps) {
 			)}
 		>
 			<Button size="icon-lg" asChild variant="ghost">
-				<Link to="/">
+				<Link to="/" aria-label="Home">
 					<BrandMark className="size-5" />
 				</Link>
 			</Button>
-			<nav>
+			<nav aria-label="Main">
 				<ul className="flex flex-col items-center gap-4">
 					{navItems.map((item) => (
 						<NavIconButton key={item.to} {...item} />
