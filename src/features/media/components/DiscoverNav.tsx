@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Clapperboard, Sparkles, Tv } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { PillNav, PillNavItem } from "#/components/PillNav";
-import type { MediaType } from "../types";
+import { DISCOVER_TYPE_PAGES } from "../discoverPages";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
+import { MEDIA_TYPES, type MediaType } from "../types";
 
 interface DiscoverNavProps {
 	/** The page being shown; undefined for the mixed discover page. */
@@ -18,18 +20,17 @@ export function DiscoverNav({ current }: DiscoverNavProps) {
 					Everything
 				</Link>
 			</PillNavItem>
-			<PillNavItem asChild active={current === "movie"}>
-				<Link to="/discover/movies">
-					<Clapperboard aria-hidden="true" />
-					Movies
-				</Link>
-			</PillNavItem>
-			<PillNavItem asChild active={current === "tv"}>
-				<Link to="/discover/tv-shows">
-					<Tv aria-hidden="true" />
-					TV shows
-				</Link>
-			</PillNavItem>
+			{MEDIA_TYPES.map((mediaType) => {
+				const { pluralLabel, icon: Icon } = MEDIA_TYPE_CONFIG[mediaType];
+				return (
+					<PillNavItem key={mediaType} asChild active={current === mediaType}>
+						<Link to={DISCOVER_TYPE_PAGES[mediaType].path}>
+							<Icon aria-hidden="true" />
+							{pluralLabel}
+						</Link>
+					</PillNavItem>
+				);
+			})}
 		</PillNav>
 	);
 }

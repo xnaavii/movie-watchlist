@@ -7,6 +7,7 @@ import {
 	truncateForMeta,
 	truncateTitle,
 } from "#/utils/seo";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 import type { MediaDetails } from "../types";
 import { toMediaPath } from "./slug";
 import { toTmdbImageUrl } from "./tmdb";
@@ -90,7 +91,7 @@ function buildMediaJsonLd(
 	const isMovie = media.mediaType === "movie";
 	return {
 		"@context": "https://schema.org",
-		"@type": isMovie ? "Movie" : "TVSeries",
+		"@type": MEDIA_TYPE_CONFIG[media.mediaType].schemaType,
 		name: media.title,
 		url,
 		...(media.overview ? { description: media.overview } : {}),

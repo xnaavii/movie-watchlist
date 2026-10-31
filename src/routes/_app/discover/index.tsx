@@ -103,8 +103,10 @@ function DiscoverPage() {
 			/>
 			<DiscoverDoorways
 				// Skip past the hero's first slides so the tiles show something new.
-				movie={movies[HERO_ITEMS_PER_TYPE]}
-				tv={shows[HERO_ITEMS_PER_TYPE]}
+				backdrops={{
+					movie: movies[HERO_ITEMS_PER_TYPE],
+					tv: shows[HERO_ITEMS_PER_TYPE],
+				}}
 			/>
 			<section>
 				<GenreRow

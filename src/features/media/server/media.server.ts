@@ -18,6 +18,7 @@ import { db } from "#/db";
 import { imdbRating } from "#/db/schema";
 import { DAY, edgeCached, HOUR } from "#/lib/edgeCache";
 import { tmdb } from "#/lib/tmdb";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 import type {
 	ImdbIdRequest,
 	MediaDiscoverRequest,
@@ -83,8 +84,7 @@ async function fromTmdb<T>(
 	}
 }
 
-const label = (mediaType: MediaType) =>
-	mediaType === "movie" ? "movie" : "TV show";
+const label = (mediaType: MediaType) => MEDIA_TYPE_CONFIG[mediaType].noun;
 
 function toMoviePage(
 	page: PaginatedResponse<Parameters<typeof normalizeMovie>[0]>,

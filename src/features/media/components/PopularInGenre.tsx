@@ -10,6 +10,7 @@ import type { MediaType } from "#/features/media/types";
 import { uniqueMedia } from "#/features/media/utils";
 import type { WatchlistStatus } from "#/features/watchlist/types";
 import { useInfiniteScrollTrigger } from "#/hooks/useInfiniteScrollTrigger";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
 
 export interface PopularInGenreProps {
 	genre: DiscoverGenre;
@@ -60,7 +61,7 @@ export function PopularInGenre({
 									replace
 									resetScroll={false}
 								>
-									{type === "movie" ? "Movies" : "TV shows"}
+									{MEDIA_TYPE_CONFIG[type].pluralLabel}
 								</Link>
 							</PillNavItem>
 						))}

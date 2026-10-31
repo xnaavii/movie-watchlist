@@ -1,41 +1,43 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Clapperboard, Tv } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
-import type { MediaItem } from "../types";
+import { DISCOVER_TYPE_PAGES } from "../discoverPages";
+import { MEDIA_TYPE_CONFIG } from "../mediaTypes";
+import { MEDIA_TYPES, type MediaItem, type MediaType } from "../types";
 import { toTmdbImageUrl } from "../utils/tmdb";
 
 interface DiscoverDoorwaysProps {
-	movie?: MediaItem;
-	tv?: MediaItem;
+	/** A title per type whose backdrop fills its tile. */
+	backdrops: Partial<Record<MediaType, MediaItem>>;
 }
 
-/** Two big entry points into the movies and TV discover pages. */
-export function DiscoverDoorways({ movie, tv }: DiscoverDoorwaysProps) {
+/** Big entry points into each media type's discover page. */
+export function DiscoverDoorways({ backdrops }: DiscoverDoorwaysProps) {
 	return (
 		<section
 			aria-label="Browse by type"
 			className="grid grid-cols-1 gap-3 sm:grid-cols-2"
 		>
-			<Doorway
-				to="/discover/movies"
-				title="Movies"
-				teaser="In theaters, coming soon and all-time classics"
-				icon={<Clapperboard aria-hidden="true" />}
-				backdrop={movie}
-			/>
-			<Doorway
-				to="/discover/tv-shows"
-				title="TV shows"
-				teaser="New episodes this week and series worth a binge"
-				icon={<Tv aria-hidden="true" />}
-				backdrop={tv}
-			/>
+			{MEDIA_TYPES.map((mediaType) => {
+				const { path, teaser } = DISCOVER_TYPE_PAGES[mediaType];
+				const { pluralLabel, icon: Icon } = MEDIA_TYPE_CONFIG[mediaType];
+				return (
+					<Doorway
+						key={mediaType}
+						to={path}
+						title={pluralLabel}
+						teaser={teaser}
+						icon={<Icon aria-hidden="true" />}
+						backdrop={backdrops[mediaType]}
+					/>
+				);
+			})}
 		</section>
 	);
 }
 
 interface DoorwayProps {
-	to: "/discover/movies" | "/discover/tv-shows";
+	to: (typeof DISCOVER_TYPE_PAGES)[MediaType]["path"];
 	title: string;
 	teaser: string;
 	icon: ReactNode;
