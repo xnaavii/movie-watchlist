@@ -276,9 +276,13 @@ function SearchPage() {
 					) : (
 						<>
 							{person && (
-								<section className="flex flex-col gap-4">
-									<h2 className="text-xl">Known for: {person.name}</h2>
-									<MediaRow items={person.credits} />
+								<section>
+									<MediaRow
+										header={
+											<h2 className="text-xl">Known for: {person.name}</h2>
+										}
+										items={person.credits}
+									/>
 								</section>
 							)}
 							{loadedMovies.length > 0 && (

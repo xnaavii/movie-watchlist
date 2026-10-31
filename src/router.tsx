@@ -15,7 +15,6 @@ export function getRouter() {
 		// calls. Only the main nav links opt in, see NavIconButton.
 		defaultPreload: false,
 		defaultPreloadStaleTime: 0,
-		scrollToTopSelectors: ["#main-scrollable-area"],
 		defaultViewTransition: true,
 		defaultErrorComponent: ErrorPage,
 	});

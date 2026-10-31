@@ -110,11 +110,15 @@ function DiscoverPage() {
 				movie={movies[HERO_ITEMS_PER_TYPE]}
 				tv={shows[HERO_ITEMS_PER_TYPE]}
 			/>
-			<section className="flex flex-col gap-4">
-				<h2 className="text-xl lg:text-2xl tracking-tighter">
-					Discover by genre
-				</h2>
-				<GenreRow genres={listDiscoverGenres()} />
+			<section>
+				<GenreRow
+					header={
+						<h2 className="text-xl lg:text-2xl tracking-tighter">
+							Discover by genre
+						</h2>
+					}
+					genres={listDiscoverGenres()}
+				/>
 			</section>
 			<DiscoverMediaSection
 				section="trending"

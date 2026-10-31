@@ -1,13 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures";
+import { RowCarousel } from "#/components/RowCarousel";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselNext,
-	CarouselPrevious,
-} from "#/components/ui/carousel";
+import { CarouselItem } from "#/components/ui/carousel";
 import { mediaQueries } from "../queries";
 import type { MediaRef } from "../types";
 import { toTmdbImageUrl } from "../utils/tmdb";
@@ -34,44 +28,36 @@ export function MediaCastView({ media }: MediaCastViewProps) {
 	if (!cast || cast.length === 0) return null;
 
 	return (
-		<section className="flex flex-col gap-6">
-			<h2 className="text-2xl tracking-tighter">Cast</h2>
-			<Carousel
-				opts={{ align: "start", dragFree: true }}
-				plugins={[WheelGesturesPlugin()]}
-			>
-				<CarouselContent className="-ml-4">
-					{cast.map((person) => (
-						<CarouselItem key={person.id} className="pl-4 basis-auto">
-							<div className="flex flex-col items-center gap-3 w-28 md:w-32 text-center">
-								<Avatar className="size-20 md:size-24">
-									<AvatarImage
-										src={toTmdbImageUrl(person.profile_path, "w185")}
-										alt={person.name}
-										className="object-cover"
-									/>
-									<AvatarFallback>{initials(person.name)}</AvatarFallback>
-								</Avatar>
-								<div className="flex flex-col gap-0.5">
-									<span className="text-sm font-medium leading-snug text-balance wrap-break-word">
-										{person.name}
+		<section>
+			<RowCarousel header={<h2 className="text-2xl tracking-tighter">Cast</h2>}>
+				{cast.map((person) => (
+					<CarouselItem key={person.id} className="pl-4 basis-auto">
+						<div className="flex flex-col items-center gap-3 w-28 md:w-32 text-center">
+							<Avatar className="size-20 md:size-24">
+								<AvatarImage
+									src={toTmdbImageUrl(person.profile_path, "w185")}
+									alt={person.name}
+									className="object-cover"
+								/>
+								<AvatarFallback>{initials(person.name)}</AvatarFallback>
+							</Avatar>
+							<div className="flex flex-col gap-0.5">
+								<span className="text-sm font-medium leading-snug text-balance wrap-break-word">
+									{person.name}
+								</span>
+								{person.character && (
+									<span
+										className="text-xs text-muted-foreground leading-snug text-balance line-clamp-2"
+										title={person.character}
+									>
+										{person.character}
 									</span>
-									{person.character && (
-										<span
-											className="text-xs text-muted-foreground leading-snug text-balance line-clamp-2"
-											title={person.character}
-										>
-											{person.character}
-										</span>
-									)}
-								</div>
+								)}
 							</div>
-						</CarouselItem>
-					))}
-				</CarouselContent>
-				<CarouselPrevious className="absolute left-0 ml-2" />
-				<CarouselNext className="absolute right-0 mr-2" />
-			</Carousel>
+						</div>
+					</CarouselItem>
+				))}
+			</RowCarousel>
 		</section>
 	);
 }
