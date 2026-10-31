@@ -15,7 +15,7 @@ import {
 } from "drizzle-orm";
 import { db } from "#/db";
 import { genre, media, mediaToGenre, watchlist } from "#/db/schema";
-import { getMediaDetails } from "#/features/media/server/media.functions";
+import { fetchMediaDetails } from "#/features/media/server/media.server";
 import type { MediaItem, MediaRef, MediaType } from "#/features/media/types";
 import { mediaKey, totalRuntime } from "#/features/media/utils";
 import {
@@ -164,7 +164,7 @@ export async function findOrCreateMedia(ref: MediaRef) {
 		}
 	}
 
-	const details = await getMediaDetails({ data: ref });
+	const details = await fetchMediaDetails(ref);
 
 	return await addMediaWithGenres({
 		newMedia: {
@@ -204,7 +204,7 @@ export async function backfillMediaDetails(userId: string, limit = 10) {
 
 	await Promise.allSettled(
 		missing.map(async (ref) => {
-			const details = await getMediaDetails({ data: ref });
+			const details = await fetchMediaDetails(ref);
 			await db.update(media).set(detailsStats(details)).where(isMedia(ref));
 		}),
 	);

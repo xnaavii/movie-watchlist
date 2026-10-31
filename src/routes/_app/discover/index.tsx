@@ -7,7 +7,6 @@ import { AudioLines } from "lucide-react";
 import { useMemo } from "react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
-import { getSiteUrl, SITE_CONFIG } from "#/config/site";
 import { DiscoverDoorways } from "#/features/media/components/DiscoverDoorways";
 import { DiscoverMediaSection } from "#/features/media/components/DiscoverMediaSection";
 import { DiscoverNav } from "#/features/media/components/DiscoverNav";
@@ -25,10 +24,9 @@ import { useMediaLogos } from "#/features/media/hooks/useMediaLogos";
 import { mediaQueries } from "#/features/media/queries";
 import { sectionQuery } from "#/features/media/sections";
 import { interleave } from "#/features/media/utils";
-import { toTmdbImageUrl } from "#/features/media/utils/tmdb";
 import { WatchlistRowView } from "#/features/watchlist/components/WatchlistRowView";
 import { watchlistQueries } from "#/features/watchlist/queries";
-import { seo } from "#/utils/seo";
+import { HOME_TITLE, pageHead, siteJsonLd } from "#/utils/seo";
 
 /** Trending titles of each type in the hero; both rows reuse the same pages. */
 const HERO_ITEMS_PER_TYPE = 6;
@@ -39,7 +37,7 @@ export const Route = createFileRoute("/_app/discover/")({
 	errorComponent: ({ error }) => <DiscoverPageError error={error} />,
 	loader: async ({ context }) => {
 		const { queryClient } = context;
-		const [trendingMovies] = await Promise.all([
+		await Promise.all([
 			queryClient.ensureInfiniteQueryData(sectionQuery("trending")),
 			queryClient.ensureInfiniteQueryData(sectionQuery("trending-tv-shows")),
 			queryClient.query({
@@ -53,17 +51,13 @@ export const Route = createFileRoute("/_app/discover/")({
 			}),
 			queryClient.query({ ...watchlistQueries.list(), staleTime: "static" }),
 		]);
-		return { poster: trendingMovies.pages[0]?.results[0]?.posterPath };
 	},
-	head: ({ loaderData }) => ({
-		meta: seo({
-			title: `Discover Movies and TV Shows | ${SITE_CONFIG.name}`,
-			description:
-				"Discover trending, new, top rated and hidden gem movies and TV shows, or browse by genre.",
-			image: toTmdbImageUrl(loaderData?.poster, "w500"),
-			url: `${getSiteUrl()}/discover`,
+	head: () =>
+		pageHead({
+			title: HOME_TITLE,
+			path: "/discover",
+			jsonLd: siteJsonLd(),
 		}),
-	}),
 });
 
 function DiscoverPage() {

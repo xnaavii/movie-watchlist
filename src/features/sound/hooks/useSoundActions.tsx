@@ -13,13 +13,6 @@ import type { SoundRatingInput, TitleRef } from "../types";
 
 type RatingScores = Omit<SoundRatingInput, "tmdbId" | "mediaType">;
 
-const showError = (error: unknown) =>
-	toast.error(
-		error instanceof Error
-			? error.message
-			: "Something went wrong. Please try again.",
-	);
-
 export function useSoundActions(ref: TitleRef) {
 	const voteAtmos = useServerFn(voteAtmosFn);
 	const rateSound = useServerFn(rateSoundFn);
@@ -44,7 +37,6 @@ export function useSoundActions(ref: TitleRef) {
 			refresh();
 			toast.success("Thanks, your answer helps everyone find Atmos titles");
 		},
-		onError: showError,
 	});
 
 	const rateMutation = useMutation({
@@ -54,7 +46,6 @@ export function useSoundActions(ref: TitleRef) {
 			refresh();
 			toast.success("Sound rating saved");
 		},
-		onError: showError,
 	});
 
 	const deleteMutation = useMutation({
@@ -63,7 +54,6 @@ export function useSoundActions(ref: TitleRef) {
 			refresh();
 			toast.success("Sound rating removed");
 		},
-		onError: showError,
 	});
 
 	/** Runs the action when signed in, otherwise sends the user to log in. */

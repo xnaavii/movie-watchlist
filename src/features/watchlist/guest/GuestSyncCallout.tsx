@@ -18,9 +18,7 @@ export function GuestSyncCallout() {
 					<RefreshCw className="size-5" aria-hidden="true" />
 				</span>
 				<div className="flex flex-col gap-1">
-					<h2 className="text-lg tracking-tight">
-						Saved on this device only
-					</h2>
+					<h2 className="text-lg tracking-tight">Saved on this device only</h2>
 					<p className="text-sm text-muted-foreground text-pretty">
 						Create a free account to sync your watchlist across devices.
 						Everything you've saved here moves over when you sign up or log in.

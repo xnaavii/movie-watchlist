@@ -1,15 +1,15 @@
+import "@tanstack/react-start/server-only";
 import { env } from "cloudflare:workers";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { oAuthProxy } from "better-auth/plugins/oauth-proxy";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { and, eq } from "drizzle-orm";
+import { PRODUCTION_URL } from "#/config/site";
 import { db } from "@/db";
 import { account, session, user } from "@/db/schema";
 import { sendResetPasswordEmail } from "@/features/auth/email/sendResetPasswordEmail";
 import { sendVerificationEmail } from "@/features/auth/email/sendVerificationEmail";
-
-const PRODUCTION_URL = "https://watchlist.xnaavii.com";
 
 // Social providers are only registered when their credentials are set, so
 // the buttons stay hidden on environments that haven't been configured yet.

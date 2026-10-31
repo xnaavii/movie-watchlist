@@ -10,7 +10,6 @@ const tmdb = vi.hoisted(() => ({
 vi.mock("@tanstack/react-start", () => import("#/__tests__/serverFn"));
 vi.mock("#/db", () => ({ db: {} }));
 vi.mock("#/lib/tmdb", () => ({ tmdb }));
-vi.mock("#/lib/watchmode", () => ({ watchmode: {} }));
 
 import { TMDBError } from "@lorenzopant/tmdb";
 import {

@@ -1,3 +1,4 @@
+import "@tanstack/react-start/server-only";
 import { env } from "cloudflare:workers";
 import { TMDB } from "@lorenzopant/tmdb";
 

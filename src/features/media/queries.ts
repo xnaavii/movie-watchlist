@@ -1,5 +1,6 @@
 import type { TrendingTimeWindow } from "@lorenzopant/tmdb";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import type { MediaDiscoverRequest } from "./schemas";
 import {
 	discoverMedia,
 	getAuthShowcase,
@@ -15,9 +16,7 @@ import {
 	getMediaReviews,
 	getMediaVideos,
 	getMediaWatchProviders,
-	getStreamingSources,
 	getTrendingMedia,
-	type MediaDiscoverRequest,
 	searchMedia,
 } from "./server/media.functions";
 import type {
@@ -183,11 +182,6 @@ export const mediaQueries = {
 			queryKey: ["media", "authShowcase"],
 			queryFn: () => getAuthShowcase(),
 			staleTime: 1000 * 60 * 60,
-		}),
-	streamingSources: (imdbId: string) =>
-		queryOptions({
-			queryKey: ["media", "streamingSources", imdbId],
-			queryFn: () => getStreamingSources({ data: { imdbId } }),
 		}),
 };
 

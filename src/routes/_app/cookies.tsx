@@ -2,16 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE_CONFIG } from "#/config/site";
 import { LegalPage } from "#/features/legal/components/LegalPage";
 import { STORAGE_ITEMS } from "#/features/legal/storageItems";
-import { seo } from "#/utils/seo";
+import { pageHead, pageTitle } from "#/utils/seo";
 
 export const Route = createFileRoute("/_app/cookies")({
 	component: CookiesPage,
-	head: () => ({
-		meta: seo({
-			title: `Cookies and storage · ${SITE_CONFIG.name}`,
+	head: () =>
+		pageHead({
+			title: pageTitle("Cookies and storage"),
 			description: `Every cookie and piece of browser storage ${SITE_CONFIG.name} uses, and why.`,
+			path: "/cookies",
 		}),
-	}),
 });
 
 function CookiesPage() {
