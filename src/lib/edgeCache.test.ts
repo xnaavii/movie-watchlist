@@ -51,4 +51,38 @@ describe("edgeCached", () => {
 		await edgeCached("x", 60, load);
 		expect(load).toHaveBeenCalledTimes(2);
 	});
+	it("stores entries with the TTL as their max age", async () => {
+		await edgeCached("details:movie 1", 3600, async () => ({ id: 1 }));
+		const [[url, response]] = [...store.entries()];
+		expect(url).toContain(encodeURIComponent("details:movie 1"));
+		expect(response?.headers.get("Cache-Control")).toBe("public, max-age=3600");
+		expect(response?.headers.get("Content-Type")).toBe("application/json");
+	});
+
+	it("caches null, so a missing logo isn't looked up again", async () => {
+		const load = vi.fn(async () => null);
+		await edgeCached("logo", 60, load);
+		expect(await edgeCached("logo", 60, load)).toBeNull();
+		expect(load).toHaveBeenCalledOnce();
+	});
+
+	it("treats a broken entry as a miss", async () => {
+		store.set(
+			"https://edge-cache.watchlist.internal/bad",
+			new Response("{not json"),
+		);
+		expect(await edgeCached("bad", 60, async () => "fresh")).toBe("fresh");
+	});
+
+	it("still returns the value when the cache can't store it", async () => {
+		vi.stubGlobal("caches", {
+			default: {
+				match: async () => undefined,
+				put: async () => {
+					throw new Error("Quota exceeded");
+				},
+			},
+		});
+		expect(await edgeCached("x", 60, async () => 42)).toBe(42);
+	});
 });

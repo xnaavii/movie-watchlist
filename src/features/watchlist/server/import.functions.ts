@@ -15,7 +15,7 @@ export type ImportEntry = MediaRef & {
 	watchedAt: string | null;
 };
 
-function parseEntries(data: unknown): ImportEntry[] {
+export function parseEntries(data: unknown): ImportEntry[] {
 	if (!Array.isArray(data)) throw new Error("Expected a list of titles");
 	return data.slice(0, IMPORT_BATCH_SIZE).map((entry) => {
 		const { mediaType, id, status, addedAt, watchedAt } = entry ?? {};
