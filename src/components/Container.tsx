@@ -10,7 +10,7 @@ export function Container({ children, className }: ContainerProps) {
 	return (
 		<div
 			className={cn(
-				"flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8 bg-background",
+				"flex flex-col gap-8 md:gap-12 lg:gap-16 p-4 md:p-6 lg:p-8 short:gap-6 short:p-4 bg-background",
 				className,
 			)}
 		>

@@ -77,9 +77,6 @@ importers:
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.4(@neondatabase/serverless@1.2.0)(@opentelemetry/api@1.10.0)(@types/pg@8.23.1)(kysely@0.29.7)(pg@8.23.1)
-      embla-carousel-autoplay:
-        specifier: ^8.6.0
-        version: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-fade:
         specifier: ^8.6.0
         version: 8.6.0(embla-carousel@8.6.0)
@@ -3580,11 +3577,6 @@ packages:
 
   electron-to-chromium@1.5.464:
     resolution: {integrity: sha512-nRa65aFge40viPAKxMKULIY8tcXKwKboJWNn4RoKwyWXJ6SP7BnrDGKUTzc64818jIciH0PK7LSF8QzZes19GA==}
-
-  embla-carousel-autoplay@8.6.0:
-    resolution: {integrity: sha512-OBu5G3nwaSXkZCo1A6LTaFMZ8EpkYbwIaH+bPqdBnDGQ2fh4+NbzjXjs2SktoPNKCtflfVMc75njaDHOYXcrsA==}
-    peerDependencies:
-      embla-carousel: 8.6.0
 
   embla-carousel-fade@8.6.0:
     resolution: {integrity: sha512-qaYsx5mwCz72ZrjlsXgs1nKejSrW+UhkbOMwLgfRT7w2LtdEB03nPRI06GHuHv5ac2USvbEiX2/nAHctcDwvpg==}
@@ -8677,10 +8669,6 @@ snapshots:
   ee-first@1.1.1: {}
 
   electron-to-chromium@1.5.464: {}
-
-  embla-carousel-autoplay@8.6.0(embla-carousel@8.6.0):
-    dependencies:
-      embla-carousel: 8.6.0
 
   embla-carousel-fade@8.6.0(embla-carousel@8.6.0):
     dependencies:

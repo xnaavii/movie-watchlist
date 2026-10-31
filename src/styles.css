@@ -15,6 +15,9 @@
 @custom-variant standalone (@media (display-mode: standalone));
 @custom-variant browser (@media not (display-mode: standalone));
 
+/* A phone on its side: wide enough for the tablet layout, but short. */
+@custom-variant short (@media (orientation: landscape) and (max-height: 32rem));
+
 :root {
   /* Strict monochrome: black, greys and one off-white. Posters bring the
      colour; the UI doesn't compete. Only destructive keeps a hue, for safety.
