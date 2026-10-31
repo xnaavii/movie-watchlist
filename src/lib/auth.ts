@@ -48,6 +48,11 @@ export const auth = betterAuth({
 		},
 	},
 	socialProviders: { google },
+	user: {
+		// Profile → Delete account. Needs the password, or a sign-in from the
+		// last day for Google-only accounts. Rows cascade from the user.
+		deleteUser: { enabled: true },
+	},
 	session: {
 		// Keeps the session in a signed cookie for a few minutes, so most
 		// requests skip the session lookup in Postgres. Revoking a session

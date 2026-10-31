@@ -13,8 +13,11 @@ import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppProtectedRouteImport } from './routes/_app/_protected'
+import { Route as AppCookiesRouteImport } from './routes/_app/cookies'
 import { Route as AppDiscoverRouteRouteImport } from './routes/_app/discover/route'
+import { Route as AppPrivacyRouteImport } from './routes/_app/privacy'
 import { Route as AppSearchRouteImport } from './routes/_app/search'
+import { Route as AppTermsRouteImport } from './routes/_app/terms'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
@@ -49,14 +52,29 @@ const AppProtectedRoute = AppProtectedRouteImport.update({
   id: '/_protected',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppCookiesRoute = AppCookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppDiscoverRouteRoute = AppDiscoverRouteRouteImport.update({
   id: '/discover',
   path: '/discover',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppPrivacyRoute = AppPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppSearchRoute = AppSearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppTermsRoute = AppTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
@@ -140,7 +158,10 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/discover': typeof AppDiscoverRouteRouteWithChildren
+  '/cookies': typeof AppCookiesRoute
+  '/privacy': typeof AppPrivacyRoute
   '/search': typeof AppSearchRoute
+  '/terms': typeof AppTermsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -160,7 +181,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/cookies': typeof AppCookiesRoute
+  '/privacy': typeof AppPrivacyRoute
   '/search': typeof AppSearchRoute
+  '/terms': typeof AppTermsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -183,7 +207,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/discover': typeof AppDiscoverRouteRouteWithChildren
   '/_app/_protected': typeof AppProtectedRouteWithChildren
+  '/_app/cookies': typeof AppCookiesRoute
+  '/_app/privacy': typeof AppPrivacyRoute
   '/_app/search': typeof AppSearchRoute
+  '/_app/terms': typeof AppTermsRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
@@ -207,7 +234,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/discover'
+    | '/cookies'
+    | '/privacy'
     | '/search'
+    | '/terms'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -227,7 +257,10 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/cookies'
+    | '/privacy'
     | '/search'
+    | '/terms'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -249,7 +282,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_app/discover'
     | '/_app/_protected'
+    | '/_app/cookies'
+    | '/_app/privacy'
     | '/_app/search'
+    | '/_app/terms'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/reset-password'
@@ -304,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtectedRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/cookies': {
+      id: '/_app/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof AppCookiesRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/discover': {
       id: '/_app/discover'
       path: '/discover'
@@ -311,11 +354,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/privacy': {
+      id: '/_app/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof AppPrivacyRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/search': {
       id: '/_app/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof AppSearchRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/terms': {
+      id: '/_app/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof AppTermsRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/auth/forgot-password': {
@@ -462,7 +519,10 @@ const AppProtectedRouteWithChildren = AppProtectedRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppDiscoverRouteRoute: typeof AppDiscoverRouteRouteWithChildren
   AppProtectedRoute: typeof AppProtectedRouteWithChildren
+  AppCookiesRoute: typeof AppCookiesRoute
+  AppPrivacyRoute: typeof AppPrivacyRoute
   AppSearchRoute: typeof AppSearchRoute
+  AppTermsRoute: typeof AppTermsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMoviesMovieSlugRoute: typeof AppMoviesMovieSlugRoute
   AppTvTvSlugRoute: typeof AppTvTvSlugRoute
@@ -472,7 +532,10 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppDiscoverRouteRoute: AppDiscoverRouteRouteWithChildren,
   AppProtectedRoute: AppProtectedRouteWithChildren,
+  AppCookiesRoute: AppCookiesRoute,
+  AppPrivacyRoute: AppPrivacyRoute,
   AppSearchRoute: AppSearchRoute,
+  AppTermsRoute: AppTermsRoute,
   AppIndexRoute: AppIndexRoute,
   AppMoviesMovieSlugRoute: AppMoviesMovieSlugRoute,
   AppTvTvSlugRoute: AppTvTvSlugRoute,
@@ -509,12 +572,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
