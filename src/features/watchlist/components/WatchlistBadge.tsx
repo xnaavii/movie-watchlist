@@ -14,7 +14,9 @@ export function WatchlistBadge({ status, className }: WatchlistBadgeProps) {
 		<div
 			className={cn(
 				"gap-1 rounded-full bg-secondary p-2 flex items-center justify-center w-fit h-fit border",
-				status === "watched" ? "bg-primary" : "bg-secondary",
+				status === "watched"
+					? "bg-primary text-primary-foreground"
+					: "bg-secondary",
 				className,
 			)}
 			title={status === "watched" ? "Watched" : "In the Watchlist"}
