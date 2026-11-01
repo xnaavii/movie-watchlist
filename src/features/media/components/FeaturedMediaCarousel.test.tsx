@@ -208,17 +208,43 @@ describe("FeaturedMediaCarousel", () => {
 			).toContainElement(progress());
 		});
 
-		it("pauses while the mouse is over the hero, not on a tap", () => {
+		it("pauses while the mouse is over the middle slide, not on a tap", () => {
 			render(<FeaturedMediaCarousel items={items} />);
-			const hero = screen.getByRole("region");
-			fireEvent.pointerEnter(hero, { pointerType: "touch" });
+			const [middle] = screen.getAllByRole("group", { name: /of 3/ });
+			if (!middle) throw new Error("No middle slide");
+			fireEvent.pointerMove(middle, { pointerType: "touch" });
 			expect(progress()).toHaveAttribute("data-state", "playing");
 
-			fireEvent.pointerEnter(hero, { pointerType: "mouse" });
+			fireEvent.pointerMove(middle, { pointerType: "mouse" });
 			expect(progress()).toHaveAttribute("data-state", "paused");
 			expect(progress().style.animationPlayState).toBe("paused");
 
-			fireEvent.pointerLeave(hero, { pointerType: "mouse" });
+			fireEvent.pointerLeave(middle, { pointerType: "mouse" });
+			expect(progress()).toHaveAttribute("data-state", "playing");
+		});
+
+		it("keeps playing while the mouse is over a neighbour or the dots", () => {
+			render(<FeaturedMediaCarousel items={items} />);
+			const [, neighbour] = screen.getAllByRole("group", { name: /of 3/ });
+			if (!neighbour) throw new Error("No neighbour slide");
+			fireEvent.pointerMove(neighbour, { pointerType: "mouse" });
+			expect(progress()).toHaveAttribute("data-state", "playing");
+
+			fireEvent.pointerMove(screen.getByRole("button", { name: "Show Heat" }), {
+				pointerType: "mouse",
+			});
+			expect(progress()).toHaveAttribute("data-state", "playing");
+		});
+
+		it("lets the next middle slide play until the mouse moves on it", () => {
+			render(<FeaturedMediaCarousel items={items} />);
+			const [middle] = screen.getAllByRole("group", { name: /of 3/ });
+			if (!middle) throw new Error("No middle slide");
+			fireEvent.pointerMove(middle, { pointerType: "mouse" });
+			expect(progress()).toHaveAttribute("data-state", "paused");
+
+			embla.state.selected = 1;
+			act(() => embla.api.emit("select"));
 			expect(progress()).toHaveAttribute("data-state", "playing");
 		});
 

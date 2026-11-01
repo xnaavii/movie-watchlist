@@ -74,8 +74,9 @@ function slideOffsets(api: NonNullable<CarouselApi>) {
  * either side. Swipe, the arrows, the arrow keys or the dots move between them.
  *
  * It moves on by itself: the current dot fills up as the time runs out, and
- * the end of that fill is what brings in the next slide. Pointing at the hero,
- * keyboard focus inside it, a drag or a hidden tab pause the fill where it is.
+ * the end of that fill is what brings in the next slide. Pointing at the
+ * middle slide, keyboard focus inside the hero, a drag or a hidden tab pause
+ * the fill where it is.
  */
 export function FeaturedMediaCarousel({
 	items: allItems,
@@ -124,6 +125,8 @@ export function FeaturedMediaCarousel({
 				.slideNodes()
 				.some((slide) => active && slide.contains(active));
 			setSelected(api.selectedScrollSnap());
+			// The new middle slide counts as hovered once the mouse moves on it.
+			setHovered(false);
 		};
 		onSelect();
 		api.on("select", onSelect);
@@ -221,10 +224,6 @@ export function FeaturedMediaCarousel({
 				duration: reducedMotion ? 1 : 30,
 			}}
 			className="flex flex-col gap-4"
-			onPointerEnter={(event) => {
-				if (event.pointerType === "mouse") setHovered(true);
-			}}
-			onPointerLeave={() => setHovered(false)}
 			// Only keyboard focus holds the slide; a tap on a button shouldn't.
 			onFocus={(event) => {
 				if (event.target.matches(":focus-visible")) setFocused(true);
@@ -258,6 +257,13 @@ export function FeaturedMediaCarousel({
 									"relative basis-[76%] pl-0 sm:basis-[72%] lg:basis-[62%] xl:basis-[58%]",
 									!isSelected && "cursor-pointer",
 								)}
+								// Pointing at the middle slide holds it; the
+								// neighbours and the dots don't.
+								onPointerMove={(event) => {
+									if (isSelected && event.pointerType === "mouse")
+										setHovered(true);
+								}}
+								onPointerLeave={() => setHovered(false)}
 							>
 								<div
 									inert={!isSelected}
