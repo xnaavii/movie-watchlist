@@ -312,7 +312,13 @@ export function FeaturedMediaCarousel({
 												)}
 											</div>
 											<div className="flex max-w-xl min-w-0 flex-col gap-2 text-sm md:text-base">
-												<h2 className="line-clamp-2 text-2xl font-medium tracking-tighter text-balance md:text-4xl short:text-2xl">
+												{/* The logo already shows the title, so keep the heading for screen readers only. */}
+												<h2
+													className={cn(
+														"line-clamp-2 text-2xl font-medium tracking-tighter text-balance md:text-4xl short:text-2xl",
+														logos?.[key] && "sr-only",
+													)}
+												>
 													{media.title}
 												</h2>
 												<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground">
