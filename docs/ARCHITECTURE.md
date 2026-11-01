@@ -139,6 +139,10 @@ account on sign-in by `AuthStateSync`.
   reference (for example deduping infinite pages with `uniqueMedia`).
 - Components are named exports, one main component per file, named after the
   file.
+- Any grid of posters (and its skeleton) uses `MEDIA_GRID_CLASS` from
+  `features/media/components/MediaGrid.tsx`, or `<MediaGrid>` itself, so every
+  page shows the same number of columns. Adjust it with `cn()` only where the
+  cards differ (for example 2 columns on phones for cards with text below).
 
 ### Movies and TV shows
 

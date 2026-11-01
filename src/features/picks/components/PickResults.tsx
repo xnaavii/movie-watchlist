@@ -11,14 +11,16 @@ import {
 import { Skeleton } from "#/components/ui/skeleton";
 import { MediaCard } from "#/features/media/components/MediaCard";
 import { MediaCardSkeleton } from "#/features/media/components/MediaCardSkeleton";
+import { MEDIA_GRID_CLASS } from "#/features/media/components/MediaGrid";
 import { normalizeMovie } from "#/features/media/utils";
+import { cn } from "#/lib/utils";
 import { picksQueries } from "../queries";
 import { PICK_ERRORS, type PickRequest } from "../types";
 import { PickCard } from "./PickCard";
 
-// Same grid as the search results, so picks and titles line up.
-const GRID =
-	"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-2.5 gap-y-6";
+// The shared title grid, with 2 columns on phones and more room between rows
+// because each pick has its reason written under the poster.
+const GRID = cn(MEDIA_GRID_CLASS, "grid-cols-2 gap-y-6");
 
 type PickResultsProps = {
 	request: PickRequest;

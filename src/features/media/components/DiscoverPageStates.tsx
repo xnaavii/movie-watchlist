@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import { getErrorMessage } from "#/lib/utils";
+import { MEDIA_GRID_CLASS } from "./MediaGrid";
 
 const skeletonItems = Array.from({ length: 5 }, (_, i) => ({ id: i }));
 
@@ -14,7 +15,7 @@ export function DiscoverPagePending() {
 					<div key={item.id} className="h-9 w-24 bg-muted rounded-full" />
 				))}
 			</div>
-			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+			<div className={MEDIA_GRID_CLASS}>
 				{skeletonItems.map((item) => (
 					<div key={item.id} className="aspect-2/3 bg-muted rounded-lg" />
 				))}
@@ -51,7 +52,7 @@ export function MediaGridPagePending({
 			) : (
 				<div className="h-10 w-64 max-w-full rounded-full bg-muted" />
 			)}
-			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2.5">
+			<div className={MEDIA_GRID_CLASS}>
 				{gridItems.map((item) => (
 					<div key={item.id} className="aspect-2/3 bg-muted rounded-lg" />
 				))}
