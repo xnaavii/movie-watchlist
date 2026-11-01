@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { TitleAtmosBadge } from "#/features/sound/components/TitleAtmosBadge";
+import { cn } from "#/lib/utils";
+import { mediaQueries } from "../queries";
 import type { MediaDetails } from "../types";
 import { formatRuntime, formatSeasons } from "../utils/format";
 import { Genres } from "./Genres";
@@ -16,11 +19,20 @@ export function MediaDetailsView({ media }: { media: MediaDetails }) {
 				]
 			: [year, formatRuntime(media.runtime)];
 	const visibleMeta = meta.filter(Boolean);
+	// The logo above already shows the title, so the heading stays for screen
+	// readers only. Same query as MediaLogoView, so it's read from the cache.
+	const { data: images } = useQuery(mediaQueries.images(media));
+	const hasLogo = Boolean(images?.logos[0]);
 
 	return (
 		<div className="flex flex-col items-center md:items-start gap-5 text-sm md:text-base max-w-[65ch]">
 			<div className="flex flex-col items-center md:items-start gap-2">
-				<h1 className="font-medium tracking-tighter text-3xl md:text-4xl text-balance">
+				<h1
+					className={cn(
+						"font-medium tracking-tighter text-3xl md:text-4xl text-balance",
+						hasLogo && "sr-only",
+					)}
+				>
 					{media.title}
 				</h1>
 				<div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5">

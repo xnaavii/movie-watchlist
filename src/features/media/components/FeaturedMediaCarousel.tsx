@@ -18,7 +18,7 @@ import { useReducedMotion } from "#/hooks/useReducedMotion";
 import { cn } from "#/lib/utils";
 import type { MediaItem } from "../types";
 import { mediaKey } from "../utils";
-import { Genres } from "./Genres";
+import { Genres, uniqueGenres } from "./Genres";
 import { MediaLink } from "./MediaLink";
 import { MediaLogo } from "./MediaLogo";
 
@@ -241,8 +241,9 @@ export function FeaturedMediaCarousel({
 				<CarouselContent className="ml-0 py-1">
 					{items.map((media, index) => {
 						const key = mediaKey(media);
-						const mediaGenres = genres?.filter((genre) =>
-							media.genreIds?.includes(genre.id),
+						const mediaGenres = uniqueGenres(
+							genres?.filter((genre) => media.genreIds?.includes(genre.id)) ??
+								[],
 						);
 						const watchlistStatus = watchlistStatuses?.[key] ?? null;
 						const isSelected = index === selected;
@@ -320,7 +321,8 @@ export function FeaturedMediaCarousel({
 													)}
 												</div>
 												{media.overview && (
-													<p className="hidden text-muted-foreground line-clamp-2 sm:block short:hidden">
+													// One short, readable line: `sm:block` would undo the clamp.
+													<p className="hidden max-w-md text-sm text-foreground/80 sm:line-clamp-2 lg:line-clamp-1 short:hidden">
 														{media.overview}
 													</p>
 												)}
