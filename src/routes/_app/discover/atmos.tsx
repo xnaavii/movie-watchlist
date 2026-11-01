@@ -4,10 +4,12 @@ import { AudioLines } from "lucide-react";
 import { useState } from "react";
 import { BrandedTitle } from "#/components/BrandedTitle";
 import { Button } from "#/components/ui/button";
+import { MEDIA_GRID_CLASS } from "#/features/media/components/MediaGrid";
 import { PickPill } from "#/features/picks/components/PickPill";
 import { AtmosTitleCard } from "#/features/sound/components/AtmosTitleCard";
 import { soundQueries } from "#/features/sound/queries";
 import type { MediaType } from "#/features/sound/types";
+import { cn } from "#/lib/utils";
 import { pageHead, pageTitle } from "#/utils/seo";
 
 const FILTERS: { value: MediaType | "all"; label: string }[] = [
@@ -78,7 +80,7 @@ function AtmosPage() {
 					Nothing here yet. The list fills in as titles are added and rated.
 				</p>
 			) : (
-				<ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-8">
+				<ul className={cn(MEDIA_GRID_CLASS, "grid-cols-2 gap-y-8")}>
 					{visible.map((item) => (
 						<li key={`${item.mediaType}:${item.tmdbId}`}>
 							<AtmosTitleCard item={item} />
@@ -94,7 +96,7 @@ function AtmosPagePending() {
 	return (
 		<>
 			<AtmosHeader />
-			<ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+			<ul className={cn(MEDIA_GRID_CLASS, "grid-cols-2")}>
 				{Array.from({ length: 12 }, (_, i) => (
 					<li
 						// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton

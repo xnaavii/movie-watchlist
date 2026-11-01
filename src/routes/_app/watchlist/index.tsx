@@ -11,6 +11,7 @@ import {
 	MediaFilterBar,
 	type MediaFilterValues,
 } from "#/features/media/components/MediaFilterBar";
+import { MEDIA_GRID_CLASS } from "#/features/media/components/MediaGrid";
 import { mediaKey } from "#/features/media/utils";
 import {
 	hasActiveFilters,
@@ -122,7 +123,7 @@ function WatchlistPage() {
 					Nothing in your watchlist matches these filters.
 				</p>
 			)}
-			<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
+			<div className={MEDIA_GRID_CLASS}>
 				{items.map(({ media }) => (
 					<MediaCard
 						key={mediaKey(media)}

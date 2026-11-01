@@ -14,6 +14,7 @@ import {
 import { normalizeText } from "../utils/search";
 import { MediaCard } from "./MediaCard";
 import { MediaFilterBar, type MediaFilterValues } from "./MediaFilterBar";
+import { MEDIA_GRID_CLASS } from "./MediaGrid";
 import { MediaRow } from "./MediaRow";
 
 interface SearchResultsViewProps {
@@ -159,7 +160,7 @@ export function SearchResultsView({
 									)}
 								</div>
 							)}
-							<div className="grid grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
+							<div className={MEDIA_GRID_CLASS}>
 								{movies.map((item) => (
 									<MediaCard key={mediaKey(item)} media={item} />
 								))}
