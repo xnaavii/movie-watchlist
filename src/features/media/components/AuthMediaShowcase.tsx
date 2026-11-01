@@ -58,7 +58,7 @@ export function AuthMediaShowcase() {
 			}}
 		>
 			<img
-				src="/discover-desktop.png"
+				src="/discover-desktop.webp"
 				alt="Showcase of the app"
 				className="absolute inset-0 h-full w-full object-cover brightness-[0.2] grayscale"
 				loading="lazy"
