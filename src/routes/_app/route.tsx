@@ -19,8 +19,10 @@ function AppLayout() {
 
 	return (
 		// The page scrolls the document, not an inner box, so tapping the
-		// status bar on iOS scrolls to the top.
-		<div className="grid grid-cols-1 max-md:content-start md:grid-cols-[auto_minmax(0,1fr)] min-h-svh">
+		// status bar on iOS scrolls to the top. The shell is at least one
+		// screen tall and <main> fills it, so the footer sits at the bottom
+		// even when the page is short.
+		<div className="flex min-h-dvh flex-col md:grid md:grid-cols-[auto_minmax(0,1fr)]">
 			<SkipLink targetId="main-scrollable-area" />
 			<AuthStateSync />
 			<RouteProgress />
@@ -34,11 +36,15 @@ function AppLayout() {
 			<main
 				ref={mainRef}
 				// Leaves room for the tab bar and the notch in the installed app.
-				className="relative min-w-0 outline-none standalone:pt-[env(safe-area-inset-top)] md:pt-0 pb-(--tab-bar-space)"
+				className="relative flex min-w-0 flex-1 flex-col outline-none standalone:pt-[env(safe-area-inset-top)] md:pt-0 pb-(--tab-bar-space)"
 				id="main-scrollable-area"
 				tabIndex={-1}
 			>
-				<Outlet />
+				{/* Grows to push the footer down. A plain block, so pages lay out as
+				    they would directly inside <main>. */}
+				<div className="flex-1">
+					<Outlet />
+				</div>
 				<SiteFooter />
 			</main>
 		</div>
