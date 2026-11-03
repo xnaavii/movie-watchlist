@@ -117,8 +117,8 @@ export function fetchMediaDetails(data: MediaRef): Promise<MediaDetails> {
 			return normalizeTVDetails(show, externalIds?.imdb_id);
 		},
 		`Failed to get the ${label(data.mediaType)} details`,
-		// v3: movies include their wide release date and disc releases.
-		{ key: `getMediaDetails:v3:${JSON.stringify(data)}`, ttl: DAY },
+		// v4: disc releases are one row per region.
+		{ key: `getMediaDetails:v4:${JSON.stringify(data)}`, ttl: DAY },
 	);
 }
 
