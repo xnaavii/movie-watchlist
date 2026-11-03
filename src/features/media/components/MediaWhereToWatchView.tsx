@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { mediaQueries } from "../queries";
-import type { MediaRef } from "../types";
+import type { MediaDetails } from "../types";
+import { pickBestWayToWatch } from "../utils/bestWayToWatch";
+import { toBlurayComSearchUrl } from "../utils/blurayLinks";
+import { formatRegion } from "../utils/format";
 import { toTmdbImageUrl } from "../utils/tmdb";
 import { pickWhereToWatch } from "../utils/watchProviders";
+import { BestWayToWatchPicks } from "./BestWayToWatchPicks";
+import { DiscReleasesList } from "./DiscReleasesList";
 
 const KIND_LABELS = {
 	stream: "Stream",
@@ -13,11 +18,15 @@ const KIND_LABELS = {
 } as const;
 
 interface MediaWhereToWatchViewProps {
-	media: MediaRef;
+	media: Pick<MediaDetails, "mediaType" | "id" | "title" | "discReleases">;
 	/** Watching-at-home extras shown under the providers, like the Atmos prompt. */
 	children?: ReactNode;
 }
 
+/**
+ * "Best way to watch": the headline picks, every streaming, rent and buy
+ * option (JustWatch via TMDB), and disc releases (TMDB, movies only).
+ */
 export function MediaWhereToWatchView({
 	media,
 	children,
@@ -30,7 +39,7 @@ export function MediaWhereToWatchView({
 	if (isLoading) {
 		return (
 			<section className="flex flex-col gap-6">
-				<h2 className="text-2xl tracking-tighter">Where to Watch</h2>
+				<h2 className="text-2xl tracking-tighter">Best way to watch</h2>
 				<div className="flex gap-4">
 					{Array.from({ length: 4 }, (_, i) => (
 						<div
@@ -45,18 +54,33 @@ export function MediaWhereToWatchView({
 		);
 	}
 
-	if (!whereToWatch && !children) return null;
+	const discs = media.discReleases ?? null;
+	const picks = pickBestWayToWatch(whereToWatch ?? null, discs);
+	if (!whereToWatch && !discs && !children) return null;
+
+	const discLink = toBlurayComSearchUrl(media.title);
+	const today = new Date().toISOString().slice(0, 10);
 
 	return (
 		<section className="flex flex-col gap-6">
 			<div className="flex flex-col gap-1">
-				<h2 className="text-2xl tracking-tighter">Where to Watch</h2>
+				<h2 className="text-2xl tracking-tighter">Best way to watch</h2>
 				{whereToWatch && (
 					<p className="text-sm text-muted-foreground">
-						Availability in {whereToWatch.region}, powered by JustWatch
+						Streaming in {formatRegion(whereToWatch.region)}, powered by
+						JustWatch
 					</p>
 				)}
 			</div>
+
+			{picks && (
+				<BestWayToWatchPicks
+					picks={picks}
+					watchLink={whereToWatch?.link ?? null}
+					discLink={discLink}
+				/>
+			)}
+
 			{whereToWatch && (
 				<ul className="flex flex-wrap gap-4 md:gap-6">
 					{whereToWatch.options.map((option) => (
@@ -82,7 +106,16 @@ export function MediaWhereToWatchView({
 					))}
 				</ul>
 			)}
-			{children}
+
+			{discs && (
+				<DiscReleasesList discs={discs} discLink={discLink} today={today} />
+			)}
+			{children && (
+				<div className="flex flex-col gap-3 max-w-3xl">
+					<h3 className="text-sm font-medium text-muted-foreground">Sound</h3>
+					{children}
+				</div>
+			)}
 		</section>
 	);
 }

@@ -10,6 +10,7 @@ import type {
 	TVSeriesResultItem,
 } from "@lorenzopant/tmdb";
 import type { MediaDetails, MediaItem, MediaRef, MediaReview } from "../types";
+import { pickDiscReleases } from "./discReleases";
 import { resizeTmdbImage } from "./tmdb";
 
 type DiscoverFilters = {
@@ -196,6 +197,7 @@ export function normalizeMovieDetails(
 		revenue: movie.revenue,
 		...(movie.release_dates && {
 			wideReleaseDate: pickWideReleaseDate(movie.release_dates),
+			discReleases: pickDiscReleases(movie.release_dates.results),
 		}),
 	};
 }

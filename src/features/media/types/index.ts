@@ -6,6 +6,24 @@ export type MediaType = (typeof MEDIA_TYPES)[number];
 /** Points at one TMDB title. Movie and TV ids overlap, so both parts are needed. */
 export type MediaRef = { mediaType: MediaType; id: number };
 
+/** Disc formats TMDB release notes mention, best picture and sound first. */
+export type DiscFormat = "uhd" | "bluray" | "dvd";
+
+export type DiscRelease = {
+	/** ISO 3166-1 country code. */
+	region: string;
+	/** ISO date, YYYY-MM-DD. */
+	date: string;
+	/** Empty when TMDB doesn't say which formats. */
+	formats: DiscFormat[];
+};
+
+export type DiscReleases = {
+	releases: DiscRelease[];
+	/** Every format seen across the releases, best first. */
+	formats: DiscFormat[];
+};
+
 /** A movie or TV show as lists, rows and cards show it. */
 export type MediaItem = MediaRef & {
 	title: string;
@@ -37,6 +55,8 @@ export type MediaDetails = MediaItem & {
 	 * TMDB's release dates. null when it has only premiered or had a limited run.
 	 */
 	wideReleaseDate?: string | null;
+	/** Movies only: DVD, Blu-ray and 4K releases, from TMDB's release dates. */
+	discReleases?: DiscReleases | null;
 	/** Movie length, or a typical episode for TV shows, in minutes. */
 	runtime?: number;
 	budget?: number;
