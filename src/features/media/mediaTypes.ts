@@ -19,6 +19,8 @@ export interface MediaTypeConfig {
 	similarHeading: string;
 	/** The schema.org type for structured data. */
 	schemaType: "Movie" | "TVSeries";
+	/** Whether TMDB lists DVD and Blu-ray releases for this type. */
+	hasDiscReleases: boolean;
 	icon: LucideIcon;
 }
 
@@ -30,6 +32,7 @@ export const MEDIA_TYPE_CONFIG: Record<MediaType, MediaTypeConfig> = {
 		pluralNoun: "movies",
 		similarHeading: "Similar movie recommendations",
 		schemaType: "Movie",
+		hasDiscReleases: true,
 		icon: Clapperboard,
 	},
 	tv: {
@@ -39,6 +42,7 @@ export const MEDIA_TYPE_CONFIG: Record<MediaType, MediaTypeConfig> = {
 		pluralNoun: "TV shows",
 		similarHeading: "Shows you might also like",
 		schemaType: "TVSeries",
+		hasDiscReleases: false,
 		icon: Tv,
 	},
 };

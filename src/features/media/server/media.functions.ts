@@ -18,6 +18,7 @@ import {
 	fetchLanguages,
 	fetchMediaCredits,
 	fetchMediaDetails,
+	fetchMediaDiscReleases,
 	fetchMediaGenres,
 	fetchMediaImages,
 	fetchMediaList,
@@ -74,6 +75,10 @@ export const getMediaImages = createServerFn({ method: "GET" })
 export const getMediaWatchProviders = createServerFn({ method: "GET" })
 	.validator(mediaRefSchema)
 	.handler(({ data }) => fetchMediaWatchProviders(data));
+
+export const getMediaDiscReleases = createServerFn({ method: "GET" })
+	.validator(mediaRefSchema)
+	.handler(({ data }) => fetchMediaDiscReleases(data));
 
 export const getMediaGenres = createServerFn({ method: "GET" })
 	.validator(mediaTypeRequestSchema)

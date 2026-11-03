@@ -62,3 +62,9 @@ export const formatSeasons = (count: number | undefined): string | null => {
 	if (!count || count <= 0) return null;
 	return `${count} ${count === 1 ? "season" : "seasons"}`;
 };
+
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+/** "IE" becomes "Ireland". */
+export const formatRegion = (code: string): string =>
+	regionNames.of(code) ?? code;

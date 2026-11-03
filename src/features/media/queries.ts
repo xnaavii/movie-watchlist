@@ -9,6 +9,7 @@ import {
 	getLanguages,
 	getMediaCredits,
 	getMediaDetails,
+	getMediaDiscReleases,
 	getMediaGenres,
 	getMediaImages,
 	getMediaList,
@@ -97,6 +98,15 @@ export const mediaQueries = {
 					data: { mediaType: ref.mediaType, id: ref.id },
 				}),
 			staleTime: 1000 * 60 * 60 * 6,
+		}),
+	discReleases: (ref: MediaRef) =>
+		queryOptions({
+			queryKey: ["media", ref.mediaType, ref.id, "discReleases"],
+			queryFn: () =>
+				getMediaDiscReleases({
+					data: { mediaType: ref.mediaType, id: ref.id },
+				}),
+			staleTime: 1000 * 60 * 60 * 24,
 		}),
 	videos: (ref: MediaRef) =>
 		queryOptions({

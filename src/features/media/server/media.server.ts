@@ -48,6 +48,7 @@ import {
 	normalizeTVShow,
 	toLogoUrl,
 } from "../utils";
+import { type DiscReleases, pickDiscReleases } from "../utils/discReleases";
 import {
 	buildFallbackQueries,
 	isPersonMatch,
@@ -280,6 +281,23 @@ export function fetchMediaWatchProviders(
 			key: `getMediaWatchProviders:${JSON.stringify(data)}`,
 			ttl: 6 * HOUR,
 		},
+	);
+}
+
+/** DVD, Blu-ray and 4K releases (TMDB lists them for movies only). */
+export async function fetchMediaDiscReleases(
+	data: MediaRef,
+): Promise<DiscReleases | null> {
+	if (!MEDIA_TYPE_CONFIG[data.mediaType].hasDiscReleases) return null;
+	return fromTmdb(
+		async () => {
+			const { results } = await tmdb.movies.release_dates({
+				movie_id: data.id,
+			});
+			return pickDiscReleases(results);
+		},
+		`Failed to get the ${label(data.mediaType)} disc releases`,
+		{ key: `getMediaDiscReleases:${JSON.stringify(data)}`, ttl: DAY },
 	);
 }
 
