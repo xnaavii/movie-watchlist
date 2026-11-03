@@ -46,7 +46,7 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 						<MediaLogoView
 							media={media}
 							title={media.title}
-							imageClassName="w-auto h-auto max-w-[clamp(12rem,24vw,22rem)] max-h-[clamp(4.5rem,16vh,9rem)]"
+							imageClassName="w-[clamp(12rem,24vw,22rem)] max-h-[clamp(4.5rem,16vh,9rem)] md:object-left"
 							fallbackClassName={DETAILS_TITLE_CLASS}
 						/>
 						<MediaDetailsView media={media} />

@@ -6,6 +6,10 @@ interface MediaLogoProps {
 	title: string;
 	isLoading?: boolean;
 	className?: string;
+	/**
+	 * Keep a definite width here. TMDB's SVG logos often have no width or
+	 * height of their own, so with `w-auto` they shrink to nothing.
+	 */
 	imageClassName?: string;
 	/**
 	 * When set, the title shows as text in this style until the logo image
