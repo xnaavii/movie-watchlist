@@ -21,9 +21,13 @@ export function MediaLogo({
 		<div className={className} title={title}>
 			{logoSrc ? (
 				<div className="relative inline-block self-start">
+					{/* The glow is scaled to twice the logo's size, so on details
+					    pages it spills over the nav rail. pointer-events-none keeps
+					    it from swallowing clicks on whatever it covers. */}
 					<div
+						aria-hidden="true"
 						className={cn(
-							"absolute inset-0 blur-2xl rounded-full scale-200",
+							"pointer-events-none absolute inset-0 blur-2xl rounded-full scale-200",
 							overBackground ? "bg-background/20" : "bg-black/20",
 						)}
 					/>
