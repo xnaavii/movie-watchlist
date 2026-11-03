@@ -9,6 +9,10 @@ import { IMDBRatingView } from "./IMDBRatingView";
 import { MediaCreditsView } from "./MediaCreditsView";
 import { MediaOverview } from "./MediaOverview";
 
+/** The details page title, as heading text or in place of a missing logo. */
+export const DETAILS_TITLE_CLASS =
+	"font-medium tracking-tighter text-3xl md:text-4xl text-balance";
+
 export function MediaDetailsView({ media }: { media: MediaDetails }) {
 	const year = media.releaseDate?.slice(0, 4);
 	const meta =
@@ -19,20 +23,16 @@ export function MediaDetailsView({ media }: { media: MediaDetails }) {
 				]
 			: [year, formatRuntime(media.runtime)];
 	const visibleMeta = meta.filter(Boolean);
-	// The logo above already shows the title, so the heading stays for screen
-	// readers only. Same query as MediaLogoView, so it's read from the cache.
-	const { data: images } = useQuery(mediaQueries.images(media));
-	const hasLogo = Boolean(images?.logos[0]);
+	// The logo slot above shows the title (as the logo, or as text while it
+	// loads), so the heading stays for screen readers only. Same query as
+	// MediaLogoView, so it's read from the cache.
+	const { data: images, isLoading } = useQuery(mediaQueries.images(media));
+	const hasLogo = isLoading || Boolean(images?.logos[0]);
 
 	return (
 		<div className="flex flex-col items-center md:items-start gap-5 text-sm md:text-base max-w-[65ch]">
 			<div className="flex flex-col items-center md:items-start gap-2">
-				<h1
-					className={cn(
-						"font-medium tracking-tighter text-3xl md:text-4xl text-balance",
-						hasLogo && "sr-only",
-					)}
-				>
+				<h1 className={cn(DETAILS_TITLE_CLASS, hasLogo && "sr-only")}>
 					{media.title}
 				</h1>
 				<div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5">
