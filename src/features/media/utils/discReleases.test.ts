@@ -46,25 +46,33 @@ describe("pickDiscReleases", () => {
 			release_dates: [
 				release(5, "2024-07-01", "DVD"),
 				release(5, "2024-06-10"),
+				release(5, "2024-06-10", "Blu-ray"),
 				release(4, "2024-04-16"),
 			],
 		},
+		{ iso_3166_1: "GB", release_dates: [release(5, "2024-06-01")] },
 		{ iso_3166_1: "FR", release_dates: [release(5, "2024-01-01", "DVD")] },
 	];
 
-	it("keeps physical releases in the shown regions, in region then date order", () => {
+	it("merges each region into one row and drops regions with no known format", () => {
 		expect(pickDiscReleases(results)).toEqual({
 			releases: [
-				{ region: "IE", date: "2024-06-10", formats: [] },
-				{ region: "IE", date: "2024-07-01", formats: ["dvd"] },
+				{ region: "IE", date: "2024-06-10", formats: ["bluray", "dvd"] },
 				{ region: "US", date: "2024-05-14", formats: ["uhd"] },
 			],
-			formats: ["uhd", "dvd"],
+			formats: ["uhd", "bluray", "dvd"],
+		});
+	});
+
+	it("keeps unknown-format rows when no region names a format", () => {
+		expect(pickDiscReleases(results, ["GB"])).toEqual({
+			releases: [{ region: "GB", date: "2024-06-01", formats: [] }],
+			formats: [],
 		});
 	});
 
 	it("returns null without physical releases", () => {
 		expect(pickDiscReleases([])).toBeNull();
-		expect(pickDiscReleases(results, ["GB"])).toBeNull();
+		expect(pickDiscReleases(results, ["DE"])).toBeNull();
 	});
 });

@@ -39,24 +39,40 @@ export function parseDiscFormats(note: string): DiscFormat[] {
 	return DISC_FORMAT_ORDER.filter((format) => formats.has(format));
 }
 
-/** Collects the disc releases in the regions we show, in region order. */
+/**
+ * One row per region we show, in region order: the first disc date and every
+ * format TMDB's notes mention there. TMDB often adds a release twice, once
+ * with a note and once without, so regions with no known format are dropped
+ * when another region names one.
+ */
 export function pickDiscReleases(
 	results: MovieReleaseDateResult[],
 	regions: readonly string[] = WATCH_REGIONS,
 ): DiscReleases | null {
-	const releases = regions.flatMap((region) =>
-		(
+	const byRegion = regions.flatMap((region) => {
+		const discs = (
 			results.find((result) => result.iso_3166_1 === region)?.release_dates ??
 			[]
-		)
-			.filter((release) => release.type === PHYSICAL_RELEASE)
-			.map((release) => ({
+		).filter((release) => release.type === PHYSICAL_RELEASE);
+		if (discs.length === 0) return [];
+
+		const formats = new Set(
+			discs.flatMap((release) => parseDiscFormats(release.note ?? "")),
+		);
+		const date = discs
+			.map((release) => release.release_date.slice(0, 10))
+			.sort()[0];
+		return [
+			{
 				region,
-				date: release.release_date.slice(0, 10),
-				formats: parseDiscFormats(release.note ?? ""),
-			}))
-			.sort((a, b) => a.date.localeCompare(b.date)),
-	);
+				date,
+				formats: DISC_FORMAT_ORDER.filter((format) => formats.has(format)),
+			},
+		];
+	});
+
+	const known = byRegion.filter((release) => release.formats.length > 0);
+	const releases = known.length > 0 ? known : byRegion;
 	if (releases.length === 0) return null;
 
 	const seen = new Set(releases.flatMap((release) => release.formats));
