@@ -59,11 +59,13 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 			</section>
 
 			<Container className="gap-12 md:gap-16 lg:gap-20 pb-16 md:pb-20 lg:pb-24">
-				<MediaWhereToWatchView media={media} />
+				<MediaWhereToWatchView media={media}>
+					{/* Sound feedback only makes sense once people can watch it. */}
+					{isReleased(media) && (
+						<AtmosFeedback tmdbId={media.id} mediaType={media.mediaType} />
+					)}
+				</MediaWhereToWatchView>
 				{media.mediaType === "tv" && <TVSeasons show={media} />}
-				{isReleased(media) && (
-					<AtmosFeedback tmdbId={media.id} mediaType={media.mediaType} />
-				)}
 				{/* Sections below the fold fetch only once they scroll into view. */}
 				<LazySection fallback={<MediaTrailerSkeleton />}>
 					<MediaTrailerView media={media} title={media.title} />

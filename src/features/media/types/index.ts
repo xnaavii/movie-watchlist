@@ -32,6 +32,11 @@ export type MediaDetails = MediaItem & {
 	tagline?: string;
 	imdbId?: string;
 	status?: string;
+	/**
+	 * Movies only: when it first opened in cinemas or came out at home, from
+	 * TMDB's release dates. null when it has only premiered or had a limited run.
+	 */
+	wideReleaseDate?: string | null;
 	/** Movie length, or a typical episode for TV shows, in minutes. */
 	runtime?: number;
 	budget?: number;

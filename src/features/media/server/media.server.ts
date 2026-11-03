@@ -102,7 +102,10 @@ export function fetchMediaDetails(data: MediaRef): Promise<MediaDetails> {
 	return fromTmdb(
 		async () => {
 			if (data.mediaType === "movie") {
-				const movie = await tmdb.movies.details({ movie_id: data.id });
+				const movie = await tmdb.movies.details({
+					movie_id: data.id,
+					append_to_response: ["release_dates"],
+				});
 				return normalizeMovieDetails(movie);
 			}
 			const [show, externalIds] = await Promise.all([
@@ -114,7 +117,8 @@ export function fetchMediaDetails(data: MediaRef): Promise<MediaDetails> {
 			return normalizeTVDetails(show, externalIds?.imdb_id);
 		},
 		`Failed to get the ${label(data.mediaType)} details`,
-		{ key: `getMediaDetails:${JSON.stringify(data)}`, ttl: DAY },
+		// v2: movies include their wide release date.
+		{ key: `getMediaDetails:v2:${JSON.stringify(data)}`, ttl: DAY },
 	);
 }
 

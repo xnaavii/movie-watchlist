@@ -3,6 +3,7 @@ import type {
 	LanguageISO6391,
 	MovieDetails,
 	MovieImages,
+	MovieReleaseDates,
 	MovieResultItem,
 	Review,
 	TVSeriesDetails,
@@ -47,18 +48,60 @@ export function formatReleaseYear(
 	return releaseDate.slice(0, 4);
 }
 
+/** TMDB release types that make a movie watchable for everyone. */
+const WIDE_RELEASE_TYPES = new Set([
+	3, // Theatrical
+	4, // Digital
+	5, // Physical
+	6, // TV
+]);
+
 /**
- * Whether a title is out yet: a movie that has premiered or a show whose first
- * episode has aired. Without a date, only a movie TMDB marks as released counts.
+ * The first date a movie opened in cinemas or came out at home anywhere
+ * (YYYY-MM-DD). Festival premieres and limited runs don't count, so a movie
+ * that has only premiered gets null.
+ */
+export function pickWideReleaseDate(
+	releaseDates: MovieReleaseDates,
+): string | null {
+	const dates = releaseDates.results
+		.flatMap((country) => country.release_dates)
+		.filter((release) => WIDE_RELEASE_TYPES.has(release.type))
+		.map((release) => release.release_date.slice(0, 10))
+		.sort();
+	return dates[0] ?? null;
+}
+
+/**
+ * Whether a title is out yet: a movie that has opened in cinemas or come out
+ * at home, or a show whose first episode has aired. Movies use their wide
+ * release date when TMDB has one, since their main release date is often a
+ * festival premiere. Without any date, only a movie TMDB marks as released
+ * counts.
  */
 export function isReleased(
-	media: Pick<MediaDetails, "mediaType" | "releaseDate" | "status">,
+	media: Pick<
+		MediaDetails,
+		"mediaType" | "releaseDate" | "wideReleaseDate" | "status"
+	>,
 	today: Date = new Date(),
 ): boolean {
-	if (media.releaseDate) {
-		return media.releaseDate <= today.toISOString().slice(0, 10);
+	const todayIso = today.toISOString().slice(0, 10);
+	switch (media.mediaType) {
+		case "movie":
+			if (media.wideReleaseDate !== undefined) {
+				return (
+					media.wideReleaseDate !== null && media.wideReleaseDate <= todayIso
+				);
+			}
+			if (media.releaseDate) return media.releaseDate <= todayIso;
+			return media.status === "Released";
+		case "tv":
+			return Boolean(media.releaseDate && media.releaseDate <= todayIso);
+		default:
+			media.mediaType satisfies never;
+			return false;
 	}
-	return media.mediaType === "movie" && media.status === "Released";
 }
 
 /** "movie:550", a key that stays unique across movies and TV shows. */
@@ -127,7 +170,9 @@ export function normalizeTVShow(show: TVSeriesResultItem): MediaItem {
 	};
 }
 
-export function normalizeMovieDetails(movie: MovieDetails): MediaDetails {
+export function normalizeMovieDetails(
+	movie: MovieDetails & { release_dates?: MovieReleaseDates },
+): MediaDetails {
 	return {
 		id: movie.id,
 		mediaType: "movie",
@@ -149,6 +194,9 @@ export function normalizeMovieDetails(movie: MovieDetails): MediaDetails {
 		runtime: movie.runtime,
 		budget: movie.budget,
 		revenue: movie.revenue,
+		...(movie.release_dates && {
+			wideReleaseDate: pickWideReleaseDate(movie.release_dates),
+		}),
 	};
 }
 
