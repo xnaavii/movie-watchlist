@@ -5,6 +5,7 @@ import type { MediaDetails } from "../types";
 import { pickBestWayToWatch } from "../utils/bestWayToWatch";
 import { toBlurayComSearchUrl } from "../utils/blurayLinks";
 import { formatRegion } from "../utils/format";
+import { toJustWatchSearchUrl, toProviderUrl } from "../utils/providerLinks";
 import { toTmdbImageUrl } from "../utils/tmdb";
 import { pickWhereToWatch } from "../utils/watchProviders";
 import { BestWayToWatchPicks } from "./BestWayToWatchPicks";
@@ -31,7 +32,11 @@ export function MediaWhereToWatchView({
 	media,
 	children,
 }: MediaWhereToWatchViewProps) {
-	const { data: whereToWatch, isLoading } = useQuery({
+	const {
+		data: whereToWatch,
+		isLoading,
+		isError,
+	} = useQuery({
 		...mediaQueries.watchProviders(media),
 		select: (data) => pickWhereToWatch(data.results),
 	});
@@ -56,7 +61,6 @@ export function MediaWhereToWatchView({
 
 	const discs = media.discReleases ?? null;
 	const picks = pickBestWayToWatch(whereToWatch ?? null, discs);
-	if (!whereToWatch && !discs && !children) return null;
 
 	const discLink = toBlurayComSearchUrl(media.title);
 	const today = new Date().toISOString().slice(0, 10);
@@ -65,18 +69,43 @@ export function MediaWhereToWatchView({
 		<section className="flex flex-col gap-6">
 			<div className="flex flex-col gap-1">
 				<h2 className="text-2xl tracking-tighter">Best way to watch</h2>
-				{whereToWatch && (
-					<p className="text-sm text-muted-foreground">
-						Streaming in {formatRegion(whereToWatch.region)}, powered by
-						JustWatch
-					</p>
-				)}
+				<p className="text-sm text-muted-foreground">
+					{isError ? (
+						"Couldn't load streaming options right now."
+					) : whereToWatch ? (
+						<>
+							Streaming in {formatRegion(whereToWatch.region)}, powered by
+							JustWatch
+						</>
+					) : (
+						<>
+							Not streaming, for rent or for sale in Ireland, the UK or the US
+							right now.{" "}
+							<a
+								href={toJustWatchSearchUrl(media.title, "IE")}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="underline underline-offset-4 hover:text-foreground"
+							>
+								Check JustWatch
+							</a>
+						</>
+					)}
+				</p>
 			</div>
 
 			{picks && (
 				<BestWayToWatchPicks
 					picks={picks}
-					watchLink={whereToWatch?.link ?? null}
+					watchLink={
+						picks.easiest && whereToWatch
+							? toProviderUrl(
+									picks.easiest.provider_id,
+									media.title,
+									whereToWatch.region,
+								)
+							: null
+					}
 					discLink={discLink}
 				/>
 			)}
@@ -86,7 +115,11 @@ export function MediaWhereToWatchView({
 					{whereToWatch.options.map((option) => (
 						<li key={option.provider_id}>
 							<a
-								href={whereToWatch.link}
+								href={toProviderUrl(
+									option.provider_id,
+									media.title,
+									whereToWatch.region,
+								)}
 								target="_blank"
 								rel="noopener noreferrer"
 								title={`${KIND_LABELS[option.kind]} on ${option.provider_name}`}
