@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickWhereToWatch } from "./watchProviders";
+import { pickWhereToWatch, watchRegionsFor } from "./watchProviders";
 
 const provider = (id: number, name: string, priority = id) => ({
 	provider_id: id,
@@ -37,5 +37,13 @@ describe("pickWhereToWatch", () => {
 			["Apple", "rent"],
 			["Amazon", "buy"],
 		]);
+	});
+});
+
+describe("watchRegionsFor", () => {
+	it("puts the visitor's country first without duplicates", () => {
+		expect(watchRegionsFor("DE")).toEqual(["DE", "IE", "GB", "US"]);
+		expect(watchRegionsFor("GB")).toEqual(["GB", "IE", "US"]);
+		expect(watchRegionsFor(null)).toEqual(["IE", "GB", "US"]);
 	});
 });
