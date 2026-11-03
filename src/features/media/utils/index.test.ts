@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildDiscoverParams, isReleased, normalizeReview } from ".";
+import {
+	buildDiscoverParams,
+	isReleased,
+	normalizeReview,
+	pickWideReleaseDate,
+} from ".";
 import { formatReviewDate, stripMarkdown } from "./format";
 
 describe("buildDiscoverParams", () => {
@@ -94,6 +99,23 @@ describe("isReleased", () => {
 		).toBe(false);
 	});
 
+	it("waits for a movie's wide release, not its festival premiere", () => {
+		const premiered = {
+			mediaType: "movie" as const,
+			releaseDate: "2026-09-02",
+			status: "Released",
+		};
+		expect(
+			isReleased({ ...premiered, wideReleaseDate: "2026-12-18" }, today),
+		).toBe(false);
+		expect(isReleased({ ...premiered, wideReleaseDate: null }, today)).toBe(
+			false,
+		);
+		expect(
+			isReleased({ ...premiered, wideReleaseDate: "2026-10-01" }, today),
+		).toBe(true);
+	});
+
 	it("falls back to the TMDB status when there is no date", () => {
 		expect(isReleased({ mediaType: "movie", status: "Released" }, today)).toBe(
 			true,
@@ -107,5 +129,52 @@ describe("isReleased", () => {
 				today,
 			),
 		).toBe(false);
+	});
+});
+
+describe("pickWideReleaseDate", () => {
+	const release = (type: number, release_date: string) => ({
+		type,
+		release_date,
+		certification: "",
+		iso_639_1: "",
+		note: "",
+		descriptors: [],
+	});
+
+	it("picks the earliest cinema or home release in any country", () => {
+		expect(
+			pickWideReleaseDate({
+				results: [
+					{
+						iso_3166_1: "US",
+						release_dates: [
+							release(1, "2026-09-02T00:00:00.000Z"),
+							release(3, "2026-11-21T00:00:00.000Z"),
+						],
+					},
+					{
+						iso_3166_1: "IE",
+						release_dates: [release(3, "2026-11-14T00:00:00.000Z")],
+					},
+				],
+			}),
+		).toBe("2026-11-14");
+	});
+
+	it("ignores premieres and limited runs", () => {
+		expect(
+			pickWideReleaseDate({
+				results: [
+					{
+						iso_3166_1: "IT",
+						release_dates: [
+							release(1, "2026-09-02T00:00:00.000Z"),
+							release(2, "2026-09-20T00:00:00.000Z"),
+						],
+					},
+				],
+			}),
+		).toBeNull();
 	});
 });

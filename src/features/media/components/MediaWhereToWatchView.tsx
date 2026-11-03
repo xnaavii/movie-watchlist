@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { mediaQueries } from "../queries";
 import type { MediaRef } from "../types";
 import { toTmdbImageUrl } from "../utils/tmdb";
@@ -13,9 +14,14 @@ const KIND_LABELS = {
 
 interface MediaWhereToWatchViewProps {
 	media: MediaRef;
+	/** Watching-at-home extras shown under the providers, like the Atmos prompt. */
+	children?: ReactNode;
 }
 
-export function MediaWhereToWatchView({ media }: MediaWhereToWatchViewProps) {
+export function MediaWhereToWatchView({
+	media,
+	children,
+}: MediaWhereToWatchViewProps) {
 	const { data: whereToWatch, isLoading } = useQuery({
 		...mediaQueries.watchProviders(media),
 		select: (data) => pickWhereToWatch(data.results),
@@ -34,43 +40,49 @@ export function MediaWhereToWatchView({ media }: MediaWhereToWatchViewProps) {
 						/>
 					))}
 				</div>
+				{children}
 			</section>
 		);
 	}
 
-	if (!whereToWatch) return null;
+	if (!whereToWatch && !children) return null;
 
 	return (
 		<section className="flex flex-col gap-6">
 			<div className="flex flex-col gap-1">
 				<h2 className="text-2xl tracking-tighter">Where to Watch</h2>
-				<p className="text-sm text-muted-foreground">
-					Availability in {whereToWatch.region}, powered by JustWatch
-				</p>
+				{whereToWatch && (
+					<p className="text-sm text-muted-foreground">
+						Availability in {whereToWatch.region}, powered by JustWatch
+					</p>
+				)}
 			</div>
-			<ul className="flex flex-wrap gap-4 md:gap-6">
-				{whereToWatch.options.map((option) => (
-					<li key={option.provider_id}>
-						<a
-							href={whereToWatch.link}
-							target="_blank"
-							rel="noopener noreferrer"
-							title={`${KIND_LABELS[option.kind]} on ${option.provider_name}`}
-							className="group flex flex-col items-center gap-2 w-16 md:w-20 text-center"
-						>
-							<img
-								src={toTmdbImageUrl(option.logo_path, "w154")}
-								alt={option.provider_name}
-								className="size-14 md:size-16 rounded-full object-cover ring-2 ring-muted transition-all duration-200 group-hover:ring-foreground"
-								loading="lazy"
-							/>
-							<span className="text-xs text-muted-foreground">
-								{KIND_LABELS[option.kind]}
-							</span>
-						</a>
-					</li>
-				))}
-			</ul>
+			{whereToWatch && (
+				<ul className="flex flex-wrap gap-4 md:gap-6">
+					{whereToWatch.options.map((option) => (
+						<li key={option.provider_id}>
+							<a
+								href={whereToWatch.link}
+								target="_blank"
+								rel="noopener noreferrer"
+								title={`${KIND_LABELS[option.kind]} on ${option.provider_name}`}
+								className="group flex flex-col items-center gap-2 w-16 md:w-20 text-center"
+							>
+								<img
+									src={toTmdbImageUrl(option.logo_path, "w154")}
+									alt={option.provider_name}
+									className="size-14 md:size-16 rounded-full object-cover ring-2 ring-muted transition-all duration-200 group-hover:ring-foreground"
+									loading="lazy"
+								/>
+								<span className="text-xs text-muted-foreground">
+									{KIND_LABELS[option.kind]}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
+			{children}
 		</section>
 	);
 }
