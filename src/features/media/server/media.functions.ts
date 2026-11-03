@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import {
 	imdbIdRequestSchema,
 	mediaDiscoverRequestSchema,
@@ -74,6 +75,16 @@ export const getMediaImages = createServerFn({ method: "GET" })
 export const getMediaWatchProviders = createServerFn({ method: "GET" })
 	.validator(mediaRefSchema)
 	.handler(({ data }) => fetchMediaWatchProviders(data));
+
+/** The visitor's country from Cloudflare (ISO 3166-1), or null when unknown. */
+export const getVisitorRegion = createServerFn({ method: "GET" }).handler(
+	() => {
+		const country = getRequestHeader("cf-ipcountry")?.toUpperCase();
+		return country && /^[A-Z]{2}$/.test(country) && country !== "XX"
+			? country
+			: null;
+	},
+);
 
 export const getMediaGenres = createServerFn({ method: "GET" })
 	.validator(mediaTypeRequestSchema)

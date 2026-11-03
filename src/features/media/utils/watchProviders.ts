@@ -2,6 +2,13 @@ import type { WatchProvider, WatchProviderItem } from "@lorenzopant/tmdb";
 
 export const WATCH_REGIONS = ["IE", "GB", "US"] as const;
 
+/** The visitor's own country first, then our default regions. */
+export function watchRegionsFor(visitorRegion: string | null): string[] {
+	return [
+		...new Set([visitorRegion, ...WATCH_REGIONS].filter((r) => r !== null)),
+	];
+}
+
 export type WatchOption = WatchProviderItem & {
 	kind: "stream" | "free" | "rent" | "buy";
 };

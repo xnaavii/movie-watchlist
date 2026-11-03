@@ -18,6 +18,7 @@ import {
 	getMediaVideos,
 	getMediaWatchProviders,
 	getTrendingMedia,
+	getVisitorRegion,
 	searchMedia,
 } from "./server/media.functions";
 import type {
@@ -88,6 +89,12 @@ export const mediaQueries = {
 						include_image_language: ["null"],
 					},
 				}),
+		}),
+	visitorRegion: () =>
+		queryOptions({
+			queryKey: ["media", "visitorRegion"],
+			queryFn: () => getVisitorRegion(),
+			staleTime: Number.POSITIVE_INFINITY,
 		}),
 	watchProviders: (ref: MediaRef) =>
 		queryOptions({

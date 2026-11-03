@@ -7,7 +7,7 @@ import { toBlurayComSearchUrl } from "../utils/blurayLinks";
 import { formatRegion } from "../utils/format";
 import { toJustWatchSearchUrl, toProviderUrl } from "../utils/providerLinks";
 import { toTmdbImageUrl } from "../utils/tmdb";
-import { pickWhereToWatch } from "../utils/watchProviders";
+import { pickWhereToWatch, watchRegionsFor } from "../utils/watchProviders";
 import { BestWayToWatchPicks } from "./BestWayToWatchPicks";
 import { DiscReleasesList } from "./DiscReleasesList";
 
@@ -17,6 +17,8 @@ const KIND_LABELS = {
 	rent: "Rent",
 	buy: "Buy",
 } as const;
+
+const listFormat = new Intl.ListFormat("en", { type: "disjunction" });
 
 interface MediaWhereToWatchViewProps {
 	media: Pick<MediaDetails, "mediaType" | "id" | "title" | "discReleases">;
@@ -32,14 +34,19 @@ export function MediaWhereToWatchView({
 	media,
 	children,
 }: MediaWhereToWatchViewProps) {
+	const { data: visitorRegion, isLoading: isLoadingRegion } = useQuery(
+		mediaQueries.visitorRegion(),
+	);
+	const regions = watchRegionsFor(visitorRegion ?? null);
 	const {
 		data: whereToWatch,
-		isLoading,
+		isLoading: isLoadingProviders,
 		isError,
 	} = useQuery({
 		...mediaQueries.watchProviders(media),
-		select: (data) => pickWhereToWatch(data.results),
+		select: (data) => pickWhereToWatch(data.results, regions),
 	});
+	const isLoading = isLoadingRegion || isLoadingProviders;
 
 	if (isLoading) {
 		return (
@@ -79,10 +86,10 @@ export function MediaWhereToWatchView({
 						</>
 					) : (
 						<>
-							Not streaming, for rent or for sale in Ireland, the UK or the US
-							right now.{" "}
+							Not streaming, for rent or for sale in{" "}
+							{listFormat.format(regions.map(formatRegion))} right now.{" "}
 							<a
-								href={toJustWatchSearchUrl(media.title, "IE")}
+								href={toJustWatchSearchUrl(media.title, regions[0])}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="underline underline-offset-4 hover:text-foreground"
@@ -99,11 +106,7 @@ export function MediaWhereToWatchView({
 					picks={picks}
 					watchLink={
 						picks.easiest && whereToWatch
-							? toProviderUrl(
-									picks.easiest.provider_id,
-									media.title,
-									whereToWatch.region,
-								)
+							? toProviderUrl(picks.easiest, media.title, whereToWatch.region)
 							: null
 					}
 					discLink={discLink}
@@ -115,11 +118,7 @@ export function MediaWhereToWatchView({
 					{whereToWatch.options.map((option) => (
 						<li key={option.provider_id}>
 							<a
-								href={toProviderUrl(
-									option.provider_id,
-									media.title,
-									whereToWatch.region,
-								)}
+								href={toProviderUrl(option, media.title, whereToWatch.region)}
 								target="_blank"
 								rel="noopener noreferrer"
 								title={`${KIND_LABELS[option.kind]} on ${option.provider_name}`}
