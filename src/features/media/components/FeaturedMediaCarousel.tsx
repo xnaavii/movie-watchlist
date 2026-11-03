@@ -306,6 +306,7 @@ export function FeaturedMediaCarousel({
 													logoSrc={logos?.[key]}
 													title={media.title}
 													imageClassName="w-[clamp(8rem,14vw,20rem)] max-h-20 md:max-h-28 object-left short:max-h-12"
+													fallbackClassName="line-clamp-2 max-w-md text-2xl font-medium tracking-tighter text-balance md:text-4xl short:text-2xl"
 												/>
 												{watchlistStatus && (
 													<WatchlistBadge status={watchlistStatus} />

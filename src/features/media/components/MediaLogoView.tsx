@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Skeleton } from "#/components/ui/skeleton";
 import { mediaQueries } from "../queries";
 import type { MediaRef } from "../types";
 import { MediaLogo } from "./MediaLogo";
@@ -9,6 +8,8 @@ interface MediaLogoViewProps {
 	title: string;
 	className?: string;
 	imageClassName?: string;
+	/** Text style for the title shown until the logo loads, or if it fails. */
+	fallbackClassName: string;
 }
 
 export function MediaLogoView({
@@ -16,11 +17,17 @@ export function MediaLogoView({
 	title,
 	className,
 	imageClassName,
+	fallbackClassName,
 }: MediaLogoViewProps) {
 	const { data: images, isLoading } = useQuery(mediaQueries.images(media));
 
+	// Most titles have a logo, so the title holds its spot while we find out.
 	if (isLoading) {
-		return <Skeleton className="h-20 w-64 rounded-xl" />;
+		return (
+			<p aria-hidden="true" className={fallbackClassName}>
+				{title}
+			</p>
+		);
 	}
 
 	const logoSrc =
@@ -36,6 +43,7 @@ export function MediaLogoView({
 			title={title}
 			className={className}
 			imageClassName={imageClassName}
+			fallbackClassName={fallbackClassName}
 			overBackground
 		/>
 	);

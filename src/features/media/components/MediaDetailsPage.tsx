@@ -13,7 +13,7 @@ import { isReleased } from "../utils";
 import { JustWatchButton } from "./JustWatchButton";
 import { MediaBackdropImageView } from "./MediaBackdropImageView";
 import { MediaCastView } from "./MediaCastView";
-import { MediaDetailsView } from "./MediaDetailsView";
+import { DETAILS_TITLE_CLASS, MediaDetailsView } from "./MediaDetailsView";
 import { MediaFacts } from "./MediaFacts";
 import { MediaGalleryView } from "./MediaGalleryView";
 import { MediaLogoView } from "./MediaLogoView";
@@ -47,6 +47,7 @@ export function MediaDetailsPage({ media: ref }: { media: MediaRef }) {
 							media={media}
 							title={media.title}
 							imageClassName="w-auto h-auto max-w-[clamp(12rem,24vw,22rem)] max-h-[clamp(4.5rem,16vh,9rem)]"
+							fallbackClassName={DETAILS_TITLE_CLASS}
 						/>
 						<MediaDetailsView media={media} />
 						<div className="flex flex-wrap justify-center md:justify-start gap-2">
