@@ -19,6 +19,6 @@
     }
   ],
   "vars": {
-   "VITE_SITE_URL":"https://movie-watchlist-app.petrovic-valpovo.workers.dev/"
+   "VITE_SITE_URL":"https://watchlist.ipetrovic.com/"
   }
 }

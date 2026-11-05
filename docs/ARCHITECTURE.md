@@ -31,6 +31,7 @@ src/
   components/ui/    shadcn components. Vendored: change sparingly.
   hooks/            App-wide hooks (useInView, useInfiniteScrollTrigger, ...)
   lib/              App-wide setup: auth, tmdb client, edge cache, env, AI
+  start.ts          Request middleware for every request (canonical host, CSRF)
   db/               Drizzle schema and client
   integrations/     QueryClient setup and devtools
   __tests__/        Test helpers (server function stand-in, Workers env)

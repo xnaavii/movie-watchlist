@@ -29,6 +29,9 @@ export const enabledSocialProviders = {
 export type SocialProvider = keyof typeof enabledSocialProviders;
 
 export const auth = betterAuth({
+	// Production and previews build Google's redirect and email links from the
+	// live domain, whatever BETTER_AUTH_URL says. Local dev uses BETTER_AUTH_URL.
+	baseURL: import.meta.env.DEV ? undefined : PRODUCTION_URL,
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
