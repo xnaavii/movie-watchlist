@@ -104,7 +104,7 @@ describe("sitemap", () => {
 	});
 
 	it("renders valid, escaped, de-duplicated XML", () => {
-		const xml = renderSitemap("https://watchlist.xnaavii.com", [
+		const xml = renderSitemap("https://watchlist.ipetrovic.com", [
 			{ path: "/discover", changefreq: "daily", priority: 1 },
 			{ path: "/discover", changefreq: "daily", priority: 1 },
 			{ path: "/movies/1-a&b", changefreq: "weekly", priority: 0.7 },
@@ -112,7 +112,7 @@ describe("sitemap", () => {
 		expect(xml).toMatch(/^<\?xml version="1.0"/);
 		expect(xml.match(/<url>/g)).toHaveLength(2);
 		expect(xml).toContain(
-			"<loc>https://watchlist.xnaavii.com/movies/1-a&amp;b</loc>",
+			"<loc>https://watchlist.ipetrovic.com/movies/1-a&amp;b</loc>",
 		);
 		expect(xml).toContain("<priority>1.0</priority>");
 	});

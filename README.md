@@ -6,7 +6,7 @@
 </h1>
 
 Find something to watch, fast, and keep track of what you're watching. A discovery and watchlist app for movies and TV shows, built with TanStack Start and deployed on Cloudflare Workers.
-Check out the [live site](https://watchlist.xnaavii.com/discover).
+Check out the [live site](https://watchlist.ipetrovic.com/discover).
 
 <img src="docs/screenshots/hero-dark.webp" alt="Watchlist on a laptop and a phone: the discover page and a movie details page">
 

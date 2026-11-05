@@ -4,4 +4,4 @@
 User-agent: *
 Disallow: /api/
 
-Sitemap: https://watchlist.xnaavii.com/sitemap.xml
+Sitemap: https://watchlist.ipetrovic.com/sitemap.xml

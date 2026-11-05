@@ -28,7 +28,7 @@ describe("seo", () => {
 
 		const full = seo({
 			title: "Dune",
-			url: "https://watchlist.xnaavii.com/movies/1-dune",
+			url: "https://watchlist.ipetrovic.com/movies/1-dune",
 			image: "https://image.tmdb.org/dune.jpg",
 			imageAlt: "Dune poster",
 			siteName: "Watchlist",
@@ -38,7 +38,7 @@ describe("seo", () => {
 			expect.arrayContaining([
 				{
 					property: "og:url",
-					content: "https://watchlist.xnaavii.com/movies/1-dune",
+					content: "https://watchlist.ipetrovic.com/movies/1-dune",
 				},
 				{ property: "og:image", content: "https://image.tmdb.org/dune.jpg" },
 				{ name: "twitter:card", content: "summary_large_image" },

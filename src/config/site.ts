@@ -2,7 +2,18 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 
 /** The live domain. Canonical URLs and link previews always point here. */
-export const PRODUCTION_URL = "https://watchlist.xnaavii.com";
+export const PRODUCTION_URL = "https://watchlist.ipetrovic.com";
+
+/**
+ * Old addresses of the live site. Requests to these are permanently
+ * redirected to PRODUCTION_URL (see lib/canonicalHost.ts). Preview
+ * deployments (`<version>-movie-watchlist.petrovic-valpovo.workers.dev`)
+ * are not listed, so they keep working.
+ */
+export const LEGACY_HOSTS: readonly string[] = [
+	"watchlist.xnaavii.com",
+	"movie-watchlist.petrovic-valpovo.workers.dev",
+];
 
 /**
  * Single source of truth for the app's branding. The PWA manifest
@@ -31,7 +42,7 @@ export const SITE_CONFIG = {
 /**
  * The origin used in canonical URLs and link previews. Production builds
  * always use the live domain, so a page opened on the workers.dev URL still
- * points search engines and previews at watchlist.xnaavii.com. Development
+ * points search engines and previews at watchlist.ipetrovic.com. Development
  * uses whatever origin the page is served from.
  */
 export const getSiteUrl = createIsomorphicFn()

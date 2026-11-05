@@ -4,7 +4,7 @@
 interface __BaseEnv_Env {
 	AI: Ai;
 	PICKS_RATE_LIMITER: RateLimit;
-	VITE_SITE_URL: "https://movie-watchlist-app.petrovic-valpovo.workers.dev/";
+	VITE_SITE_URL: "https://watchlist.ipetrovic.com/";
 	DATABASE_URL: string;
 	BETTER_AUTH_URL: string;
 	BETTER_AUTH_SECRET: string;
