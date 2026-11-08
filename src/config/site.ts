@@ -2,7 +2,7 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 
 /** The live domain. Canonical URLs and link previews always point here. */
-export const PRODUCTION_URL = "https://watchlist.xnaavii.com";
+export const PRODUCTION_URL = "https://watchlist.ipetrovic.com";
 
 /**
  * Single source of truth for the app's branding. The PWA manifest
